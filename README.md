@@ -24,4 +24,4 @@
 - NapCat面板默认密码为NapCat
 
 #### 官方文档
-** https://astrbot.app/what-is-astrbot.html **
+**https://astrbot.app/what-is-astrbot.html**
