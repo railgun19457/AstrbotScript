@@ -1,0 +1,1 @@
+function r(){const e=localStorage.getItem("uiTheme");return!e||!["PurpleTheme","PurpleThemeDark"].includes(e)?(localStorage.setItem("uiTheme","PurpleTheme"),"PurpleTheme"):e}const t={Sidebar_drawer:!0,Customizer_drawer:!1,mini_sidebar:!1,fontTheme:"Roboto",uiTheme:r(),inputBg:!1};export{t as c};

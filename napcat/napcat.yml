@@ -1,0 +1,25 @@
+services:
+  napcat:
+    environment:
+      - NAPCAT_UID=${NAPCAT_UID:-1000}
+      - NAPCAT_GID=${NAPCAT_GID:-1000}
+      - MODE=astrbot
+    ports:
+      - 6099:6099
+    container_name: napcat
+    restart: always
+    image: mlikiowa/napcat-docker:latest
+    volumes:
+      - ../data:/AstrBot/data
+      - ./ntqq:/app/.config/QQ
+    networks:
+      - astrbot
+
+    #可选固定mac
+    mac_address: "02:42:ac:11:00:02"
+    
+    cpus: 2.0
+    mem_limit: 2g
+networks:
+  astrbot:
+    external: true

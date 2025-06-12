@@ -1,0 +1,7 @@
+{
+    "inactivated_llm_tools": [
+        "web_search",
+        "fetch_url"
+    ],
+    "session_conversation": {}
+}

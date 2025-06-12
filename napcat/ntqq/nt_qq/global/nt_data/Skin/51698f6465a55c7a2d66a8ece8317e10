@@ -1,0 +1,327 @@
+{
+    "systemThemeInfoList": [
+        {
+            "id": 0,
+            "light": {
+                "primaryColor": [
+                    4278229503
+                ],
+                "aioInfo": {
+                    "color": [
+                        4294111986
+                    ]
+                },
+                "bubbleInfo": {
+                    "color": [
+                        4278229503
+                    ]
+                }
+            },
+            "dark": {
+                "primaryColor": [
+                    4278216396
+                ],
+                "aioInfo": {
+                    "color": [
+                        4279900698
+                    ]
+                },
+                "bubbleInfo": {
+                    "color": [
+                        4280690214
+                    ]
+                }
+            }
+        },
+        {
+            "id": 1,
+            "light": {
+                "primaryColor": [
+                    4278229503
+                ],
+                "aioInfo": {
+                    "color": [
+                        4294111986
+                    ]
+                },
+                "bubbleInfo": {
+                    "color": [
+                        4278229503
+                    ]
+                }
+            },
+            "dark": {
+                "primaryColor": [
+                    4278216396
+                ],
+                "aioInfo": {
+                    "color": [
+                        4279900698
+                    ]
+                },
+                "bubbleInfo": {
+                    "color": [
+                        4280690214
+                    ]
+                }
+            }
+        }
+    ],
+    "templateThemeInfoList": [
+        {
+            "id": 1003,
+            "name": "水墨国风",
+            "desc": "秋水共长天一色",
+            "themeList": [
+                {
+                    "name": "随心调",
+                    "colorId": 0,
+                    "primaryColor": [],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1003/0-light-BFE415C9.png",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1003/0-dark-185B07BC.png"
+                },
+                {
+                    "name": "典雅金",
+                    "colorId": 1,
+                    "primaryColor": [
+                        4290486125
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1003/1-light-838430CC.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1003/1-dark-A8828F6B.svg"
+                },
+                {
+                    "name": "丁香紫",
+                    "colorId": 2,
+                    "primaryColor": [
+                        4286542724
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1003/2-light-6240A45D.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1003/2-dark-50DD1FEA.svg"
+                },
+                {
+                    "name": "芸豆青",
+                    "colorId": 3,
+                    "primaryColor": [
+                        4286613882
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1003/3-light-EEB1B930.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1003/3-dark-02BB4921.svg"
+                },
+                {
+                    "name": "辰砂色",
+                    "colorId": 4,
+                    "primaryColor": [
+                        4287257170
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1003/4-light-2A2D9705.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1003/4-dark-E6E84745.svg"
+                },
+                {
+                    "name": "天青色",
+                    "colorId": 5,
+                    "primaryColor": [
+                        4287871697
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1003/5-light-B80568E3.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1003/5-dark-C80D1898.svg"
+                }
+            ]
+        },
+        {
+            "id": 1004,
+            "name": "神秘美学",
+            "desc": "每天一点甜，生活好运连连",
+            "texture": {
+                "url": "https://qqpatch.gtimg.cn/template_theme/texture/1004.svg",
+                "opaque": 0.12,
+                "layout": 1,
+                "blendMode": 0
+            },
+            "themeList": [
+                {
+                    "name": "随心调",
+                    "colorId": 0,
+                    "primaryColor": [],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1004/0-light-32E07408.png",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1004/0-dark-69EF065B.png"
+                },
+                {
+                    "name": "心想事橙",
+                    "colorId": 1,
+                    "primaryColor": [
+                        4294948729
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1004/1-light-53D638EF.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1004/1-dark-EB02630D.svg"
+                },
+                {
+                    "name": "不再焦绿",
+                    "colorId": 2,
+                    "primaryColor": [
+                        4291742544
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1004/2-light-551BCC12.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1004/2-dark-D3422370.svg"
+                },
+                {
+                    "name": "蓝以为情",
+                    "colorId": 3,
+                    "primaryColor": [
+                        4289644794
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1004/3-light-5A4C2E77.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1004/3-dark-856BC121.svg"
+                },
+                {
+                    "name": "紫属于你",
+                    "colorId": 4,
+                    "primaryColor": [
+                        4290743032
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1004/4-light-594CC46F.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1004/4-dark-940A4631.svg"
+                },
+                {
+                    "name": "青青松松",
+                    "colorId": 5,
+                    "primaryColor": [
+                        4285390748
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1004/5-light-E1196FC2.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1004/5-dark-81F54F7B.svg"
+                }
+            ]
+        },
+        {
+            "id": 1001,
+            "name": "缤纷时刻",
+            "desc": "小小画板上映射生活的美好",
+            "texture": {
+                "url": "https://qqpatch.gtimg.cn/template_theme/texture/1001.svg",
+                "opaque": 0.2,
+                "layout": 0,
+                "blendMode": 1
+            },
+            "themeList": [
+                {
+                    "name": "随心调",
+                    "colorId": 0,
+                    "primaryColor": [],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1001/0-light-ABC12B2F.png",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1001/0-dark-040501D7.png"
+                },
+                {
+                    "name": "香芋啵啵",
+                    "colorId": 1,
+                    "primaryColor": [
+                        4289956344
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1001/1-light-7EEC4F11.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1001/1-dark-452D4020.svg"
+                },
+                {
+                    "name": "海盐粉荔",
+                    "colorId": 3,
+                    "primaryColor": [
+                        4282422753
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1001/3-light-ABA15027.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1001/3-dark-4E3897BC.svg"
+                },
+                {
+                    "name": "橘子汽水",
+                    "colorId": 2,
+                    "primaryColor": [
+                        4293101103
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1001/2-light-63F079FD.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1001/2-dark-7691F99F.svg"
+                },
+                {
+                    "name": "绿豆冰沙",
+                    "colorId": 4,
+                    "primaryColor": [
+                        4288141465
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1001/4-light-F3D7EACE.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1001/4-dark-3B25672F.svg"
+                },
+                {
+                    "name": "草莓大福",
+                    "colorId": 5,
+                    "primaryColor": [
+                        4294029298
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1001/5-light-EB240507.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1001/5-dark-F080046F.svg"
+                }
+            ]
+        },
+        {
+            "id": 1002,
+            "name": "幻彩机核",
+            "desc": "永不止境的黑夜和炽热不羁的心跳",
+            "flag": 2,
+            "texture": {
+                "url": "https://qqpatch.gtimg.cn/template_theme/texture/1002.svg",
+                "opaque": 0.2,
+                "layout": 0,
+                "blendMode": 1
+            },
+            "themeList": [
+                {
+                    "name": "随心调",
+                    "colorId": 0,
+                    "primaryColor": [],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1002/0-light-0BEC3649.png",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1002/0-dark-0BEC3649.png"
+                },
+                {
+                    "name": "霓虹灯光",
+                    "colorId": 1,
+                    "primaryColor": [
+                        4292014679
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1002/1-light-55998035.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1002/1-dark-8CD710EF.svg"
+                },
+                {
+                    "name": "粉墨都市",
+                    "colorId": 3,
+                    "primaryColor": [
+                        4287233021
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1002/3-light-FF1C4D46.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1002/3-dark-CE7924DA.svg"
+                },
+                {
+                    "name": "废土朋克",
+                    "colorId": 2,
+                    "primaryColor": [
+                        4293690334
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1002/2-light-19F8CAFF.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1002/2-dark-01A6CE31.svg"
+                },
+                {
+                    "name": "魔幻丛林",
+                    "colorId": 4,
+                    "primaryColor": [
+                        4293824637
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1002/4-light-0F137DE9.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1002/4-dark-97DCB2E7.svg"
+                },
+                {
+                    "name": "与光同尘",
+                    "colorId": 5,
+                    "primaryColor": [
+                        4288521720
+                    ],
+                    "thumbnailLight": "https://qqpatch.gtimg.cn/template_theme/1002/5-light-AFB14278.svg",
+                    "thumbnailDark": "https://qqpatch.gtimg.cn/template_theme/1002/5-dark-4AACBF13.svg"
+                }
+            ]
+        }
+    ]
+}

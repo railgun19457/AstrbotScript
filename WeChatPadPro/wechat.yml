@@ -1,0 +1,100 @@
+services:
+  mysql_wx:
+    # 指定容器的名称
+    container_name: mysql_wx
+    # 指定镜像和版本
+    image: mysql:8.0
+    ports:
+      - "33306:3306"
+    restart: always
+    # 容器日志大小配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5g"
+    environment:
+      # 配置root密码
+      MYSQL_ROOT_PASSWORD: wyz_mysql
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: wechatpadpro
+    volumes:
+      # 挂载数据目录
+      - "./mysql/data:/var/lib/mysql"
+      # 挂载配置文件目录
+      - "./mysql/config:/etc/mysql/conf.d"
+    networks:
+      - astrbot
+    healthcheck:
+      # 可选：健康检查确保MySQL就绪
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  #redis:
+  redis_wx:
+    # 指定容器的名称
+    container_name: redis_wx
+    # 指定镜像和版本
+    image: redis:alpine
+    ports:
+      - "36379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    # 容器日志大小配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5g"
+    volumes:
+      - ./redis/conf/:/etc/redis/ # 映射配置文件目录，宿主机:容器
+      - ./redis/data:/data # 映射数据目录，宿主机:容器
+    restart: always # 容器开机自启
+    privileged: true # 获取宿主机root权限
+    networks:
+      - astrbot
+    command: [ "redis-server", "/etc/redis/redis.conf" ] # 指定配置文件启动redis-server进程
+
+  wechatpadpro:
+    # 指定容器的名称
+    container_name: wechatpadpro
+    # 指定镜像和版本
+    image: alpine:latest
+    ports:
+      - "8059:8059"
+    restart: always
+    depends_on:
+      mysql_wx:
+        condition: service_healthy
+      redis_wx:
+        condition: service_healthy
+    links:
+      - mysql_wx
+      - redis_wx
+    volumes:
+      - ./WeChatPadPro:/WeChatPadPro # 映射数据目录，宿主机:容器
+      - ./setting.json:/WeChatPadPro/assets/setting.json # 映射配置文件目录，宿主机:容器
+    # 指定工作目录
+    working_dir: /WeChatPadPro
+    # 指定容器启动命令，执行./stay
+    command: [ "/bin/sh", "-c", "chmod +x ./stay && ./stay" ]
+    # 容器日志大小配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5g"
+    # 设置时区
+    environment:
+      - TZ=Asia/Shanghai
+      # 设置语言
+      - LANG=zh_CN.UTF-8
+      # 设置编码
+      - LC_ALL=zh_CN.UTF-8
+    networks:
+      - astrbot
+networks:
+  astrbot:
+    external: true

@@ -1,0 +1,20 @@
+services:
+  astrbot:
+    environment:
+      - TZ=Asia/Shanghai
+    image: soulter/astrbot:latest
+    container_name: astrbot
+    restart: always
+    ports:
+      - "6185:6185"
+    volumes:
+      - ./data:/AstrBot/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - astrbot
+    cpus: 1.0
+    mem_limit: 1g
+
+networks:
+  astrbot:
+    external: true
