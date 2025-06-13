@@ -53,7 +53,9 @@ services:
       - ./redis/conf/:/etc/redis/ # 映射配置文件目录，宿主机:容器
       - ./redis/data:/data # 映射数据目录，宿主机:容器
     restart: always # 容器开机自启
-    privileged: true # 获取宿主机root权限
+
+#    privileged: true # 获取宿主机root权限
+
     networks:
       - astrbot
     command: [ "redis-server", "/etc/redis/redis.conf" ] # 指定配置文件启动redis-server进程
