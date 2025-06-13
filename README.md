@@ -1,4 +1,6 @@
 #### 使用说明
+**仅适用于Linux环境下使用Docker部署**
+
 **文件夹内有3个sh脚本，对应3种组合**
 - astrbot_napcat.sh:一键部署astrbot和napcat
 - astrbot_wechatpadpro.sh:一键部署astrbot和WeChatPadPro
