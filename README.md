@@ -4,7 +4,7 @@
 **文件夹内有3个sh脚本，对应3种组合**
 - astrbot_napcat.sh:一键部署astrbot和napcat
 - astrbot_wechatpadpro.sh:一键部署astrbot和WeChatPadPro
-- astrbot_napcat_wechatpadpro:一键部署astrbot、napcat和WeChatPadPro
+- astrbot_napcat_wechatpadpro.sh:一键部署astrbot、napcat和WeChatPadPro
 
 #### 使用方法
 在本文件夹下运行
