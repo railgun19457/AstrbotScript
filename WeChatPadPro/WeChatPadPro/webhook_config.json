@@ -1,0 +1,32 @@
+{
+  "api": {
+    "base_url": "http://localhost:1239",
+    "key": "your_wechat_key"
+  },
+  "webhook": {
+    "url": "http://your-server-ip:8000/webhook",
+    "secret": "your_secret_key",
+    "enabled": true,
+    "timeout": 10,
+    "retry_count": 3,
+    "message_types": [],
+    "include_self_message": true,
+    "port": 8000,
+    "debug": false
+  },
+  "auto_config": true,
+  "handlers": {
+    "1": {
+      "type": "text",
+      "description": "文本消息处理"
+    },
+    "3": {
+      "type": "image",
+      "description": "图片消息处理"
+    },
+    "*": {
+      "type": "all",
+      "description": "所有类型消息处理"
+    }
+  }
+} 

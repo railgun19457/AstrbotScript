@@ -4,7 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Swagger UI</title>
+  <link rel="stylesheet" type="text/css" href="./hide-theme-selector.css" />
   <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
+  <link rel="stylesheet" type="text/css" href="./custom-theme.css" />
+  <link rel="stylesheet" type="text/css" href="./custom-branding.css" />
+  <link rel="stylesheet" type="text/css" href="./enhanced-theme.css" />
+  <link rel="stylesheet" type="text/css" href="./tag-headers.css" />
+  <link rel="stylesheet" type="text/css" href="./professional-layout.css" />
   <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
   <style>
@@ -15,6 +21,9 @@
       margin: 0;
       padding: 0;
       overflow-y: scroll;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #f9fafc;
+      color: #333;
     }
 
     *,
@@ -24,19 +33,237 @@
     }
 
     body {
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background-color: #f8f9fa;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     }
 
     /* Swagger UI Container */
     #swagger-ui {
-      max-width: 1200px;
+      width: 100%;
+      max-width: 100%;
       margin: 0 auto;
+      padding: 0 5%;
+    }
+
+    /* 全局覆盖Swagger UI样式 */
+    .swagger-ui {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .swagger-ui .information-container {
+      padding: 30px 0;
+      margin: 0;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+      max-width: 100%;
+    }
+
+    .swagger-ui .info {
+      margin: 0;
       padding: 20px;
-      background-color: rgba(255, 255, 255, 0.9);
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+
+    .swagger-ui .info .title {
+      font-weight: 700;
+      font-size: 28px;
+      color: #333;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .swagger-ui .information-container.wrapper {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 隐藏不必要的元素 */
+    .swagger-ui .scheme-container,
+    .swagger-ui .url,
+    .swagger-ui .download-contents,
+    .swagger-ui .schemes-wrapper {
+      display: none !important;
+    }
+
+    .swagger-ui .opblock-tag-section {
+      margin-top: 20px;
+    }
+
+    /* 自定义标签专题背景区域 */
+    .custom-header-banner {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      height: 220px;
+      margin: 0;
+      border-radius: 0;
+      overflow: hidden;
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* 美化操作块 */
+    .swagger-ui .opblock {
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      border: none;
+      margin: 0 0 15px;
+    }
+
+    .swagger-ui .opblock:hover {
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* 美化方法标签 */
+    .swagger-ui .opblock .opblock-summary-method {
+      font-weight: 600;
+      font-size: 14px;
+      min-width: 80px;
+      text-align: center;
+      border-radius: 4px;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 优化路径显示 */
+    .swagger-ui .opblock-summary-path {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 15px;
+      color: #2c3e50;
+    }
+
+    /* 优化表单元素 */
+    .swagger-ui input[type=text],
+    .swagger-ui input[type=password],
+    .swagger-ui input[type=search],
+    .swagger-ui input[type=email],
+    .swagger-ui textarea {
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      padding: 8px 10px;
+      transition: all 0.3s ease;
+    }
+
+    .swagger-ui input[type=text]:focus,
+    .swagger-ui input[type=password]:focus,
+    .swagger-ui input[type=search]:focus,
+    .swagger-ui input[type=email]:focus,
+    .swagger-ui textarea:focus {
+      border-color: #4e54c8;
+      box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.1);
+      outline: none;
+    }
+
+    /* 美化按钮 */
+    .swagger-ui .btn {
+      border-radius: 4px;
+      border: none;
+      padding: 8px 15px;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .swagger-ui .btn.execute {
+      background-color: #4e54c8;
+    }
+
+    .swagger-ui .btn.execute:hover {
+      background-color: #3a3fae;
+    }
+
+    /* 美化信息显示区 */
+    .swagger-ui .info .base-url {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .swagger-ui .info hgroup.main {
+      margin: 0 0 20px;
+    }
+
+    .swagger-ui .info hgroup.main a {
+      font-size: 14px;
+    }
+
+    /* 优化响应和请求部分 */
+    .swagger-ui .responses-inner h4,
+    .swagger-ui .response-col_status {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .swagger-ui .response-col_description__inner p {
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* 隐藏 swagger.json 显示 */
+    .swagger-ui .servers,
+    .swagger-ui .servers-title,
+    .swagger-ui .servers > label {
+      display: none !important;
+    }
+
+    /* 优化头部信息布局 */
+    .swagger-ui .information-container .info-container {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .swagger-ui .information-container .info-container .info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .swagger-ui .information-container .info-container .auth-wrapper {
+      flex: 0 0 auto;
+      margin-left: 20px;
+    }
+
+    .swagger-ui .info .title small {
+      background: #4e54c8;
+    }
+
+    .swagger-ui .info .title small.version-stamp {
+      background-color: #6e72d6;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-weight: 500;
+      font-size: 14px;
+      color: white;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    .swagger-ui .info .title small pre {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(78, 84, 200, 0.1);
+      color: #4e54c8;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+
+    /* 隐藏主题选择 */
+    .swagger-ui .topbar {
+      display: none !important;
+    }
+
+    /* 优化页脚 */
+    .swagger-ui .footer {
+      text-align: center;
+      margin: 30px 0;
+      padding: 20px 0;
+      border-top: 1px solid #eee;
+      color: #666;
+      font-size: 14px;
     }
 
     /* Floating Window */
@@ -45,7 +272,7 @@
       bottom: 20px;
       right: 20px;
       padding: 15px 25px;
-      background-color: rgba(255, 255, 255, 0.8);
+      background-color: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
       z-index: 2;
@@ -280,11 +507,678 @@
       overflow-y: auto;
       background-color: #f9f9f9;
     }
+
+    .message {
+      color: #333;
+      margin: 5px 0;
+    }
+    .success {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+    .warning {
+      color: #FFA500;
+      font-weight: bold;
+    }
+    .error {
+      color: #F44336;
+      font-weight: bold;
+    }
+
+    /* 自定义标签专题背景区域 */
+    .custom-header-banner {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      height: 220px;
+      margin: 0 auto 30px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .banner-content {
+      position: relative;
+      z-index: 2;
+      padding: 30px 5%;
+      color: white;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .banner-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .banner-subtitle {
+      font-size: 16px;
+      opacity: 0.95;
+      max-width: 700px;
+      line-height: 1.6;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .banner-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: hidden;
+      background: radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 60%);
+    }
+
+    .banner-shape {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      animation: float 20s infinite alternate ease-in-out;
+      filter: blur(1px);
+    }
+
+    .shape-1 {
+      width: 120px;
+      height: 120px;
+      top: -30px;
+      right: 10%;
+      animation-delay: 0s;
+      background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
+    }
+
+    .shape-2 {
+      width: 80px;
+      height: 80px;
+      bottom: 20px;
+      right: 20%;
+      animation-delay: 2s;
+      background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
+    }
+
+    .shape-3 {
+      width: 60px;
+      height: 60px;
+      top: 40%;
+      right: 30%;
+      animation-delay: 4s;
+      background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.1));
+    }
+
+    .shape-4 {
+      width: 100px;
+      height: 100px;
+      bottom: -30px;
+      left: 15%;
+      animation-delay: 1s;
+      background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.1));
+    }
+
+    .shape-5 {
+      width: 50px;
+      height: 50px;
+      top: 30%;
+      left: 10%;
+      animation-delay: 3s;
+      background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
+    }
+
+    .tag-icons {
+      position: absolute;
+      bottom: 20px;
+      right: 5%;
+      display: flex;
+      gap: 15px;
+      z-index: 3;
+    }
+
+    .tag-icon {
+      width: 44px;
+      height: 44px;
+      background-color: rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tag-icon::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .tag-icon:hover {
+      transform: translateY(-5px) scale(1.05);
+      background-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .tag-icon:hover::before {
+      opacity: 1;
+    }
+
+    .tag-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+      }
+      50% {
+        transform: translate(15px, -15px) rotate(180deg) scale(1.05);
+      }
+      100% {
+        transform: translate(-15px, 15px) rotate(360deg) scale(1);
+      }
+    }
+
+    /* 粒子效果 */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      pointer-events: none;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .custom-header-banner {
+        height: 200px;
+      }
+      
+      .banner-title {
+        font-size: 24px;
+      }
+      
+      .banner-subtitle {
+        font-size: 14px;
+      }
+      
+      .tag-icons {
+        bottom: 15px;
+        right: 15px;
+        gap: 10px;
+      }
+      
+      .tag-icon {
+        width: 36px;
+        height: 36px;
+      }
+      
+      .tag-icon svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    /* WebSocket客户端样式 */
+    .ws-client {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 400px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      padding: 15px;
+    }
+    
+    .ws-client h3 {
+      margin: 0 0 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      font-size: 16px;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .ws-status {
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: normal;
+    }
+    
+    .ws-status.connected {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .ws-status.disconnected {
+      background: #f44336;
+      color: white;
+    }
+    
+    .ws-status.connecting {
+      background: #ff9800;
+      color: white;
+    }
+    
+    .ws-messages {
+      height: 200px;
+      overflow-y: auto;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 4px;
+      margin: 10px 0;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    
+    .ws-input {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .ws-input input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .ws-input button {
+      padding: 8px 15px;
+      background: #4e54c8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .ws-input button:hover {
+      background: #3a3fae;
+    }
+    
+    .ws-input button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .ws-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      color: #666;
+    }
+
+    .ws-message {
+      margin: 5px 0;
+      padding: 5px;
+      border-radius: 4px;
+    }
+
+    .ws-message.info {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .ws-message.error {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .ws-message.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .ws-message.warning {
+      background: #fff3e0;
+      color: #f57c00;
+    }
+
+    .ws-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .ws-controls button {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .ws-controls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .ws-controls .connect {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .ws-controls .disconnect {
+      background: #f44336;
+      color: white;
+    }
+
+    .ws-controls .clear {
+      background: #9e9e9e;
+      color: white;
+    }
+
+    /* 性能优化相关样式 */
+    .swagger-ui .loading-container {
+      padding: 40px 0;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+
+    .swagger-ui .loading-container .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .swagger-ui .tag-selector {
+      margin: 10px 0;
+      padding: 10px;
+      background: #fff;
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .swagger-ui .tag-selector select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+    }
+
+    .swagger-ui .performance-toggle {
+      margin: 10px 0;
+      padding: 10px;
+      background: #f0f8ff;
+      border-radius: 4px;
+      border: 1px solid #d9d9d9;
+    }
+
+    .swagger-ui .performance-toggle label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .swagger-ui .performance-toggle input {
+      margin-right: 8px;
+    }
+
+    /* 自定义样式 */
+    .swagger-ui .topbar { 
+      display: none; 
+    }
+
+    .swagger-ui .info {
+      margin: 20px 0;
+    }
+
+    .swagger-ui .info .title {
+      font-size: 36px;
+      margin: 0;
+      font-family: sans-serif;
+      color: #3b4151;
+    }
+
+    .swagger-ui .opblock {
+      margin: 0 0 15px;
+      border-radius: 4px;
+      box-shadow: 0 0 3px rgba(0, 0, 0, 0.19);
+    }
+
+    .swagger-ui .opblock .opblock-summary {
+      padding: 5px;
+    }
+
+    .swagger-ui .opblock .opblock-summary-method {
+      font-size: 14px;
+      font-weight: 700;
+      min-width: 80px;
+      padding: 6px 15px;
+      text-align: center;
+      border-radius: 3px;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+      font-family: sans-serif;
+    }
+
+    .swagger-ui .btn {
+      font-size: 14px;
+      font-weight: 700;
+      padding: 5px 23px;
+      transition: all 0.3s;
+      border: 2px solid #888;
+      border-radius: 4px;
+      background: transparent;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      font-family: sans-serif;
+      color: #3b4151;
+    }
+
+    .swagger-ui .btn:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .swagger-ui .btn.execute {
+      background-color: #4990e2;
+      color: #fff;
+      border-color: #4990e2;
+    }
+
+    .swagger-ui .btn.execute:hover {
+      background-color: #357ebd;
+      border-color: #357ebd;
+    }
+
+    .swagger-ui .parameters-col_description input[type=text] {
+      width: 100%;
+      max-width: 340px;
+      padding: 8px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+    }
+
+    .swagger-ui .parameters-col_description select {
+      padding: 5px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+    }
+
+    .swagger-ui table {
+      width: 100%;
+      padding: 0 10px;
+      border-collapse: collapse;
+    }
+
+    .swagger-ui table tbody tr td {
+      padding: 10px 0;
+      vertical-align: top;
+    }
+
+    .swagger-ui .response-col_status {
+      font-size: 14px;
+      font-family: sans-serif;
+    }
+
+    .swagger-ui .opblock-body pre {
+      font-size: 12px;
+      margin: 0;
+      padding: 10px;
+      white-space: pre-wrap;
+      border-radius: 4px;
+      background: #41444e;
+      overflow-wrap: break-word;
+      font-family: monospace;
+      color: #fff;
+    }
+
+    .swagger-ui .opblock-body pre span {
+      color: #fff !important;
+      font-size: 12px !important;
+    }
+
+    .swagger-ui .opblock-section-header {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    .swagger-ui .opblock-section-header h4 {
+      font-size: 14px;
+      margin: 0;
+      padding: 10px 0;
+      font-family: sans-serif;
+      color: #3b4151;
+    }
+
+    .swagger-ui .model {
+      font-size: 12px;
+      font-weight: 300;
+      font-family: monospace;
+    }
+
+    .swagger-ui .model-toggle {
+      font-size: 10px;
+      position: relative;
+      top: 6px;
+      display: inline-block;
+      margin: 0 5px;
+      padding: 0 5px;
+      cursor: pointer;
+      transition: all 0.5s;
+      border: 1px solid #999;
+      border-radius: 3px;
+    }
+
+    .swagger-ui section.models {
+      margin: 30px 0;
+      border: 1px solid rgba(59, 65, 81, 0.3);
+      border-radius: 4px;
+    }
+
+    .swagger-ui section.models .model-container {
+      margin: 0 20px;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(59, 65, 81, 0.3);
+    }
+
+    .swagger-ui section.models .model-container:last-of-type {
+      border: 0;
+    }
+
+    /* 性能优化提示 */
+    .swagger-ui .performance-notice {
+      padding: 10px;
+      background-color: #fffacd;
+      border-left: 4px solid #ffcc00;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
   </style>
 </head>
 
 <body>
 
+  <!-- 自定义标签专题背景区域 -->
+  <div class="custom-header-banner">
+    <div class="banner-content">
+      <h1 class="banner-title">WeChatPadPro-8060</h1>
+      <p class="banner-subtitle">最新协议 支持活号登陆自动过滑块 死号登陆自动强开，支持全平台长连接，自动开启心跳，二次登陆,支持小程序获取hostsign</p>
+      <div class="banner-buttons" style="margin-top: 20px; display: flex; gap: 15px;">
+        <button id="showVerificationBtn" style="padding: 8px 15px; background-color: #ffffff; color: #4e54c8; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">显示验证码接口</button>
+        <a href="https://bbs.knowhub.cloud/" target="_blank" style="padding: 8px 15px; background-color: #4CAF50; color: #ffffff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;">
+            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+          </svg>
+          访问技术论坛
+        </a>
+      </div>
+    </div>
+    <div class="banner-background">
+      <div class="banner-shape shape-1"></div>
+      <div class="banner-shape shape-2"></div>
+      <div class="banner-shape shape-3"></div>
+      <div class="banner-shape shape-4"></div>
+      <div class="banner-shape shape-5"></div>
+    </div>
+    <div class="particles"></div>
+    <div class="tag-icons">
+      <div class="tag-icon" title="用户模块" data-tag="user">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      </div>
+      <div class="tag-icon" title="消息模块" data-tag="message">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      </div>
+      <div class="tag-icon" title="朋友圈模块" data-tag="friendcircle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </div>
+      <div class="tag-icon" title="视频号模块" data-tag="finder">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+      </div>
+      <div class="tag-icon" title="群组模块" data-tag="group">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </div>
+      <div class="tag-icon" title="技术论坛" data-tag="forum">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+      </div>
+      <div class="tag-icon" title="AI智能体" data-tag="ai">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      </div>
+    </div>
+  </div>
 
   <div id="xxcaibi" class="wrapper" style="display: none;">
     <div class="xxcaibi-group">
@@ -318,6 +1212,26 @@
       <span style="margin-left: 20px;" id="BASE_URL"></span>
     </div>
 
+    <!-- 论坛相关链接区域 -->
+    <div class="forum-links" style="margin-top: 20px; padding: 15px; background-color: #f5f7fa; border-radius: 8px; border-left: 4px solid #4CAF50;">
+      <h4 style="margin-top: 0; color: #333; font-size: 16px;">📚 技术论坛资源</h4>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+        <a href="https://bbs.knowhub.cloud/forums/ai-agents" target="_blank" style="display: inline-flex; align-items: center; padding: 6px 12px; background-color: #e8f5e9; color: #2e7d32; text-decoration: none; border-radius: 4px; font-size: 14px;">
+          <span style="margin-right: 6px;">🤖</span>AI智能体讨论区
+        </a>
+        <a href="https://bbs.knowhub.cloud/forums/mcp" target="_blank" style="display: inline-flex; align-items: center; padding: 6px 12px; background-color: #e3f2fd; color: #1565c0; text-decoration: none; border-radius: 4px; font-size: 14px;">
+          <span style="margin-right: 6px;">🔄</span>智能体MCP交流
+        </a>
+        <a href="https://bbs.knowhub.cloud/forums/wechatpadpro" target="_blank" style="display: inline-flex; align-items: center; padding: 6px 12px; background-color: #fff3e0; color: #e65100; text-decoration: none; border-radius: 4px; font-size: 14px;">
+          <span style="margin-right: 6px;">💬</span>WeChatPadPro交流群
+        </a>
+        <a href="https://bbs.knowhub.cloud/docs" target="_blank" style="display: inline-flex; align-items: center; padding: 6px 12px; background-color: #f3e5f5; color: #7b1fa2; text-decoration: none; border-radius: 4px; font-size: 14px;">
+          <span style="margin-right: 6px;">📖</span>开发者文档
+        </a>
+      </div>
+      <p style="margin: 10px 0 0; font-size: 13px; color: #666;">加入我们的技术社区，获取最新资讯、技术支持和开发资源！</p>
+    </div>
+
     <h4 style="text-align: center;line-height: 1;margin-bottom: 10px">WS 客户端 (同步消息)</h4>
     <div class="container">
       <input id="urlInput" type="text" placeholder="输入 WebSocket URL" />
@@ -330,7 +1244,26 @@
 
   <script>
     let socket;
-    document.getElementById('urlInput').value = window.location.origin.replace(/^http/, 'ws') + '/ws/GetSyncMsg?key='
+    let reconnectAttempts = 0;
+    let maxReconnectAttempts = 10;
+    let reconnectDelay = 2000; // 初始重连延迟2秒
+    let reconnectTimer;
+    let heartbeatInterval;
+    
+    // 获取正确的 WebSocket 地址
+    function getWebSocketUrl() {
+      // 从全局配置中获取端口号
+      const port = window.xxcaibi.BASE_URL.split(':')[2] || '8059'; // 如果获取不到配置端口，才使用默认值
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const hostname = window.location.hostname || 'localhost';
+      const key = window.xxcaibi.TOKEN_KEY || '';
+      return `${protocol}//${hostname}:${port}/ws/GetSyncMsg?key=${key}`;
+    }
+
+    // 初始化时设置默认地址
+    setTimeout(() => {
+      document.getElementById('urlInput').value = getWebSocketUrl();
+    }, 1000); // 等待配置加载完成
 
     // 更新按钮文本
     function updateButton(button, text, isLoading) {
@@ -338,80 +1271,256 @@
       button.disabled = isLoading;
     }
 
-    // 连接按钮点击事件
-    document.getElementById('connectButton').onclick = function () {
+    // 添加日志消息到界面
+    function addLog(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const logMessage = `<p class="${type}">[${timestamp}] ${message}</p>`;
+      const messages = document.getElementById('messages');
+      messages.innerHTML += logMessage;
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    // 开始心跳
+    function startHeartbeat() {
+      if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+      }
+      heartbeatInterval = setInterval(() => {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          addLog('发送心跳消息');
+          socket.send('ping');
+        }
+      }, 30000); // 每30秒发送一次心跳
+    }
+
+    // 停止心跳
+    function stopHeartbeat() {
+      if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = null;
+      }
+    }
+
+    // 重置重连参数
+    function resetReconnectParams() {
+      reconnectAttempts = 0;
+      reconnectDelay = 2000;
+      if (reconnectTimer) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+      }
+    }
+
+    // 连接 WebSocket
+    function connectWebSocket() {
       const url = document.getElementById('urlInput').value;
+      if (!url) {
+        addLog('请输入WebSocket连接地址', 'error');
+        return;
+      }
+
+      // 检查 key 是否存在
+      if (!url.includes('key=') || url.split('key=')[1] === '') {
+        addLog('错误: key 参数不能为空', 'error');
+        return;
+      }
 
       // 如果已经有连接，先关闭
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.close();
       }
 
-      // 更新按钮状态为连接中
+      try {
+        addLog('正在连接服务器: ' + url);
+        
+        socket = new WebSocket(url);
+
+        // 连接成功时
+        socket.onopen = function() {
+          addLog('已连接到服务器', 'success');
+          updateButton(document.getElementById('connectButton'), '连接', false);
+          document.getElementById('connectButton').disabled = true;
+          document.getElementById('disconnectButton').disabled = false;
+          resetReconnectParams();
+          startHeartbeat();
+        };
+
+        // 接收消息
+        socket.onmessage = function(event) {
+          try {
+            // 尝试解析 JSON
+            const data = JSON.parse(event.data);
+            if (data.error) {
+              addLog('错误: ' + data.error, 'error');
+              return;
+            }
+            addLog('收到服务器消息: ' + JSON.stringify(data, null, 2));
+          } catch (e) {
+            // 不是 JSON，按普通文本处理
+            if (event.data === 'pong') {
+              addLog('收到心跳响应');
+              return;
+            }
+            addLog('收到服务器消息: ' + event.data);
+          }
+        };
+
+        // 连接关闭时
+        socket.onclose = function(event) {
+          const reason = event.reason ? `, 原因: ${event.reason}` : '';
+          addLog(`连接已关闭 (代码: ${event.code}${reason})`, 'warning');
+          stopHeartbeat();
+          
+          if (!event.wasClean) {
+            // 检查是否是因为服务器未启动
+            if (event.code === 1006) {
+              addLog('无法连接到服务器，请确保服务器已启动且端口正确', 'error');
+            }
+            reconnect();
+          } else {
+            updateButton(document.getElementById('connectButton'), '连接', false);
+            document.getElementById('connectButton').disabled = false;
+            document.getElementById('disconnectButton').disabled = true;
+          }
+        };
+
+        // 发生错误时
+        socket.onerror = function(error) {
+          addLog('连接错误: ' + (error.message || '未知错误'), 'error');
+          
+          // 检查是否是因为跨域问题
+          if (error instanceof SecurityError) {
+            addLog('跨域访问被拒绝，请检查服务器配置', 'error');
+          }
+          // 检查是否是因为协议错误
+          else if (error instanceof SyntaxError) {
+            addLog('WebSocket URL 格式错误', 'error');
+          }
+        };
+
+      } catch (error) {
+        addLog('创建连接失败: ' + error.message, 'error');
+        reconnect();
+      }
+    }
+
+    // 重连逻辑
+    function reconnect() {
+      if (reconnectAttempts >= maxReconnectAttempts) {
+        addLog('达到最大重连次数，停止重连', 'error');
+        addLog('请检查：', 'error');
+        addLog('1. 服务器是否正在运行', 'error');
+        addLog('2. 端口 (8059) 是否正确', 'error');
+        addLog('3. key 是否有效', 'error');
+        addLog('4. 网络连接是否正常', 'error');
+        updateButton(document.getElementById('connectButton'), '连接', false);
+        document.getElementById('disconnectButton').disabled = true;
+        resetReconnectParams();
+        return;
+      }
+
+      reconnectAttempts++;
+      addLog(`正在进行第 ${reconnectAttempts} 次重连...`);
+
+      reconnectTimer = setTimeout(() => {
+        connectWebSocket();
+        // 指数退避，最大延迟30秒
+        reconnectDelay = Math.min(reconnectDelay * 2, 30000);
+      }, reconnectDelay);
+    }
+
+    // 连接按钮点击事件
+    document.getElementById('connectButton').onclick = function() {
       updateButton(this, '连接中', true);
-
-      console.log('连接 WebSocket 服务器:', url,1111111111111111);
-      // 创建 WebSocket 连接
-      socket = new WebSocket(url);
-
-      // 连接成功时
-      socket.onopen = function () {
-        console.log('已连接到服务器');
-        document.getElementById('messages').innerHTML += '<p>已连接到服务器</p>';
-        updateButton(document.getElementById('connectButton'), '连接', false); // 重置连接按钮
-        document.getElementById('disconnectButton').disabled = false; // 启用取消连接按钮
-        document.getElementById('connectButton').disabled = true;
-      };
-
-      // 接收消息
-      socket.onmessage = function (event) {
-        console.log('收到来自服务器的消息:', event.data);
-        document.getElementById('messages').innerHTML += '<p>服务器: ' + event.data + '</p>';
-      };
-
-      // 连接关闭时
-      socket.onclose = function () {
-        console.log('与服务器的连接已关闭');
-        document.getElementById('messages').innerHTML += '<p>与服务器的连接已关闭</p>';
-        updateButton(document.getElementById('connectButton'), '连接', false); // 启用连接按钮
-        document.getElementById('disconnectButton').innerHTML = "取消连接",
-          document.getElementById('disconnectButton').disabled = true; // 启用连接按钮
-        document.getElementById('connectButton').disabled = false; // 启用连接按钮
-      };
-
-      // 处理错误
-      socket.onerror = function (error) {
-        console.error('WebSocket 错误:', error);
-        document.getElementById('messages').innerHTML += '<p>WebSocket 错误: ' + error.message + '</p>';
-        updateButton(document.getElementById('connectButton'), '连接', false); // 重置连接按钮
-      };
+      connectWebSocket();
     };
 
-    // 取消连接按钮点击事件
-    document.getElementById('disconnectButton').onclick = function () {
-      updateButton(this, '取消中', true); // 更新为取消中状态
+    // 断开连接按钮点击事件
+    document.getElementById('disconnectButton').onclick = function() {
       if (socket) {
-        setTimeout(function () {
-          socket.close();
-        }, 30)
-
+        addLog('主动断开连接');
+        socket.close(1000, "用户主动断开连接");
+        this.disabled = true;
+        stopHeartbeat();
+        resetReconnectParams();
       }
     };
 
-    // 清理消息按钮点击事件
-    document.getElementById('clearMessagesButton').onclick = function () {
-      document.getElementById('messages').innerHTML = ''; // 清空消息区域
+    // 页面关闭时清理
+    window.onbeforeunload = function() {
+      if (socket) {
+        socket.close();
+      }
+      stopHeartbeat();
+      resetReconnectParams();
     };
   </script>
   <div id="swagger-ui"></div>
 
-  <!-- Floating window -->
-  <div class="floating-window" style="display: none !important">
+  <!-- WebSocket 客户端 -->
+  <div class="ws-client" id="wsClient" style="display: none;">
+    <h3>
+      WebSocket 客户端
+      <span class="ws-status disconnected">未连接</span>
+    </h3>
+    <div class="ws-messages" id="wsMessages"></div>
+    <div class="ws-controls">
+      <button class="connect" id="wsConnect">连接</button>
+      <button class="disconnect" id="wsDisconnect" disabled>断开</button>
+      <button class="clear" id="wsClear">清空</button>
+    </div>
   </div>
 
+  <div class="swagger-ui footer" style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; text-align: center;">
+    <div style="max-width: 800px; margin: 0 auto;">
+      <div style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 20px;">
+        <div style="flex: 1; min-width: 200px; margin: 0 10px 20px; text-align: left;">
+          <h4 style="font-size: 16px; color: #333; margin-bottom: 15px;">WeChatPadPro</h4>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="margin-bottom: 8px;"><a href="https://github.com/WeChatPadPro/WeChatPadPro" target="_blank" style="color: #666; text-decoration: none;">GitHub 仓库</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://t.me/+LK0JuqLxjmk0ZjRh" target="_blank" style="color: #666; text-decoration: none;">Telegram 群组</a></li>
+            <li style="margin-bottom: 8px;"><a href="http://wxmcp.knowhub.cloud/" target="_blank" style="color: #666; text-decoration: none;">MCP 服务地址</a></li>
+          </ul>
+        </div>
+        <div style="flex: 1; min-width: 200px; margin: 0 10px 20px; text-align: left;">
+          <h4 style="font-size: 16px; color: #333; margin-bottom: 15px;">技术论坛</h4>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="margin-bottom: 8px;"><a href="https://bbs.knowhub.cloud/forums/ai-agents" target="_blank" style="color: #666; text-decoration: none;">AI智能体讨论区</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://bbs.knowhub.cloud/forums/mcp" target="_blank" style="color: #666; text-decoration: none;">智能体MCP交流</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://bbs.knowhub.cloud/forums/wechatpadpro" target="_blank" style="color: #666; text-decoration: none;">WeChatPadPro交流群</a></li>
+          </ul>
+        </div>
+        <div style="flex: 1; min-width: 200px; margin: 0 10px 20px; text-align: left;">
+          <h4 style="font-size: 16px; color: #333; margin-bottom: 15px;">资源中心</h4>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="margin-bottom: 8px;"><a href="https://bbs.knowhub.cloud/docs" target="_blank" style="color: #666; text-decoration: none;">开发者文档</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://bbs.knowhub.cloud/api" target="_blank" style="color: #666; text-decoration: none;">API 参考</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://bbs.knowhub.cloud/support" target="_blank" style="color: #666; text-decoration: none;">技术支持</a></li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; color: #888; font-size: 13px;">
+        <p>© 2025 KnowHub. 探索与交流 Know Hub 的无限可能。</p>
+        <p>
+          <a href="https://bbs.knowhub.cloud/" target="_blank" style="color: #4CAF50; text-decoration: none; margin: 0 10px;">官方论坛</a> |
+          <a href="https://bbs.knowhub.cloud/terms" target="_blank" style="color: #666; text-decoration: none; margin: 0 10px;">服务条款</a> |
+          <a href="https://bbs.knowhub.cloud/privacy" target="_blank" style="color: #666; text-decoration: none; margin: 0 10px;">隐私政策</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="./jquery-3.7.1.slim.min.js" charset="UTF-8"></script>
   <script src="./swagger-ui-bundle.js" charset="UTF-8"></script>
   <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"></script>
-  <script src="./jquery-3.7.1.slim.min.js"></script>
+  <script src="./theme-enforcer.js"></script>
+  <script src="./theme-generator.js"></script>
+  <script src="./enhanced-animations.js"></script>
+  <script src="./tag-effects.js"></script>
+  <script src="./tag-banner.js"></script>
+  <script src="./footer.js"></script>
+  <script src="./quick-nav.js"></script>
+  <script src="./search-enhancer.js"></script>
 
   <script>
     function closeDiv(element) {
@@ -634,6 +1743,26 @@
           CustomPlugin,
         ],
         docExpansion: "none",  // none(不展开) list(展开operations) full(全部展开)
+        defaultModelsExpandDepth: -1, // 默认不展开Models
+        displayRequestDuration: true, // 显示请求耗时
+        filter: true, // 开启过滤功能
+        persistAuthorization: true, // 持久化授权信息
+        syntaxHighlight: {
+          activated: true,
+          theme: "agate" // 固定使用 agate 主题
+        },
+        defaultModelRendering: "model", // 模型渲染方式
+        showExtensions: false, // 不显示扩展
+        showCommonExtensions: false, // 不显示通用扩展
+        layout: "StandaloneLayout", // 使用独立布局
+        withCredentials: false, // 禁用凭证
+        tryItOutEnabled: true, // 启用试用功能
+        displayOperationId: false, // 不显示操作 ID
+        showMutatedRequest: true, // 显示修改后的请求
+        defaultTheme: "normal", // 默认使用普通主题，不使用暗黑主题
+        disableTopbar: true, // 禁用顶部导航栏
+        disableThemeSwitcher: true, // 禁用主题切换功能
+        showTitle: false, // 不显示标题
         onComplete: function () {
           // Swagger-UI 渲染完成后回调; updateSpec 成功也会调用
           // 但是如果数据太多会导致部分 HTML 元素在此时还未加载完成
@@ -641,6 +1770,13 @@
           console.log("Swagger UI Version:", window.versions.swaggerUi.version)
           parseBaseUrl();
           addXXCaiBi();
+          
+          // 隐藏不需要的元素
+          hideUnwantedElements();
+          
+          // 优化布局和样式
+          enhanceLayout();
+          
           checkSwaggerLoadingComplete(function () {
             addCopy1();
             addCopy2();
@@ -654,13 +1790,59 @@
             });
           });
         },
-        // parameterMacro: function (operation, parameter) {
-        //   // 展开 API 对应的 operations 时触发, 可以在此修改 指定参数的默认值
-        //   console.log(operation, parameter);
-        //   return "";
-        // },
       });
       window.ui = ui;
+      
+      // 隐藏不需要的元素
+      function hideUnwantedElements() {
+        // 隐藏 swagger.json 显示
+        $('.download-url-wrapper').hide();
+        $('.scheme-container').hide();
+        
+        // 隐藏主题选择器相关元素
+        $('.topbar').hide();
+        $('.scheme-container .schemes-wrapper').hide();
+        $('.select-label').hide();
+        
+        // 移除不必要的模型显示
+        setTimeout(() => {
+          $('.models').hide();
+          
+          // 再次确保主题选择器被隐藏（防止动态加载）
+          $('.topbar').hide();
+          $('.scheme-container .schemes-wrapper').hide();
+          $('.select-label').hide();
+        }, 500);
+        
+        // 添加额外的 CSS 样式确保隐藏
+        const style = document.createElement('style');
+        style.textContent = `
+          .swagger-ui .topbar,
+          .swagger-ui .scheme-container .schemes-wrapper,
+          .swagger-ui .select-label[data-name="themes"],
+          .swagger-ui .select-label[data-name="theme"] {
+            display: none !important;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+      
+      // 增强布局和样式
+      function enhanceLayout() {
+        // 重新组织信息区域
+        setTimeout(() => {
+          // 为版本号添加样式
+          $('.info .title small').addClass('version-stamp');
+          
+          // 添加页脚
+          if (!$('.swagger-ui .footer').length) {
+            $('#swagger-ui').append(
+              `<div class="footer">
+              </div>`
+            );
+          }
+        }, 500);
+      }
 
       window.xxcaibi = {
         "BASE_URL": "",
@@ -744,7 +1926,7 @@
         if (!document.getElementsByClassName("tg-link").length) {
           $(".info__contact").append(
             '<div class="tg-link">' +
-            '<a href="https://t.me/wx_ipad" target="_blank" class="tg-button">' +
+            '<a href="https://t.me/+LK0JuqLxjmk0ZjRh" target="_blank" class="tg-button">' +
             '<img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Logo" class="tg-icon">' +
             '加入 Telegram 群' +
             '</a>' +
@@ -753,9 +1935,139 @@
         }
 
         $("#BASE_URL").html("BASE_URL: " + window.xxcaibi.BASE_URL);
+
       }
 
     };
+    
+    // 添加点击事件，显示验证码接口
+    document.addEventListener('DOMContentLoaded', function() {
+      const button = document.getElementById('showVerificationBtn');
+      if (button) {
+        button.addEventListener('click', function() {
+          // 在swagger UI中创建一个自定义的验证码接口卡片
+          const loginSection = document.querySelector('.opblock-tag[data-tag="login"]');
+          if (loginSection) {
+            // 先尝试展开登录部分
+            loginSection.click();
+            
+            setTimeout(() => {
+              // 检查是否已存在该接口卡片
+              if (!document.getElementById('custom-verification-api')) {
+                // 获取登录区域
+                const loginContent = loginSection.nextElementSibling;
+                if (loginContent) {
+                  // 创建验证码接口卡片
+                  const apiCard = document.createElement('div');
+                  apiCard.id = 'custom-verification-api';
+                  apiCard.className = 'opblock opblock-post';
+                  apiCard.style.marginBottom = '15px';
+                  
+                  apiCard.innerHTML = `
+                    <div class="opblock-summary opblock-summary-post">
+                      <span class="opblock-summary-method" style="background-color: #49cc90;">POST</span>
+                      <span class="opblock-summary-path">
+                        <a><span>/login/YPayVerificationcode</span></a>
+                      </span>
+                      <div class="opblock-summary-description">提交登录验证码</div>
+                      <button style="margin-left: 10px; padding: 4px 8px; background: #2b85e4; color: #FFF; border-color: #2b85e4; border-radius: 4px; cursor: pointer;">复制</button>
+                    </div>
+                    <div class="opblock-body" style="display: none;">
+                      <div class="opblock-section">
+                        <div class="opblock-section-header">
+                          <div class="tab-header">
+                            <div class="tab-item active">
+                              <h4>参数</h4>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="parameters-container">
+                          <div class="table-container">
+                            <table>
+                              <thead>
+                                <tr>
+                                  <th>名称</th>
+                                  <th>位置</th>
+                                  <th>类型</th>
+                                  <th>必填</th>
+                                  <th>描述</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td>key</td>
+                                  <td>query</td>
+                                  <td>string</td>
+                                  <td>是</td>
+                                  <td>授权密钥</td>
+                                </tr>
+                                <tr>
+                                  <td>body</td>
+                                  <td>body</td>
+                                  <td>object</td>
+                                  <td>是</td>
+                                  <td>验证码参数</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="opblock-section">
+                        <div class="opblock-section-header">
+                          <h4>请求体示例</h4>
+                        </div>
+                        <div class="opblock-description-wrapper">
+                          <div class="opblock-description">
+                            <pre style="background: #f0f0f0; padding: 10px; border-radius: 4px;">{
+  "code": "123456"  // 用户输入的验证码，通常是6位数字
+}</pre>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                  
+                  // 插入到登录部分
+                  loginContent.appendChild(apiCard);
+                  
+                  // 添加点击事件，展开/折叠API详情
+                  const summarySection = apiCard.querySelector('.opblock-summary');
+                  const bodySection = apiCard.querySelector('.opblock-body');
+                  
+                  summarySection.addEventListener('click', function(e) {
+                    if (e.target.tagName !== 'BUTTON') {
+                      bodySection.style.display = bodySection.style.display === 'none' ? 'block' : 'none';
+                    }
+                  });
+                  
+                  // 复制按钮点击事件
+                  const copyButton = apiCard.querySelector('button');
+                  copyButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const text = '/login/YPayVerificationcode 提交登录验证码';
+                    navigator.clipboard.writeText(text).then(function() {
+                      copyButton.textContent = '复制成功！';
+                      setTimeout(() => {
+                        copyButton.textContent = '复制';
+                      }, 1000);
+                    });
+                  });
+                  
+                  // 滚动到该元素
+                  apiCard.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }
+              } else {
+                // 如果已存在，则滚动到该元素
+                document.getElementById('custom-verification-api').scrollIntoView({behavior: 'smooth', block: 'center'});
+              }
+            }, 500);
+          } else {
+            alert('未找到登录部分，请确保Swagger UI已正确加载');
+          }
+        });
+      }
+    });
   </script>
 </body>
 

@@ -1,0 +1,41 @@
+# MySQL 运行时文件 - 启动时自动生成
+mysql/data/mysql.sock
+mysql/data/ib_buffer_pool
+mysql/data/ibtmp1
+mysql/data/#ib_16384_*.dblwr
+mysql/data/auto.cnf
+mysql/data/binlog.*
+mysql/data/undo_*
+mysql/data/#innodb_redo/
+mysql/data/#innodb_temp/
+mysql/data/performance_schema/
+mysql/data/sys/
+
+# MySQL 系统数据库运行时文件
+mysql/data/mysql/*.sdi
+mysql/data/mysql/*.CSV
+mysql/data/mysql/*.CSM
+
+# Redis 运行时文件
+redis/data/
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+
+# 操作系统相关
+.DS_Store
+Thumbs.db
+
+# IDE 相关
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker 相关
+.env.local
+.env.*.local

@@ -4,22 +4,22 @@
   "port": "8059",
   "apiVersion": "",
   "ghWxid": "",
-  "adminKey": "stay33",
+  "adminKey": "12345",
   "workerpoolsize": 500,
   "maxworkertasklen": 1000,
   "redisConfig": {
-    "Host": "redis_wx",
+    "Host": "wechatpadpro_redis",
     "Port": 6379,
     "Db": 1,
     "User": "",
-    "Pass": "redis_wx_password",
+    "Pass": "wechatpadpro_redis",
     "MaxIdle": 10,
     "MaxActive": 20,
     "IdleTimeout": 5000,
     "MaxConnLifetime": 30,
     "ConnectTimeout": 0
   },
-  "mySqlConnectStr": "root:wyz_mysql@tcp(mysql_wx:3306)/wechatpadpro?charset=utf8mb4&parseTime=true&loc=Local",
+  "mySqlConnectStr": "wechatpadpro:wechatpadpro_mysql@tcp(wechatpadpro_mysql:3306)/wechatpadpro?charset=utf8mb4&parseTime=true&loc=Local",
   "disabledCmdList": [
     "A000"
   ],

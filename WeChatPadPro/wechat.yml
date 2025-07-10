@@ -1,102 +1,64 @@
 services:
-  mysql_wx:
-    # 指定容器的名称
-    container_name: mysql_wx
-    # 指定镜像和版本
-    image: mysql:8.0
-    ports:
-      - "33306:3306"
-    restart: always
-    # 容器日志大小配置
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5g"
-    environment:
-      # 配置root密码
-      MYSQL_ROOT_PASSWORD: wyz_mysql
-      MYSQL_ROOT_HOST: '%'
-      MYSQL_DATABASE: wechatpadpro
-    volumes:
-      # 挂载数据目录
-      - "./mysql/data:/var/lib/mysql"
-      # 挂载配置文件目录
-      - "./mysql/config:/etc/mysql/conf.d"
-    networks:
-      - astrbot
-    healthcheck:
-      # 可选：健康检查确保MySQL就绪
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-
-  #redis:
-  redis_wx:
-    # 指定容器的名称
-    container_name: redis_wx
-    # 指定镜像和版本
-    image: redis:alpine
-    ports:
-      - "36379:6379"
-    healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-    # 容器日志大小配置
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5g"
-    volumes:
-      - ./redis/conf/:/etc/redis/ # 映射配置文件目录，宿主机:容器
-      - ./redis/data:/data # 映射数据目录，宿主机:容器
-    restart: always # 容器开机自启
-
-#    privileged: true # 获取宿主机root权限
-
-    networks:
-      - astrbot
-    command: [ "redis-server", "/etc/redis/redis.conf" ] # 指定配置文件启动redis-server进程
-
   wechatpadpro:
-    # 指定容器的名称
+    image: luolinaiwis/wechatpadpro:latest
     container_name: wechatpadpro
-    # 指定镜像和版本
-    image: alpine:latest
+    restart: unless-stopped
     ports:
       - "8059:8059"
-    restart: always
-    depends_on:
-      mysql_wx:
-        condition: service_healthy
-      redis_wx:
-        condition: service_healthy
-    links:
-      - mysql_wx
-      - redis_wx
     volumes:
-      - ./WeChatPadPro:/WeChatPadPro # 映射数据目录，宿主机:容器
-      - ./setting.json:/WeChatPadPro/assets/setting.json # 映射配置文件目录，宿主机:容器
-    # 指定工作目录
-    working_dir: /WeChatPadPro
-    # 指定容器启动命令，执行./stay
-    command: [ "/bin/sh", "-c", "chmod +x ./stay && ./stay" ]
-    # 容器日志大小配置
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5g"
-    # 设置时区
-    environment:
-      - TZ=Asia/Shanghai
-      # 设置语言
-      - LANG=zh_CN.UTF-8
-      # 设置编码
-      - LC_ALL=zh_CN.UTF-8
+      - ./wechatpadpro:/app
+      - ./.env:/app/.env
     networks:
       - astrbot
+    environment:
+      - DEBUG=true
+      - ADMIN_KEY=12345
+      - REDIS_HOST=wechatpadpro_redis
+      - REDIS_PASS=wechatpadpro_redis
+      - MYSQL_CONNECT_STR=wechatpadpro:wechatpadpro_mysql@tcp(wechatpadpro_mysql:3306)/wechatpadpro?charset=utf8mb4&parseTime=true&loc=Local
+      - PORT=8059
+      - HOST=0.0.0.0
+      - TZ=Asia/Shanghai
+    depends_on:
+      - wechatpadpro_mysql
+      - wechatpadpro_redis
+
+  wechatpadpro_redis:
+    image: redis:7-alpine
+    container_name: wechatpadpro_redis
+    restart: unless-stopped
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+#使用容器网络进行连接，无需映射端口
+#    ports:
+#      - "6379:6379"
+
+    volumes:
+      - ./redis/data:/data
+      - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - astrbot
+
+  wechatpadpro_mysql:
+    image: mysql:8.0
+    container_name: wechatpadpro_mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=wechatpadpro_mysql
+      - MYSQL_DATABASE=wechatpadpro
+      - MYSQL_USER=wechatpadpro
+      - MYSQL_PASSWORD=wechatpadpro_mysql
+
+#使用容器网络进行连接，无需映射端口
+#    ports:
+#      - "3306:3306"
+
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    networks:
+      - astrbot
+    command: --default-authentication-plugin=mysql_native_password
+
 networks:
   astrbot:
     external: true

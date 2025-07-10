@@ -1,39 +1,14 @@
 basePath: ""
+consumes:
+- application/json
+- multipart/form-data
 definitions:
-  ActionInfo:
-    properties:
-      AppMsg:
-        $ref: '#/definitions/AppMsg'
-    title: ActionInfo
-    type: object
   AlisaModel:
     properties:
       Alisa:
         example: ""
         type: string
     title: AlisaModel
-    type: object
-  AppInfo:
-    properties:
-      AppName:
-        example: ""
-        type: string
-      FromURL:
-        example: ""
-        type: string
-      ID:
-        example: ""
-        type: string
-      InstallURL:
-        example: ""
-        type: string
-      IsForceUpdate:
-        format: uint32
-        type: integer
-      Version:
-        example: ""
-        type: string
-    title: AppInfo
     type: object
   AppMessageItem:
     properties:
@@ -56,13 +31,6 @@ definitions:
           $ref: '#/definitions/AppMessageItem'
         type: array
     title: AppMessageModel
-    type: object
-  AppMsg:
-    properties:
-      MessageAction:
-        example: ""
-        type: string
-    title: AppMsg
     type: object
   AppletModel:
     properties:
@@ -114,8 +82,13 @@ definitions:
           format: int
           type: integer
         type: array
+      file:
+        description: 上传的文件内容
+        type: file
     title: CdnUploadVideoRequest
     type: object
+    x-media-format: video
+    x-media-type: true
   ChatRoomWxIdListModel:
     properties:
       ChatRoomWxIdList:
@@ -183,24 +156,6 @@ definitions:
         type: string
     title: ConfirmPreTransfer
     type: object
-  ContentObject:
-    properties:
-      ContentStyle:
-        format: uint32
-        type: integer
-      ContentURL:
-        example: ""
-        type: string
-      Description:
-        example: ""
-        type: string
-      MediaList:
-        $ref: '#/definitions/MediaList'
-      Title:
-        example: ""
-        type: string
-    title: ContentObject
-    type: object
   CreateChatRoomModel:
     properties:
       TopIc:
@@ -257,6 +212,10 @@ definitions:
     type: object
   DelayAuthKeyModel:
     properties:
+      AuthKey:
+        description: ' 要延期的 AuthKey'
+        example: ""
+        type: string
       Days:
         description: ' AuthKey 的延期天数; Days 小于1默认设置为30'
         example: "30"
@@ -275,6 +234,10 @@ definitions:
     type: object
   DeleteAuthKeyModel:
     properties:
+      AuthKey:
+        description: ' 要删除的 AuthKey'
+        example: ""
+        type: string
       Key:
         description: ' 要删除的 AuthKey'
         example: ""
@@ -283,6 +246,9 @@ definitions:
         description: ' 删除操作 0:仅删除授权码 1:删除授权码相关的所有数据'
         format: int
         type: integer
+      unknown:
+        example: ""
+        type: string
     title: DeleteAuthKeyModel
     type: object
   DeviceIdLoginModel:
@@ -317,65 +283,16 @@ definitions:
     type: object
   DeviceInfo:
     properties:
-      AdSource:
+      AndroidId:
         example: ""
         type: string
-      BundleID:
+      ImeI:
         example: ""
         type: string
-      CarrierName:
+      Manufacturer:
         example: ""
         type: string
-      ClientCheckDataXML:
-        example: ""
-        type: string
-      CoreCount:
-        format: uint32
-        type: integer
-      DeviceBrand:
-        example: ""
-        type: string
-      DeviceID:
-        items:
-          format: int
-          type: integer
-        type: array
-      DeviceName:
-        example: ""
-        type: string
-      DeviceToken:
-        $ref: '#/definitions/wechat.TrustResp'
-      GUID2:
-        example: ""
-        type: string
-      Imei:
-        example: ""
-        type: string
-      IphoneVer:
-        example: ""
-        type: string
-      Language:
-        example: ""
-        type: string
-      OsType:
-        example: ""
-        type: string
-      OsTypeNumber:
-        example: ""
-        type: string
-      RealCountry:
-        example: ""
-        type: string
-      SoftTypeXML:
-        example: ""
-        type: string
-      TimeZone:
-        example: ""
-        type: string
-      UUIDOne:
-        example: ""
-        type: string
-      UUIDTwo:
+      Model:
         example: ""
         type: string
     title: DeviceInfo
@@ -391,8 +308,13 @@ definitions:
       FileURL:
         example: ""
         type: string
+      file:
+        description: 上传的文件内容
+        type: file
     title: DownMediaModel
     type: object
+    x-media-format: file
+    x-media-type: true
   DownloadMediaModel:
     properties:
       Key:
@@ -401,8 +323,13 @@ definitions:
       URL:
         example: ""
         type: string
+      file:
+        description: 上传的文件内容
+        type: file
     title: DownloadMediaModel
     type: object
+    x-media-format: file
+    x-media-type: true
   DownloadParam:
     properties:
       CompressType:
@@ -446,15 +373,15 @@ definitions:
         type: string
     title: DownloadVoiceModel
     type: object
-  Enc:
+  ExtDeviceLoginConfirmModel:
     properties:
-      Key:
-        example: ""
-        type: string
-      Value:
-        format: uint32
-        type: integer
-    title: Enc
+      Url:
+        $ref: '#/definitions/binding:"required"`'
+        description: ' 登录URL'
+      string:
+        $ref: '#/definitions/binding:"required"`'
+        description: ' 登录URL'
+    title: ExtDeviceLoginConfirmModel
     type: object
   ExtDeviceLoginModel:
     properties:
@@ -543,8 +470,13 @@ definitions:
       ToUserName:
         example: ""
         type: string
+      file:
+        description: 上传的文件内容
+        type: file
     title: ForwardImageItem
     type: object
+    x-media-format: image
+    x-media-type: true
   ForwardMessageModel:
     properties:
       ForwardImageList:
@@ -577,8 +509,13 @@ definitions:
       ToUserName:
         example: ""
         type: string
+      file:
+        description: 上传的文件内容
+        type: file
     title: ForwardVideoItem
     type: object
+    x-media-format: video
+    x-media-type: true
   GenAuthKeyModel:
     properties:
       Count:
@@ -591,6 +528,10 @@ definitions:
         example: "30"
         format: int
         type: integer
+      Remark:
+        description: ' 设备备注信息'
+        example: ""
+        type: string
     title: GenAuthKeyModel
     type: object
   GeneratePayQCodeModel:
@@ -711,21 +652,6 @@ definitions:
         type: integer
     title: GetQrCodeModel
     type: object
-  GetRedPacketList:
-    properties:
-      HongBaoItem:
-        $ref: '#/definitions/HongBaoURLItem'
-      Limit:
-        format: int64
-        type: integer
-      NativeURL:
-        example: ""
-        type: string
-      Offset:
-        format: int64
-        type: integer
-    title: GetRedPacketList
-    type: object
   GetSnsInfoModel:
     properties:
       FirstPageMD5:
@@ -762,8 +688,13 @@ definitions:
         items:
           type: string
         type: array
+      file:
+        description: 上传的文件内容
+        type: file
     title: GroupMassMsgImageModel
     type: object
+    x-media-format: image
+    x-media-type: true
   GroupMassMsgTextModel:
     properties:
       Content:
@@ -774,46 +705,6 @@ definitions:
           type: string
         type: array
     title: GroupMassMsgTextModel
-    type: object
-  HongBaoItem:
-    properties:
-      Limit:
-        format: int64
-        type: integer
-      NativeURL:
-        example: ""
-        type: string
-      URLItem:
-        $ref: '#/definitions/HongBaoURLItem'
-    title: HongBaoItem
-    type: object
-  HongBaoURLItem:
-    properties:
-      ChannelID:
-        example: ""
-        type: string
-      MsgType:
-        example: ""
-        type: string
-      SendID:
-        example: ""
-        type: string
-      SendUserName:
-        example: ""
-        type: string
-      ShowSourceMac:
-        example: ""
-        type: string
-      ShowWxPayTitle:
-        example: ""
-        type: string
-      Sign:
-        example: ""
-        type: string
-      Ver:
-        example: ""
-        type: string
-    title: HongBaoURLItem
     type: object
   InviteChatroomMembersModel:
     properties:
@@ -841,77 +732,6 @@ definitions:
           $ref: '#/definitions/baseinfo.UserLabelInfoItem'
         type: array
     title: LabelModel
-    type: object
-  Location:
-    properties:
-      City:
-        example: ""
-        type: string
-      Latitude:
-        example: ""
-        type: string
-      Longitude:
-        example: ""
-        type: string
-      PoiAddress:
-        example: ""
-        type: string
-      PoiClassifyID:
-        example: ""
-        type: string
-      PoiClassifyType:
-        format: uint32
-        type: integer
-      PoiName:
-        example: ""
-        type: string
-    title: Location
-    type: object
-  Media:
-    properties:
-      Description:
-        example: ""
-        type: string
-      Enc:
-        $ref: '#/definitions/Enc'
-      ID:
-        format: uint64
-        type: integer
-      Private:
-        format: uint32
-        type: integer
-      Size:
-        $ref: '#/definitions/Size'
-      SubType:
-        format: uint32
-        type: integer
-      Thumb:
-        $ref: '#/definitions/Thumb'
-      Title:
-        example: ""
-        type: string
-      Type:
-        format: uint32
-        type: integer
-      URL:
-        $ref: '#/definitions/URL'
-      UserData:
-        example: ""
-        type: string
-      VideoDuration:
-        format: double
-        type: number
-      VideoSize:
-        $ref: '#/definitions/VideoSize'
-    title: Media
-    type: object
-  MediaList:
-    properties:
-      Media:
-        items:
-          $ref: '#/definitions/Media'
-        type: array
-    title: MediaList
     type: object
   MessageItem:
     properties:
@@ -1111,34 +931,6 @@ definitions:
         type: string
     title: QWSyncChatRoomModel
     type: object
-  RedPacket:
-    properties:
-      Amount:
-        description: ' 每个红包的金额(单位为分, 最小为100); 总金额为 Amount*Count'
-        format: uint32
-        type: integer
-      Content:
-        description: ' 红包的备注内容(祝福语)'
-        example: ""
-        type: string
-      Count:
-        description: ' 红包个数(最少为1)'
-        format: uint32
-        type: integer
-      From:
-        description: ' InAway(0:群红包; 1:个人红包)'
-        format: uint32
-        type: integer
-      RedType:
-        description: ' 红包类型(0 普通红包; 1 拼手气红包; ? 专属红包)'
-        format: uint32
-        type: integer
-      Username:
-        description: ' 红包接收者; wxid 或 群ID'
-        example: ""
-        type: string
-    title: RedPacket
-    type: object
   ReplyCommentItem:
     properties:
       NickName:
@@ -1267,6 +1059,27 @@ definitions:
         type: string
     title: SendFavItemCircle
     type: object
+  SendFileModel:
+    properties:
+      FileName:
+        description: ' 文件名称(可选，如果为空则使用URL中的文件名或本地文件名)'
+        example: ""
+        type: string
+      FileUrl:
+        description: ' 文件URL或本地文件路径'
+        example: ""
+        type: string
+      ToUserName:
+        description: ' 接收者的微信ID'
+        example: ""
+        type: string
+      file:
+        description: 上传的文件内容
+        type: file
+    title: SendFileModel
+    type: object
+    x-media-format: file
+    x-media-type: true
   SendMessageModel:
     properties:
       MsgItem:
@@ -1332,15 +1145,25 @@ definitions:
       VoiceSecond,:
         format: int32
         type: integer
+      file:
+        description: 上传的文件内容
+        type: file
     title: SendUploadVoiceRequestModel
     type: object
+    x-media-format: file
+    x-media-type: true
   SetBackgroundImageModel:
     properties:
       Url:
         example: ""
         type: string
+      file:
+        description: 上传的文件内容
+        type: file
     title: SetBackgroundImageModel
     type: object
+    x-media-format: image
+    x-media-type: true
   SetChatroomAccessVerifyModel:
     properties:
       ChatRoomName:
@@ -1391,19 +1214,6 @@ definitions:
         example: ""
         type: string
     title: ShareCardParam
-    type: object
-  Size:
-    properties:
-      Height:
-        example: ""
-        type: string
-      TotalSize:
-        example: ""
-        type: string
-      Width:
-        example: ""
-        type: string
-    title: Size
     type: object
   SnsCommentItem:
     properties:
@@ -1529,8 +1339,13 @@ definitions:
       VideoWidth:
         example: ""
         type: string
+      file:
+        description: 上传的文件内容
+        type: file
     title: SnsMediaItemModel
     type: object
+    x-media-format: file
+    x-media-type: true
   SnsObjectOpItem:
     properties:
       Data:
@@ -1621,21 +1436,13 @@ definitions:
           format: int
           type: integer
         type: array
+      file:
+        description: 上传的文件内容
+        type: file
     title: SnsVideoItemModel
     type: object
-  StreamVideo:
-    properties:
-      StreamVideoThumbURL:
-        example: ""
-        type: string
-      StreamVideoURL:
-        example: ""
-        type: string
-      StreamVideoWebURL:
-        example: ""
-        type: string
-    title: StreamVideo
-    type: object
+    x-media-format: video
+    x-media-type: true
   SyncMessageModel:
     properties:
       Count:
@@ -1643,81 +1450,6 @@ definitions:
         format: int
         type: integer
     title: SyncMessageModel
-    type: object
-  Thumb:
-    properties:
-      EncIdx:
-        example: ""
-        type: string
-      Key:
-        example: ""
-        type: string
-      Token:
-        example: ""
-        type: string
-      Type:
-        example: ""
-        type: string
-      Value:
-        example: ""
-        type: string
-    title: Thumb
-    type: object
-  TimelineObject:
-    properties:
-      ActionInfo:
-        $ref: '#/definitions/ActionInfo'
-      AppInfo:
-        $ref: '#/definitions/AppInfo'
-      ContentDesc:
-        example: ""
-        type: string
-      ContentDescScene:
-        format: uint32
-        type: integer
-      ContentDescShowType:
-        format: uint32
-        type: integer
-      ContentObject:
-        $ref: '#/definitions/ContentObject'
-      CreateTime:
-        format: uint32
-        type: integer
-      ID:
-        format: uint64
-        type: integer
-      Location:
-        $ref: '#/definitions/Location'
-      Private:
-        format: uint32
-        type: integer
-      PublicUserName:
-        example: ""
-        type: string
-      ShowFlag:
-        format: uint32
-        type: integer
-      SightFolded:
-        format: uint32
-        type: integer
-      SourceNickName:
-        example: ""
-        type: string
-      SourceUserName:
-        example: ""
-        type: string
-      StatExtStr:
-        example: ""
-        type: string
-      StatisticsData:
-        example: ""
-        type: string
-      StreamVideo:
-        $ref: '#/definitions/StreamVideo'
-      UserName:
-        example: ""
-        type: string
-    title: TimelineObject
     type: object
   TransferGroupOwnerModel:
     properties:
@@ -1736,31 +1468,6 @@ definitions:
         example: ""
         type: string
     title: TransmitFriendCircleModel
-    type: object
-  URL:
-    properties:
-      EncIdx:
-        example: ""
-        type: string
-      Key:
-        example: ""
-        type: string
-      MD5:
-        example: ""
-        type: string
-      Token:
-        example: ""
-        type: string
-      Type:
-        example: ""
-        type: string
-      Value:
-        example: ""
-        type: string
-      VideoMD5:
-        example: ""
-        type: string
-    title: URL
     type: object
   UpdateAutopassModel:
     properties:
@@ -1813,6 +1520,23 @@ definitions:
         type: integer
     title: UpdateStepNumberModel
     type: object
+  UploadFileToCDNModel:
+    properties:
+      FileName:
+        description: ' 文件名称(可选，如果为空则使用URL中的文件名或本地文件名)'
+        example: ""
+        type: string
+      FileUrl:
+        description: ' 文件URL或本地文件路径'
+        example: ""
+        type: string
+      file:
+        description: 上传的文件内容
+        type: file
+    title: UploadFileToCDNModel
+    type: object
+    x-media-format: file
+    x-media-type: true
   UploadFriendCircleModel:
     properties:
       ImageDataList:
@@ -1823,15 +1547,25 @@ definitions:
         items:
           type: string
         type: array
+      file:
+        description: 上传的文件内容
+        type: file
     title: UploadFriendCircleModel
     type: object
+    x-media-format: file
+    x-media-type: true
   UploadHeadImageModel:
     properties:
       Base64:
         example: ""
         type: string
+      file:
+        description: 上传的文件内容
+        type: file
     title: UploadHeadImageModel
     type: object
+    x-media-format: image
+    x-media-type: true
   UploadMContactModel:
     properties:
       Mobile:
@@ -1841,14 +1575,47 @@ definitions:
         items:
           type: string
         type: array
+      file:
+        description: 上传的文件内容
+        type: file
     title: UploadMContactModel
     type: object
+    x-media-format: file
+    x-media-type: true
   UserRankLikeModel:
     properties:
       RankId:
         example: ""
         type: string
     title: UserRankLikeModel
+    type: object
+  VerificationcodeParam:
+    properties:
+      Code:
+        description: ' 用户输入的验证码'
+        example: ""
+        type: string
+      Data62:
+        description: ' 设备数据'
+        example: ""
+        type: string
+      Ticket:
+        description: ' 验证票据'
+        example: ""
+        type: string
+      Uuid:
+        description: ' 用户标识'
+        example: ""
+        type: string
+    title: VerificationcodeParam
+    type: object
+  VerificationcodeSimpleParam:
+    properties:
+      Code:
+        description: ' 用户输入的验证码，通常是6位数字'
+        example: ""
+        type: string
+    title: VerificationcodeSimpleParam
     type: object
   VerifyUserItem:
     properties:
@@ -1892,15 +1659,74 @@ definitions:
         type: string
     title: VerifyUserRequestModel
     type: object
-  VideoSize:
+  WebhookConfig:
     properties:
-      Height:
+      Enabled:
+        type: boolean
+      IncludeSelfMessage:
+        type: boolean
+      MessageTypes:
+        items:
+          type: string
+        type: array
+      RetryCount:
+        format: int
+        type: integer
+      Secret:
         example: ""
         type: string
-      Width:
+      Timeout:
+        format: int
+        type: integer
+      URL:
+        $ref: '#/definitions/binding:"required"`'
+      string:
+        $ref: '#/definitions/binding:"required"`'
+      unknown:
         example: ""
         type: string
-    title: VideoSize
+    title: WebhookConfig
+    type: object
+  WebhookTestResponse:
+    properties:
+      Elapsed:
+        description: ' 耗时，单位毫秒'
+        format: int64
+        type: integer
+      Message:
+        example: ""
+        type: string
+      Success:
+        type: boolean
+    title: WebhookTestResponse
+    type: object
+  WxAppletQRCodeModel:
+    properties:
+      AppId:
+        description: ' 小程序AppID'
+        example: ""
+        type: string
+      NonceStr:
+        description: ' 随机字符串'
+        example: ""
+        type: string
+      Package:
+        description: ' 订单详情扩展字符串'
+        example: ""
+        type: string
+      PaySign:
+        description: ' 签名'
+        example: ""
+        type: string
+      SessionId:
+        description: ' 会话ID，通过JSGetRuntimeSession接口获取'
+        example: ""
+        type: string
+      TimeStamp:
+        description: ' 时间戳'
+        example: ""
+        type: string
+    title: WxAppletQRCodeModel
     type: object
   WxBindOpMobileForModel:
     properties:
@@ -1930,6 +1756,12 @@ definitions:
         format: uint32
         type: integer
     title: WxFunctionSwitchModel
+    type: object
+  baseinfo.ActionInfo:
+    properties:
+      AppMsg:
+        $ref: '#/definitions/SnsAppMsg'
+    title: baseinfo.ActionInfo
     type: object
   baseinfo.AlgorithmInfo:
     properties:
@@ -2020,22 +1852,81 @@ definitions:
         type: string
     title: baseinfo.AlgorithmInfo
     type: object
-  baseinfo.DeviceInfo:
+  baseinfo.AppInfo:
     properties:
-      AdSource:
-        description: ' 广告来源'
+      AppName:
         example: ""
         type: string
+      FromURL:
+        example: ""
+        type: string
+      ID:
+        example: ""
+        type: string
+      InstallURL:
+        example: ""
+        type: string
+      IsForceUpdate:
+        format: uint32
+        type: integer
+      Version:
+        example: ""
+        type: string
+    title: baseinfo.AppInfo
+    type: object
+  baseinfo.AppMsg:
+    properties:
+      AppAttach:
+        $ref: '#/definitions/AppAttach'
+      AppID:
+        example: ""
+        type: string
+      Content:
+        example: ""
+        type: string
+      Des:
+        example: ""
+        type: string
+      MD5:
+        example: ""
+        type: string
+      SdkVersion:
+        format: int
+        type: integer
+      Title:
+        example: ""
+        type: string
+      Type:
+        format: uint32
+        type: integer
+      URL:
+        example: ""
+        type: string
+    title: baseinfo.AppMsg
+    type: object
+  baseinfo.ContentObject:
+    properties:
+      ContentStyle:
+        format: uint32
+        type: integer
+      ContentURL:
+        example: ""
+        type: string
+      Description:
+        example: ""
+        type: string
+      MediaList:
+        $ref: '#/definitions/MediaList'
+      Title:
+        example: ""
+        type: string
+    title: baseinfo.ContentObject
+    type: object
+  baseinfo.DeviceInfo:
+    description: 简化版，仅显示部分属性
+    properties:
       BaseLibVersion:
         description: ' 基础库版本'
-        example: ""
-        type: string
-      BundleID:
-        description: ' 包ID'
-        example: ""
-        type: string
-      CarrierName:
-        description: ' 运营商名称'
         example: ""
         type: string
       ClientCheckDataXML:
@@ -2064,24 +1955,8 @@ definitions:
           format: int
           type: integer
         type: array
-      DeviceModel:
-        description: ' 设备型号'
-        example: ""
-        type: string
       DeviceName:
         description: ' 设备名称'
-        example: ""
-        type: string
-      DeviceType:
-        description: ' 设备类型'
-        example: ""
-        type: string
-      GUID2:
-        description: ' GUID2'
-        example: ""
-        type: string
-      H5Version:
-        description: ' H5版本'
         example: ""
         type: string
       Imei:
@@ -2100,10 +1975,6 @@ definitions:
         description: ' 轻应用版本'
         example: ""
         type: string
-      MacAddress:
-        description: ' MAC地址'
-        example: ""
-        type: string
       NetworkType:
         description: ' 网络类型'
         example: ""
@@ -2116,32 +1987,16 @@ definitions:
         description: ' 系统版本号'
         example: ""
         type: string
-      RealCountry:
-        description: ' 国家'
-        example: ""
-        type: string
-      ScreenHeight:
-        description: ' 屏幕高度'
-        format: uint32
-        type: integer
       ScreenWidth:
         description: ' 屏幕宽度'
         format: uint32
         type: integer
-      SoftTypeXML:
-        description: ' 软件类型XML'
-        example: ""
-        type: string
       TimeZone:
         description: ' 时区'
         example: ""
         type: string
       UUIDOne:
         description: ' UUID1'
-        example: ""
-        type: string
-      UUIDTwo:
-        description: ' UUID2'
         example: ""
         type: string
       WifiBSSID:
@@ -2153,6 +2008,71 @@ definitions:
         example: ""
         type: string
     title: baseinfo.DeviceInfo
+    type: object
+  baseinfo.Enc:
+    properties:
+      Key:
+        example: ""
+        type: string
+      Value:
+        format: uint32
+        type: integer
+    title: baseinfo.Enc
+    type: object
+  baseinfo.GetRedPacketList:
+    properties:
+      HongBaoItem:
+        $ref: '#/definitions/HongBaoURLItem'
+      Limit:
+        format: int64
+        type: integer
+      NativeURL:
+        example: ""
+        type: string
+      Offset:
+        format: int64
+        type: integer
+    title: baseinfo.GetRedPacketList
+    type: object
+  baseinfo.HongBaoItem:
+    properties:
+      Limit:
+        format: int64
+        type: integer
+      NativeURL:
+        example: ""
+        type: string
+      URLItem:
+        $ref: '#/definitions/HongBaoURLItem'
+    title: baseinfo.HongBaoItem
+    type: object
+  baseinfo.HongBaoURLItem:
+    properties:
+      ChannelID:
+        example: ""
+        type: string
+      MsgType:
+        example: ""
+        type: string
+      SendID:
+        example: ""
+        type: string
+      SendUserName:
+        example: ""
+        type: string
+      ShowSourceMac:
+        example: ""
+        type: string
+      ShowWxPayTitle:
+        example: ""
+        type: string
+      Sign:
+        example: ""
+        type: string
+      Ver:
+        example: ""
+        type: string
+    title: baseinfo.HongBaoURLItem
     type: object
   baseinfo.Location:
     properties:
@@ -2178,6 +2098,80 @@ definitions:
         example: ""
         type: string
     title: baseinfo.Location
+    type: object
+  baseinfo.Media:
+    properties:
+      Description:
+        example: ""
+        type: string
+      Enc:
+        $ref: '#/definitions/Enc'
+      ID:
+        format: uint64
+        type: integer
+      Private:
+        format: uint32
+        type: integer
+      Size:
+        $ref: '#/definitions/Size'
+      SubType:
+        format: uint32
+        type: integer
+      Thumb:
+        $ref: '#/definitions/Thumb'
+      Title:
+        example: ""
+        type: string
+      Type:
+        format: uint32
+        type: integer
+      URL:
+        $ref: '#/definitions/URL'
+      UserData:
+        example: ""
+        type: string
+      VideoDuration:
+        format: double
+        type: number
+      VideoSize:
+        $ref: '#/definitions/VideoSize'
+    title: baseinfo.Media
+    type: object
+  baseinfo.MediaList:
+    properties:
+      Media:
+        items:
+          $ref: '#/definitions/Media'
+        type: array
+    title: baseinfo.MediaList
+    type: object
+  baseinfo.RedPacket:
+    properties:
+      Amount:
+        description: ' 每个红包的金额(单位为分, 最小为100); 总金额为 Amount*Count'
+        format: uint32
+        type: integer
+      Content:
+        description: ' 红包的备注内容(祝福语)'
+        example: ""
+        type: string
+      Count:
+        description: ' 红包个数(最少为1)'
+        format: uint32
+        type: integer
+      From:
+        description: ' InAway(0:群红包; 1:个人红包)'
+        format: uint32
+        type: integer
+      RedType:
+        description: ' 红包类型(0 普通红包; 1 拼手气红包; ? 专属红包)'
+        format: uint32
+        type: integer
+      Username:
+        description: ' 红包接收者; wxid 或 群ID'
+        example: ""
+        type: string
+    title: baseinfo.RedPacket
     type: object
   baseinfo.SecurityInfo:
     properties:
@@ -2239,6 +2233,132 @@ definitions:
         type: array
     title: baseinfo.SecurityInfo
     type: object
+  baseinfo.Size:
+    properties:
+      Height:
+        example: ""
+        type: string
+      TotalSize:
+        example: ""
+        type: string
+      Width:
+        example: ""
+        type: string
+    title: baseinfo.Size
+    type: object
+  baseinfo.StreamVideo:
+    properties:
+      StreamVideoThumbURL:
+        example: ""
+        type: string
+      StreamVideoURL:
+        example: ""
+        type: string
+      StreamVideoWebURL:
+        example: ""
+        type: string
+    title: baseinfo.StreamVideo
+    type: object
+  baseinfo.Thumb:
+    properties:
+      EncIdx:
+        example: ""
+        type: string
+      Key:
+        example: ""
+        type: string
+      Token:
+        example: ""
+        type: string
+      Type:
+        example: ""
+        type: string
+      Value:
+        example: ""
+        type: string
+    title: baseinfo.Thumb
+    type: object
+  baseinfo.TimelineObject:
+    properties:
+      ActionInfo:
+        $ref: '#/definitions/ActionInfo'
+      AppInfo:
+        $ref: '#/definitions/AppInfo'
+      ContentDesc:
+        example: ""
+        type: string
+      ContentDescScene:
+        format: uint32
+        type: integer
+      ContentDescShowType:
+        format: uint32
+        type: integer
+      ContentObject:
+        $ref: '#/definitions/ContentObject'
+      CreateTime:
+        format: uint32
+        type: integer
+      ID:
+        format: uint64
+        type: integer
+      Location:
+        $ref: '#/definitions/Location'
+      Private:
+        format: uint32
+        type: integer
+      PublicUserName:
+        example: ""
+        type: string
+      ShowFlag:
+        format: uint32
+        type: integer
+      SightFolded:
+        format: uint32
+        type: integer
+      SourceNickName:
+        example: ""
+        type: string
+      SourceUserName:
+        example: ""
+        type: string
+      StatExtStr:
+        example: ""
+        type: string
+      StatisticsData:
+        example: ""
+        type: string
+      StreamVideo:
+        $ref: '#/definitions/StreamVideo'
+      UserName:
+        example: ""
+        type: string
+    title: baseinfo.TimelineObject
+    type: object
+  baseinfo.URL:
+    properties:
+      EncIdx:
+        example: ""
+        type: string
+      Key:
+        example: ""
+        type: string
+      MD5:
+        example: ""
+        type: string
+      Token:
+        example: ""
+        type: string
+      Type:
+        example: ""
+        type: string
+      Value:
+        example: ""
+        type: string
+      VideoMD5:
+        example: ""
+        type: string
+    title: baseinfo.URL
+    type: object
   baseinfo.UserLabelInfoItem:
     properties:
       LabelIDList:
@@ -2248,6 +2368,16 @@ definitions:
         example: ""
         type: string
     title: baseinfo.UserLabelInfoItem
+    type: object
+  baseinfo.VideoSize:
+    properties:
+      Height:
+        example: ""
+        type: string
+      Width:
+        example: ""
+        type: string
+    title: baseinfo.VideoSize
     type: object
   wechat.TrustResp:
     properties:
@@ -2289,16 +2419,23 @@ definitions:
     title: wechat.TrustSoftData
     type: object
 info:
-  contact: ""
-  description: |-
-    WeChatPadPro-8059 iOS18.3.2 mcp服务器版 mcp地址 http://wxmcp.knowhub.cloud/ (完美兼容mcp服务MCP模型上下文协议，提供LLM与外部系统的标准化交互接口支持长链接、自动心跳、自动二次登录、重启API服务自动登录，开源生态：兼容HuggingFace/OpenAI等主流模型平台)
-
-    服务已启动(SSE模式)，访问地址: http://localhost:8099
-  title: WeChatPadPro-8059 iOS18.3.2 最新修订mcp服务器版（SSE模式）
-  version: 仅供学习交流使用，禁止用于非法用途
+  contact:
+    email: support@knowhub.cloud
+    name: KnowHub技术支持
+    url: https://bbs.knowhub.cloud/
+  description: "\U0001F680 WeChatPadPro-860 iOS18.5.0\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n\U0001F4F1
+    MCP服务器版本\n• 完美兼容MCP服务模型上下文协议\n• 支持长链接、自动心跳、二次登录\n• 重启API服务自动登录\n• 开源生态：兼容HuggingFace/OpenAI等主流模型平台\n\n✨
+    本地服务\n• API模式：SSE\n• API访问：http://localhost:0\n• WebSocket：ws://localhost:1238/ws/GetSyncMsg?key=\n\n\U0001F310
+    技术社区与论坛\n• 官方论坛：https://bbs.knowhub.cloud/\n  - AI智能体讨论区：探讨智能体如何重塑数字未来\n  - 智能体MCP交流：MCP服务模型和协议讨论\n
+    \ - WeChatPadPro交流：使用经验分享与问题解决\n  - 开发者资源：API文档、插件开发、最佳实践\n\n\U0001F4CC 其他链接\n•
+    GitHub：https://github.com/WeChatPadPro/WeChatPadPro\n• Telegram：https://t.me/+LK0JuqLxjmk0ZjRh"
+  title: WeChatPadPro-860 iOS18.5.0 最新修订mcp服务器版（SSE模式）
 paths:
   /admin/DelayAuthKey:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2311,12 +2448,15 @@ paths:
           $ref: '#/definitions/DelayAuthKeyModel'
       responses:
         "200":
-          description: ""
-      summary: 授权码延期
+          description: 成功响应
+      summary: 延期授权码
       tags:
       - 管理
   /admin/DeleteAuthKey:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2329,12 +2469,15 @@ paths:
           $ref: '#/definitions/DeleteAuthKeyModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 删除授权码
       tags:
       - 管理
   /admin/GenAuthKey1:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2347,12 +2490,15 @@ paths:
           $ref: '#/definitions/GenAuthKeyModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 生成授权码(新设备)
       tags:
       - 管理
-  /admin/GenAuthKey2:
+  /admin/GetAllDevices:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2360,12 +2506,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
-      summary: 生成授权码(新设备)
+          description: 成功响应
+      summary: 获取所有设备key
       tags:
       - 管理
   /applet/AuthMpLogin:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2378,12 +2527,15 @@ paths:
           $ref: '#/definitions/GetMpA8KeyModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 授权公众号登录
       tags:
       - 公众号/小程序
   /applet/FollowGH:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2396,12 +2548,15 @@ paths:
           $ref: '#/definitions/FollowGHModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 关注公众号
       tags:
       - 公众号/小程序
   /applet/GetA8Key:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2414,12 +2569,15 @@ paths:
           $ref: '#/definitions/GetA8KeyRequestModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 授权链接
       tags:
       - 公众号/小程序
   /applet/GetMpA8Key:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2432,12 +2590,15 @@ paths:
           $ref: '#/definitions/GetMpA8KeyModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 授权链接
       tags:
       - 公众号/小程序
   /applet/GetMpHistoryMessage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2450,12 +2611,15 @@ paths:
           $ref: '#/definitions/GetMpHistoryMsgModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取公众号历史消息
       tags:
       - 公众号/小程序
-  /applet/JSOperateWxData:
+  /applet/JSGetRuntimeSession:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2468,12 +2632,57 @@ paths:
           $ref: '#/definitions/AppletModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
+      summary: 获取小程序运行时会话
+      tags:
+      - 公众号/小程序
+  /applet/JSGetSessionidQRcode:
+    post:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/WxAppletQRCodeModel'
+      responses:
+        "200":
+          description: 成功响应
+      summary: 获取小程序支付二维码
+      tags:
+      - 公众号/小程序
+  /applet/JSOperateWxData:
+    post:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/AppletModel'
+      responses:
+        "200":
+          description: 成功响应
       summary: 小程序云函数操作
       tags:
       - 公众号/小程序
   /applet/JsLogin:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2486,12 +2695,15 @@ paths:
           $ref: '#/definitions/AppletModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 授权小程序(返回授权后的code)
       tags:
       - 公众号/小程序
   /applet/QRConnectAuthorize:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2504,12 +2716,15 @@ paths:
           $ref: '#/definitions/QRConnectAuthorizeModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 二维码授权请求
       tags:
       - 公众号/小程序
   /applet/QRConnectAuthorizeConfirm:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2522,12 +2737,15 @@ paths:
           $ref: '#/definitions/QRConnectAuthorizeModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 二维码授权确认
       tags:
       - 公众号/小程序
   /applet/SdkOauthAuthorize:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2540,12 +2758,15 @@ paths:
           $ref: '#/definitions/AppletModel'
       responses:
         "200":
-          description: ""
-      summary: 应用授权
+          description: 成功响应
+      summary: app 应用授权
       tags:
       - 公众号/小程序
   /equipment/DelSafeDevice:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2558,12 +2779,15 @@ paths:
           $ref: '#/definitions/DelSafeDeviceModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 删除安全设备
       tags:
       - 设备
   /equipment/GetBoundHardDevice:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2571,12 +2795,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取硬件设备情况
       tags:
       - 设备
   /equipment/GetOnlineInfo:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2584,12 +2811,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取在线设备信息
       tags:
       - 设备
   /equipment/GetSafetyInfo:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2597,12 +2827,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取安全设备列表
       tags:
       - 设备
   /favor/BatchDelFavItem:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2615,12 +2848,15 @@ paths:
           $ref: '#/definitions/FavInfoModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 删除收藏
       tags:
       - 收藏
   /favor/FavSync:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2628,12 +2864,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 同步收藏
       tags:
       - 收藏
   /favor/GetFavItemId:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2646,12 +2885,15 @@ paths:
           $ref: '#/definitions/FavInfoModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取收藏详细
       tags:
       - 收藏
   /favor/GetFavList:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2664,12 +2906,15 @@ paths:
           $ref: '#/definitions/FavInfoModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取收藏list
       tags:
       - 收藏
   /finder/FinderFollow:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2682,12 +2927,15 @@ paths:
           $ref: '#/definitions/FinderFollowModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 关注取消
       tags:
       - 视频号
   /finder/FinderSearch:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2700,12 +2948,15 @@ paths:
           $ref: '#/definitions/FinderSearchModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 视频号搜索
       tags:
       - 视频号
   /finder/FinderUserPrepare:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2718,12 +2969,15 @@ paths:
           $ref: '#/definitions/FinderUserPrepareModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 视频号中心
       tags:
       - 视频号
   /friend/AgreeAdd:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2736,12 +2990,15 @@ paths:
           $ref: '#/definitions/VerifyUserRequestModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 同意好友请求
       tags:
       - 朋友
   /friend/DelContact:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2754,12 +3011,15 @@ paths:
           $ref: '#/definitions/DelContactModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 删除好友
       tags:
       - 朋友
   /friend/GetContactDetailsList:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2772,12 +3032,15 @@ paths:
           $ref: '#/definitions/BatchGetContactModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取联系人详情
       tags:
       - 朋友
   /friend/GetContactList:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2790,12 +3053,15 @@ paths:
           $ref: '#/definitions/GetContactListModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取全部联系人
       tags:
       - 朋友
   /friend/GetFriendList:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2803,12 +3069,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取好友列表
       tags:
       - 朋友
   /friend/GetFriendRelation:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2821,12 +3090,15 @@ paths:
           $ref: '#/definitions/GetFriendRelationModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取好友关系
       tags:
       - 朋友
   /friend/GetGHList:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2834,12 +3106,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取关注的公众号列表
       tags:
       - 朋友
   /friend/GetMFriend:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2847,12 +3122,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取手机通讯录好友
       tags:
       - 朋友
   /friend/GroupList:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2860,12 +3138,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取保存的群聊列表
       tags:
       - 朋友
   /friend/SearchContact:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2878,12 +3159,15 @@ paths:
           $ref: '#/definitions/SearchContactRequestModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 搜索联系人
       tags:
       - 朋友
   /friend/UploadMContact:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2894,14 +3178,24 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/UploadMContactModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 上传手机通讯录好友
       tags:
+      - 文件操作
       - 朋友
+      x-media-endpoint: true
+      x-media-type: file
   /friend/VerifyUser:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2914,12 +3208,15 @@ paths:
           $ref: '#/definitions/VerifyUserRequestModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 验证好友/添加好友
       tags:
       - 朋友
   /group/AddChatRoomMembers:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2932,30 +3229,15 @@ paths:
           $ref: '#/definitions/InviteChatroomMembersModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 添加群成员
-      tags:
-      - 群管理
-  /group/AddChatroomAdmin:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/ChatroomMemberModel'
-      responses:
-        "200":
-          description: ""
-      summary: 添加群管理员
       tags:
       - 群管理
   /group/CreateChatRoom:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -2968,30 +3250,31 @@ paths:
           $ref: '#/definitions/CreateChatRoomModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 创建群请求
       tags:
       - 群管理
-  /group/DelChatroomAdmin:
-    post:
+  /group/GetAllGroupList:
+    get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
         name: key
         type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/ChatroomMemberModel'
       responses:
         "200":
-          description: ""
-      summary: 删除群管理员
+          description: 成功响应
+      summary: 获取所有群列表（包括未保存到通讯录的群）
       tags:
       - 群管理
   /group/GetChatRoomInfo:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3004,12 +3287,15 @@ paths:
           $ref: '#/definitions/ChatRoomWxIdListModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取群详情
       tags:
       - 群管理
   /group/GetChatroomMemberDetail:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3022,12 +3308,15 @@ paths:
           $ref: '#/definitions/GetChatroomMemberDetailModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取群成员详细
       tags:
       - 群管理
   /group/GetChatroomQrCode:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3040,25 +3329,15 @@ paths:
           $ref: '#/definitions/GetChatroomQrCodeModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取群二维码
-      tags:
-      - 群管理
-  /group/GroupList:
-    get:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      responses:
-        "200":
-          description: ""
-      summary: 获取群列表
       tags:
       - 群管理
   /group/InviteChatroomMembers:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3071,12 +3350,15 @@ paths:
           $ref: '#/definitions/InviteChatroomMembersModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 邀请群成员
       tags:
       - 群管理
   /group/MoveToContract:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3089,12 +3371,15 @@ paths:
           $ref: '#/definitions/MoveContractModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取群聊
       tags:
       - 群管理
   /group/QuitChatroom:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3107,12 +3392,15 @@ paths:
           $ref: '#/definitions/GetChatroomMemberDetailModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 退出群聊
       tags:
       - 群管理
   /group/ScanIntoUrlGroup:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3125,12 +3413,15 @@ paths:
           $ref: '#/definitions/ScanIntoUrlGroupModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 扫码入群
       tags:
       - 群管理
   /group/SendDelDelChatRoomMember:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3143,12 +3434,15 @@ paths:
           $ref: '#/definitions/InviteChatroomMembersModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 删除群成员
       tags:
       - 群管理
   /group/SendPat:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3161,30 +3455,15 @@ paths:
           $ref: '#/definitions/SendPatModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 群拍一拍功能
-      tags:
-      - 群管理
-  /group/SendTransferGroupOwner:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/TransferGroupOwnerModel'
-      responses:
-        "200":
-          description: ""
-      summary: 转让群
       tags:
       - 群管理
   /group/SetChatroomAccessVerify:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3197,12 +3476,15 @@ paths:
           $ref: '#/definitions/SetChatroomAccessVerifyModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 设置群聊邀请开关
       tags:
       - 群管理
   /group/SetChatroomAnnouncement:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3215,30 +3497,15 @@ paths:
           $ref: '#/definitions/UpdateChatroomAnnouncementModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 设置群公告
-      tags:
-      - 群管理
-  /group/SetChatroomName:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/ChatroomNameModel'
-      responses:
-        "200":
-          description: ""
-      summary: 设置群昵称
       tags:
       - 群管理
   /group/SetGetChatRoomInfoDetail:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3251,12 +3518,15 @@ paths:
           $ref: '#/definitions/GetChatroomMemberDetailModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取群公告
       tags:
       - 群管理
   /label/AddContactLabel:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3269,12 +3539,15 @@ paths:
           $ref: '#/definitions/LabelModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 添加列表
       tags:
       - 标签
   /label/DelContactLabel:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3287,12 +3560,15 @@ paths:
           $ref: '#/definitions/LabelModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 删除标签
       tags:
       - 标签
   /label/GetContactLabelList:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3300,12 +3576,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取标签列表
       tags:
       - 标签
   /label/GetWXFriendListByLabel:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3318,12 +3597,15 @@ paths:
           $ref: '#/definitions/LabelModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取标签下所有好友
       tags:
       - 标签
   /label/ModifyLabel:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3336,30 +3618,15 @@ paths:
           $ref: '#/definitions/LabelModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 修改标签
       tags:
       - 标签
-  /login/A16Login:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/DeviceIdLoginModel'
-      responses:
-        "200":
-          description: ""
-      summary: 数据登录
-      tags:
-      - 登录
   /login/CheckCanSetAlias:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3367,12 +3634,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 检测微信登录环境
       tags:
       - 登录
   /login/CheckLoginStatus:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3380,12 +3650,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 检测扫码状态
       tags:
       - 登录
   /login/DeviceLogin:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3398,12 +3671,57 @@ paths:
           $ref: '#/definitions/DeviceIdLoginModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 62账号密码登录
+      tags:
+      - 登录
+  /login/ExtDeviceLoginConfirmGet:
+    post:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/ExtDeviceLoginConfirmModel'
+      responses:
+        "200":
+          description: 成功响应
+      summary: 获取设备登录确认信息
+      tags:
+      - 登录
+  /login/ExtDeviceLoginConfirmOk:
+    post:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/ExtDeviceLoginConfirmModel'
+      responses:
+        "200":
+          description: 成功响应
+      summary: 确认设备登录
       tags:
       - 登录
   /login/Get62Data:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3411,12 +3729,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 提取62数据
       tags:
       - 登录
   /login/GetIWXConnect:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3424,25 +3745,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 打印链接数量
-      tags:
-      - 登录
-  /login/GetInItStatus:
-    get:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      responses:
-        "200":
-          description: ""
-      summary: 初始化状态
       tags:
       - 登录
   /login/GetLoginQrCodeNew:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3455,12 +3766,15 @@ paths:
           $ref: '#/definitions/GetLoginQrCodeModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取登录二维码(异地IP用代理)
       tags:
       - 登录
   /login/GetLoginQrCodeNewX:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3473,25 +3787,15 @@ paths:
           $ref: '#/definitions/GetLoginQrCodeModel'
       responses:
         "200":
-          description: ""
-      summary: 获取登录二维码(绕过验证码)
-      tags:
-      - 登录
-  /login/GetLoginStatus:
-    get:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      responses:
-        "200":
-          description: ""
-      summary: 获取在线状态
+          description: 成功响应
+      summary: GetLoginQrCodeNewApi 获取登录二维码(绕过验证码)
       tags:
       - 登录
   /login/LogOut:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3499,12 +3803,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 退出登录
       tags:
       - 登录
   /login/LoginNew:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3517,30 +3824,15 @@ paths:
           $ref: '#/definitions/DeviceIdLoginModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 62LoginNew新疆号登录
-      tags:
-      - 登录
-  /login/PhoneDeviceLogin:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/PhoneLoginModel'
-      responses:
-        "200":
-          description: ""
-      summary: 辅助新手机登录
       tags:
       - 登录
   /login/ShowQrCode:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3548,12 +3840,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: HTML展示登录二维码
       tags:
       - 登录
   /login/SmsLogin:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3566,30 +3861,15 @@ paths:
           $ref: '#/definitions/DeviceIdLoginModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 短信登录
-      tags:
-      - 登录
-  /login/WakeUpLogin:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/GetLoginQrCodeModel'
-      responses:
-        "200":
-          description: ""
-      summary: 唤醒登录(只限扫码登录)
       tags:
       - 登录
   /login/WxBindOpMobileForReg:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3602,12 +3882,36 @@ paths:
           $ref: '#/definitions/WxBindOpMobileForModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取验证码
+      tags:
+      - 登录
+  /login/YPayVerificationcode:
+    post:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/VerificationcodeSimpleParam'
+      responses:
+        "200":
+          description: 成功响应
+      summary: 提交登录验证码
       tags:
       - 登录
   /message/AddMessageMgr:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3620,12 +3924,15 @@ paths:
           $ref: '#/definitions/SendMessageModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 添加要发送的文本消息进入管理器
       tags:
       - 消息
   /message/CdnUploadVideo:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3636,14 +3943,47 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/CdnUploadVideoRequest'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 上传视频
       tags:
+      - 视频操作
       - 消息
+      x-media-endpoint: true
+      x-media-type: video
+  /message/DownloadFile:
+    post:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
+      responses:
+        "200":
+          description: 成功响应
+      summary: 下载文件接口
+      tags:
+      - 文件操作
+      - 消息
+      x-media-endpoint: true
+      x-media-type: file
   /message/ForwardEmoji:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3654,14 +3994,26 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/SendEmojiMessageModel'
+      - description: 要转发的消息ID
+        in: query
+        name: msgId
+        required: true
+        type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 转发表情，包含动图
       tags:
+      - 转发操作
       - 消息
+      x-forward-operation: true
+      x-media-endpoint: true
+      x-media-type: file
   /message/ForwardImageMessage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3672,14 +4024,30 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/ForwardMessageModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
+      - description: 要转发的消息ID
+        in: query
+        name: msgId
+        required: true
+        type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 转发图片
       tags:
+      - 转发操作
       - 消息
+      x-forward-operation: true
+      x-media-endpoint: true
+      x-media-type: image
   /message/ForwardVideoMessage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3690,14 +4058,30 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/ForwardMessageModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
+      - description: 要转发的消息ID
+        in: query
+        name: msgId
+        required: true
+        type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 转发视频
       tags:
+      - 转发操作
       - 消息
+      x-forward-operation: true
+      x-media-endpoint: true
+      x-media-type: video
   /message/GetMsgBigImg:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3710,12 +4094,15 @@ paths:
           $ref: '#/definitions/DownloadParam'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取图片(高清图片下载)
       tags:
       - 消息
   /message/GetMsgVideo:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3726,14 +4113,24 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/DownloadParam'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取视频(视频数据下载)
       tags:
+      - 视频操作
       - 消息
+      x-media-endpoint: true
+      x-media-type: video
   /message/GetMsgVoice:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3746,12 +4143,15 @@ paths:
           $ref: '#/definitions/DownloadVoiceModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 下载语音消息
       tags:
       - 消息
   /message/GroupMassMsgImage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3762,14 +4162,24 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/GroupMassMsgImageModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 群发图片
       tags:
+      - 图片操作
       - 消息
+      x-media-endpoint: true
+      x-media-type: image
   /message/GroupMassMsgText:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3782,12 +4192,15 @@ paths:
           $ref: '#/definitions/GroupMassMsgTextModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 群发接口
       tags:
       - 消息
   /message/HttpSyncMsg:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3800,12 +4213,15 @@ paths:
           $ref: '#/definitions/SyncMessageModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 同步消息, HTTP-轮询方式
       tags:
       - 消息
   /message/NewSyncHistoryMessage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3813,12 +4229,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 同步历史消息
       tags:
       - 消息
   /message/RevokeMsg:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3831,12 +4250,15 @@ paths:
           $ref: '#/definitions/RevokeMsgModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 撤销消息
       tags:
       - 消息
   /message/RevokeMsgNew:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3849,12 +4271,15 @@ paths:
           $ref: '#/definitions/RevokeMsgModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 撤回消息（New）
       tags:
       - 消息
   /message/SendAppMessage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3867,12 +4292,15 @@ paths:
           $ref: '#/definitions/AppMessageModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 发送App消息
       tags:
       - 消息
   /message/SendCdnDownload:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3885,12 +4313,15 @@ paths:
           $ref: '#/definitions/DownMediaModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 下载 请求
       tags:
       - 消息
   /message/SendEmojiMessage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3903,12 +4334,43 @@ paths:
           $ref: '#/definitions/SendEmojiMessageModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 发送表情
       tags:
       - 消息
+  /message/SendFileMessage:
+    post:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/SendFileModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
+      responses:
+        "200":
+          description: 成功响应
+      summary: 发送文件消息
+      tags:
+      - 文件操作
+      - 消息
+      x-media-endpoint: true
+      x-media-type: file
   /message/SendImageMessage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3919,14 +4381,24 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/SendMessageModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 发送图片消息
       tags:
+      - 图片操作
       - 消息
+      x-media-endpoint: true
+      x-media-type: image
   /message/SendImageNewMessage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3937,14 +4409,24 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/SendMessageModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 发送图片消息（New）
       tags:
+      - 图片操作
       - 消息
+      x-media-endpoint: true
+      x-media-type: image
   /message/SendTextMessage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3957,12 +4439,15 @@ paths:
           $ref: '#/definitions/SendMessageModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 发送文本消息
       tags:
       - 消息
   /message/SendVoice:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3973,14 +4458,24 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/SendUploadVoiceRequestModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 发送语音
       tags:
+      - 文件操作
       - 消息
+      x-media-endpoint: true
+      x-media-type: file
   /message/ShareCardMessage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -3993,12 +4488,43 @@ paths:
           $ref: '#/definitions/ShareCardParam'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 分享名片消息
       tags:
       - 消息
+  /message/UploadFileToCDN:
+    post:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/UploadFileToCDNModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
+      responses:
+        "200":
+          description: 成功响应
+      summary: 上传文件到微信CDN服务器
+      tags:
+      - 文件操作
+      - 消息
+      x-media-endpoint: true
+      x-media-type: file
   /other/GetPeopleNearby:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4011,25 +4537,36 @@ paths:
           $ref: '#/definitions/PeopleNearbyModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 查看附近的人
       tags:
       - 其他
   /other/GetRedisSyncMsg:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
         name: key
         type: string
+      - description: 请求参数
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/GetSyncMsgModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取缓存在redis中的消息
       tags:
       - 其他
   /other/GetUserRankLikeCount:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4042,12 +4579,15 @@ paths:
           $ref: '#/definitions/UserRankLikeModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取步数排行数据列表
       tags:
       - 其他
   /other/RedisMemory:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4055,12 +4595,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
-      summary: 内存管理
+          description: 成功响应
+      summary: Redis内存管理API
       tags:
       - 其他
   /other/UpdateStepNumber:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4073,12 +4616,15 @@ paths:
           $ref: '#/definitions/UpdateStepNumberModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 修改步数
       tags:
       - 其他
   /pay/Collectmoney:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4091,12 +4637,15 @@ paths:
           $ref: '#/definitions/CollectmoneyModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 确定收款
       tags:
       - 支付
   /pay/ConfirmPreTransfer:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4109,12 +4658,15 @@ paths:
           $ref: '#/definitions/ConfirmPreTransfer'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 确认转账(客户端版本过低会无法转账)
       tags:
       - 支付
   /pay/CreatePreTransfer:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4127,12 +4679,15 @@ paths:
           $ref: '#/definitions/CreatePreTransfer'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 创建转账
       tags:
       - 支付
   /pay/GeneratePayQCode:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4145,12 +4700,15 @@ paths:
           $ref: '#/definitions/GeneratePayQCodeModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 生成自定义收款二维码
       tags:
       - 支付
   /pay/GetBandCardList:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4158,12 +4716,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取银行卡信息
       tags:
       - 支付
   /pay/GetRedEnvelopesDetail:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4176,12 +4737,15 @@ paths:
           $ref: '#/definitions/HongBaoItem'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 查看红包详情
       tags:
       - 支付
   /pay/GetRedPacketList:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4194,12 +4758,15 @@ paths:
           $ref: '#/definitions/GetRedPacketList'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 查看红包领取列表
       tags:
       - 支付
   /pay/OpenRedEnvelopes:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4212,12 +4779,15 @@ paths:
           $ref: '#/definitions/HongBaoItem'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 拆红包
       tags:
       - 支付
   /pay/WXCreateRedPacket:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4230,12 +4800,15 @@ paths:
           $ref: '#/definitions/RedPacket'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 创建红包
       tags:
       - 支付
   /qy/QWAcceptChatRoom:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4248,12 +4821,15 @@ paths:
           $ref: '#/definitions/QWAcceptChatRoomModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 同意进企业群
       tags:
       - 企业微信
   /qy/QWAddChatRoomMember:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4266,30 +4842,15 @@ paths:
           $ref: '#/definitions/QWAddChatRoomMemberModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 直接拉朋友进企业群
-      tags:
-      - 企业微信
-  /qy/QWAdminAcceptJoinChatRoomSet:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/QWAdminAcceptJoinChatRoomSetModel'
-      responses:
-        "200":
-          description: ""
-      summary: 设定企业群管理审核进群
       tags:
       - 企业微信
   /qy/QWApplyAddContact:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4302,12 +4863,15 @@ paths:
           $ref: '#/definitions/QWApplyAddContactModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 向企业微信打招呼
       tags:
       - 企业微信
   /qy/QWAppointChatRoomAdmin:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4320,12 +4884,15 @@ paths:
           $ref: '#/definitions/QWAddChatRoomMemberModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 增加企业管理员
       tags:
       - 企业微信
   /qy/QWChatRoomAnnounce:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4338,84 +4905,15 @@ paths:
           $ref: '#/definitions/QWModChatRoomNameModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 发布企业群公告
-      tags:
-      - 企业微信
-  /qy/QWChatRoomTransferOwner:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/QWChatRoomTransferOwnerModel'
-      responses:
-        "200":
-          description: ""
-      summary: 转让企业群
-      tags:
-      - 企业微信
-  /qy/QWContact:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/QWContactModel'
-      responses:
-        "200":
-          description: ""
-      summary: 提取企业 wx 详情
-      tags:
-      - 企业微信
-  /qy/QWCreateChatRoom:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/QWCreateModel'
-      responses:
-        "200":
-          description: ""
-      summary: 创建企业群
-      tags:
-      - 企业微信
-  /qy/QWDelChatRoom:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/QWModChatRoomNameModel'
-      responses:
-        "200":
-          description: ""
-      summary: 删除企业群
       tags:
       - 企业微信
   /qy/QWDelChatRoomAdmin:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4428,12 +4926,15 @@ paths:
           $ref: '#/definitions/QWAddChatRoomMemberModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 移除群管理员
       tags:
       - 企业微信
   /qy/QWDelChatRoomMember:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4446,12 +4947,15 @@ paths:
           $ref: '#/definitions/QWAddChatRoomMemberModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 删除企业群成员
       tags:
       - 企业微信
   /qy/QWGetChatRoomMember:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4464,30 +4968,15 @@ paths:
           $ref: '#/definitions/QWAddChatRoomMemberModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 提取企业群全部成员
-      tags:
-      - 企业微信
-  /qy/QWGetChatRoomQR:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/QWAddChatRoomMemberModel'
-      responses:
-        "200":
-          description: ""
-      summary: 提取企业群二维码
       tags:
       - 企业微信
   /qy/QWGetChatroomInfo:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4500,12 +4989,15 @@ paths:
           $ref: '#/definitions/QWAddChatRoomMemberModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 提取企业群名称公告设定等信息
       tags:
       - 企业微信
   /qy/QWInviteChatRoomMember:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4518,30 +5010,15 @@ paths:
           $ref: '#/definitions/QWAddChatRoomMemberModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 发送群邀请链接
-      tags:
-      - 企业微信
-  /qy/QWModChatRoomMemberNick:
-    post:
-      parameters:
-      - description: 账号唯一标识
-        in: query
-        name: key
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/QWModChatRoomNameModel'
-      responses:
-        "200":
-          description: ""
-      summary: 修改成员在群中呢称
       tags:
       - 企业微信
   /qy/QWModChatRoomName:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4554,12 +5031,15 @@ paths:
           $ref: '#/definitions/QWModChatRoomNameModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 修改企业群名称
       tags:
       - 企业微信
   /qy/QWRemark:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4572,12 +5052,15 @@ paths:
           $ref: '#/definitions/QWRemarkModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 备注企业 wxid
       tags:
       - 企业微信
   /qy/QWSearchContact:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4590,12 +5073,15 @@ paths:
           $ref: '#/definitions/SearchContactModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 搜手机或企业对外名片链接提取验证
       tags:
       - 企业微信
   /qy/QWSyncChatRoom:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4608,12 +5094,15 @@ paths:
           $ref: '#/definitions/QWSyncChatRoomModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 提取全部企业微信群-
       tags:
       - 企业微信
   /qy/QWSyncContact:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4621,12 +5110,15 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 提取全部的企业通讯录
       tags:
       - 企业微信
   /sns/DownloadMedia:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4637,14 +5129,24 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/DownloadMediaModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 下载朋友圈视频
       tags:
+      - 文件操作
       - 朋友圈
+      x-media-endpoint: true
+      x-media-type: file
   /sns/GetCollectCircle:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4657,12 +5159,15 @@ paths:
           $ref: '#/definitions/SendFavItemCircle'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取收藏朋友圈详情
       tags:
       - 朋友圈
   /sns/GetSnsSync:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4670,25 +5175,43 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 同步朋友圈
       tags:
       - 朋友圈
   /sns/SendCdnSnsVideoUploadReuqest:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
         name: key
         type: string
+      - description: 请求参数
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/SnsVideoItemModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 上传朋友圈视频
       tags:
+      - 视频操作
       - 朋友圈
+      x-media-endpoint: true
+      x-media-type: video
   /sns/SendFavItemCircle:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4701,12 +5224,15 @@ paths:
           $ref: '#/definitions/SendFavItemCircle'
       responses:
         "200":
-          description: ""
-      summary: 转发收藏朋友圈
+          description: 成功响应
+      summary: 转发收藏朋友圈id
       tags:
       - 朋友圈
   /sns/SendFriendCircle:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4719,12 +5245,15 @@ paths:
           $ref: '#/definitions/SnsPostItemModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 发送朋友圈
       tags:
       - 朋友圈
   /sns/SendFriendCircleByXMl:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4737,12 +5266,15 @@ paths:
           $ref: '#/definitions/TimelineObject'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 发送朋友圈XML结构
       tags:
       - 朋友圈
   /sns/SendOneIdCircle:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4755,12 +5287,15 @@ paths:
           $ref: '#/definitions/GetIdDetailModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 一键转发朋友圈
       tags:
       - 朋友圈
   /sns/SendSnsComment:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4773,12 +5308,15 @@ paths:
           $ref: '#/definitions/SendSnsCommentRequestModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 点赞评论
       tags:
       - 朋友圈
   /sns/SendSnsObjectDetailById:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4791,12 +5329,15 @@ paths:
           $ref: '#/definitions/GetIdDetailModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取指定id朋友圈
       tags:
       - 朋友圈
   /sns/SendSnsObjectOp:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4809,12 +5350,15 @@ paths:
           $ref: '#/definitions/SendSnsObjectOpRequestModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 朋友圈操作
       tags:
       - 朋友圈
   /sns/SendSnsTimeLine:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4827,12 +5371,15 @@ paths:
           $ref: '#/definitions/GetSnsInfoModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取朋友圈主页
       tags:
       - 朋友圈
   /sns/SendSnsUserPage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4845,12 +5392,15 @@ paths:
           $ref: '#/definitions/GetSnsInfoModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取指定人朋友圈
       tags:
       - 朋友圈
   /sns/SetBackgroundImage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4861,14 +5411,24 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/SetBackgroundImageModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 设置朋友圈背景图片
       tags:
+      - 图片操作
       - 朋友圈
+      x-media-endpoint: true
+      x-media-type: image
   /sns/SetFriendCircleDays:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4881,12 +5441,15 @@ paths:
           $ref: '#/definitions/SetFriendCircleDaysModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 设置朋友圈可见天数
       tags:
       - 朋友圈
   /sns/UploadFriendCircleImage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4897,14 +5460,24 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/UploadFriendCircleModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 上传图片信息
       tags:
+      - 图片操作
       - 朋友圈
+      x-media-endpoint: true
+      x-media-type: image
   /user/ChangePwd:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4917,12 +5490,15 @@ paths:
           $ref: '#/definitions/SendChangePwdRequestModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 更改密码
       tags:
       - 用户
   /user/GetMyQrCode:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4935,12 +5511,38 @@ paths:
           $ref: '#/definitions/GetQrCodeModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 获取我的二维码
       tags:
       - 用户
   /user/GetProfile:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
+      responses:
+        "200":
+          description: 成功响应
+      summary: 获取个人资料信息
+      tags:
+      - 文件操作
+      - 用户
+      x-media-endpoint: true
+      x-media-type: file
+  /user/GetProxyInfo:
+    get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4948,12 +5550,31 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
-      summary: 获取个人资料信息
+          description: 成功响应
+      summary: '@Router /user/GetProxyInfo [get]'
+      tags:
+      - 用户
+  /user/GetProxyPoolInfo:
+    get:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      responses:
+        "200":
+          description: 成功响应
+      summary: '@Router /user/GetProxyPoolInfo [get]'
       tags:
       - 用户
   /user/ModifyRemark:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4966,12 +5587,15 @@ paths:
           $ref: '#/definitions/SendModifyRemarkRequestModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 修改备注
       tags:
       - 用户
   /user/ModifyUserInfo:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -4984,12 +5608,15 @@ paths:
           $ref: '#/definitions/ModifyUserInfo'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 修改资料
       tags:
       - 用户
   /user/SetFunctionSwitch:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -5002,12 +5629,15 @@ paths:
           $ref: '#/definitions/WxFunctionSwitchModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 设置添加我的方式
       tags:
       - 用户
   /user/SetNickName:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -5020,12 +5650,15 @@ paths:
           $ref: '#/definitions/UpdateNickNameModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 设置昵称
       tags:
       - 用户
   /user/SetProxy:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -5038,12 +5671,15 @@ paths:
           $ref: '#/definitions/GetLoginQrCodeModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 修改Socks5代理
       tags:
       - 用户
   /user/SetSendPat:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -5056,12 +5692,15 @@ paths:
           $ref: '#/definitions/SetSendPatModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 设置拍一拍名称
       tags:
       - 用户
   /user/SetSexDq:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -5074,12 +5713,15 @@ paths:
           $ref: '#/definitions/UpdateSexModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 修改性别
       tags:
       - 用户
   /user/SetSignature:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -5092,12 +5734,15 @@ paths:
           $ref: '#/definitions/UpdateNickNameModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 修改签名
       tags:
       - 用户
   /user/SetWechat:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -5110,12 +5755,15 @@ paths:
           $ref: '#/definitions/AlisaModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 设置微信号
       tags:
       - 用户
   /user/UpdateAutoPass:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -5128,12 +5776,15 @@ paths:
           $ref: '#/definitions/UpdateAutopassModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 修改加好友需要验证属性
       tags:
       - 用户
   /user/UpdateNickName:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -5146,12 +5797,15 @@ paths:
           $ref: '#/definitions/UpdateNickNameModel'
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 修改名称
       tags:
       - 用户
   /user/UploadHeadImage:
     post:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -5162,14 +5816,45 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/UploadHeadImageModel'
+      - description: 上传的文件
+        in: formData
+        name: file
+        type: file
       responses:
         "200":
-          description: ""
+          description: 成功响应
       summary: 上传头像
       tags:
+      - 图片操作
       - 用户
-  /ws/GetSyncMsg:
+      x-media-endpoint: true
+      x-media-type: image
+  /webhook/Config:
+    post:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/WebhookConfig'
+      responses:
+        "200":
+          description: 成功响应
+      summary: 配置Webhook回调地址
+      tags:
+      - /webhook
+  /webhook/Status:
     get:
+      consumes:
+      - application/json
+      - multipart/form-data
       parameters:
       - description: 账号唯一标识
         in: query
@@ -5177,10 +5862,45 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: 成功响应
+      summary: 获取Webhook配置状态
+      tags:
+      - /webhook
+  /webhook/Test:
+    get:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      responses:
+        "200":
+          description: 成功响应
+      summary: 测试Webhook连通性
+      tags:
+      - /webhook
+  /ws/GetSyncMsg:
+    get:
+      consumes:
+      - application/json
+      - multipart/form-data
+      parameters:
+      - description: 账号唯一标识
+        in: query
+        name: key
+        type: string
+      responses:
+        "200":
+          description: 成功响应
       summary: 同步消息，ws协议; 下面有【同步消息-HTTP-轮询方式】
       tags:
       - 同步消息
+produces:
+- application/json
+- application/octet-stream
 swagger: "2.0"
 tags:
 - description: /admin
@@ -5215,3 +5935,16 @@ tags:
   name: 设备
 - description: /other
   name: 其他
+- description: /webhook
+  name: /webhook
+- description: 文件上传、下载等操作
+  name: 文件操作
+- description: 视频上传、转发等操作
+  name: 视频操作
+- description: 图片上传、转发等操作
+  name: 图片操作
+- description: 消息转发相关操作
+  name: 转发操作
+x-lazy-loading-enabled: true
+x-pagination-enabled: true
+x-performance-optimized: true
