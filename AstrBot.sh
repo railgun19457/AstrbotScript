@@ -22,59 +22,67 @@ check_permission() {
   chmod -R 777 "$1"
 }
 
-# 组件部署函数
-deploy_astrbot() {
-  echo -e "${GREEN}正在部署 AstrBot...${NC}"
-  check_dir ./data
-  docker network create --driver bridge astrbot || true
-  docker compose -f ./astrbot.yml up -d
-}
-
-deploy_napcat() {
-  echo -e "${GREEN}正在部署 NapCat...${NC}"
-  check_dir ./napcat/ntqq
-  check_dir ./data
-  docker network create --driver bridge astrbot || true
-  docker compose -f ./astrbot_napcat.yml up -d
-  docker compose -f ./napcat/napcat.yml up -d
-}
-
-deploy_wechatpadpro() {
-  echo -e "${GREEN}正在部署 WeChatPadPro...${NC}"
-  check_dir ./WeChatPadPro
-  check_dir ./WeChatPadPro/mysql/data
-  check_dir ./WeChatPadPro/redis/data
-  check_dir ./WeChatPadPro/redis/conf
-  check_permission ./WeChatPadPro/redis/conf
-  docker network create --driver bridge astrbot || true
-  docker compose -f ./WeChatPadPro/wechat.yml up -d
-}
-
 # 交互式选择
 show_menu() {
-  echo "请选择要部署的组件（可多选，空格分隔）："
-  echo "1) AstrBot"
-  echo "2) NapCat"
-  echo "3) WeChatPadPro"
-  echo "4) 全部部署"
-  read -p "请输入编号（如 1 3 或 4）：" choices
+  echo "请选择要部署的组合："
+  echo "0) 仅部署 AstrBot(不推荐)"
+  echo "1) AstrBot + NapCat"
+  echo "2) AstrBot + WeChatPadPro"
+  echo "3) AstrBot + NapCat + WeChatPadPro"
+  read -p "请输入编号:" choice
 }
 
 show_menu
 
-if [[ $choices =~ 4 ]]; then
-  deploy_astrbot
-  deploy_napcat
-  deploy_wechatpadpro
-else
-  for c in $choices; do
-    case $c in
-      1) deploy_astrbot ;;
-      2) deploy_napcat ;;
-      3) deploy_wechatpadpro ;;
-      *) echo -e "${RED}无效选项: $c${NC}" ;;
-    esac
-  done
-fi
+case $choice in
+  0)
+    docker network create --driver bridge astrbot || true
+    echo -e "${GREEN}正在部署 AstrBot...${NC}"
+    check_dir ./data
+    docker compose -f ./astrbot.yml up -d
+    ;;
+  1)
+    docker network create --driver bridge astrbot || true
+    echo -e "${GREEN}正在部署 AstrBot...${NC}"
+    check_dir ./data
+    docker compose -f ./astrbot_napcat.yml up -d
+    echo -e "${GREEN}正在部署 NapCat...${NC}"
+    check_dir ./napcat/ntqq
+    docker compose -f ./napcat/napcat.yml up -d
+    ;;
+  2)
+    docker network create --driver bridge astrbot || true
+    echo -e "${GREEN}正在部署 AstrBot...${NC}"
+    check_dir ./data
+    docker compose -f ./astrbot.yml up -d
+    echo -e "${GREEN}正在部署 WeChatPadPro...${NC}"
+    check_dir ./WeChatPadPro
+    check_dir ./WeChatPadPro/mysql/data
+    check_dir ./WeChatPadPro/redis/data
+    check_dir ./WeChatPadPro/redis/conf
+    check_permission ./WeChatPadPro/redis/conf
+    docker compose -f ./WeChatPadPro/wechat.yml up -d
+    ;;
+  3)
+    docker network create --driver bridge astrbot || true
+    echo -e "${GREEN}正在部署 AstrBot...${NC}"
+    check_dir ./data
+    docker compose -f ./astrbot_napcat.yml up -d
+    echo -e "${GREEN}正在部署 NapCat...${NC}"
+    check_dir ./napcat/ntqq
+    docker compose -f ./napcat/napcat.yml up -d
+    echo -e "${GREEN}正在部署 WeChatPadPro...${NC}"
+    check_dir ./WeChatPadPro
+    check_dir ./WeChatPadPro/mysql/data
+    check_dir ./WeChatPadPro/redis/data
+    check_dir ./WeChatPadPro/redis/conf
+    check_permission ./WeChatPadPro/redis/conf
+    docker compose -f ./WeChatPadPro/wechat.yml up -d
+    ;;
+  *)
+    echo -e "${RED}无效选项: $choice${NC}"
+    exit 1
+    ;;
+esac
 
 echo -e "${GREEN}部署完成！${NC}"
