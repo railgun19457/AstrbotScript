@@ -1,22 +1,23 @@
 services:
   wechatpadpro:
-    image: luolinaiwis/wechatpadpro:latest
+    image: wechatpadpro/wechatpadpro:latest
     container_name: wechatpadpro
     restart: unless-stopped
     ports:
-      - "8059:8059"
+      - "1239:1239"
     volumes:
-      - ./wechatpadpro:/app
+      - ./WeChatPadPro:/app
       - ./.env:/app/.env
     networks:
       - astrbot
+    command: sh -c "chmod +x /app/wechatpadpro-linux-amd64-v18.6 && /app/wechatpadpro-linux-amd64-v18.6"
     environment:
       - DEBUG=true
       - ADMIN_KEY=12345
       - REDIS_HOST=wechatpadpro_redis
       - REDIS_PASS=wechatpadpro_redis
       - MYSQL_CONNECT_STR=wechatpadpro:wechatpadpro_mysql@tcp(wechatpadpro_mysql:3306)/wechatpadpro?charset=utf8mb4&parseTime=true&loc=Local
-      - PORT=8059
+      - PORT=1239
       - HOST=0.0.0.0
       - TZ=Asia/Shanghai
     depends_on:
@@ -35,7 +36,7 @@ services:
 
     volumes:
       - ./redis/data:/data
-      - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/conf:/usr/local/etc/redis
     networks:
       - astrbot
 

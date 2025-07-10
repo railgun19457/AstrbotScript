@@ -1253,7 +1253,7 @@
     // 获取正确的 WebSocket 地址
     function getWebSocketUrl() {
       // 从全局配置中获取端口号
-      const port = window.xxcaibi.BASE_URL.split(':')[2] || '8059'; // 如果获取不到配置端口，才使用默认值
+      const port = window.xxcaibi.BASE_URL.split(':')[2] || '1239'; // 如果获取不到配置端口，才使用默认值
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const hostname = window.location.hostname || 'localhost';
       const key = window.xxcaibi.TOKEN_KEY || '';
@@ -1410,7 +1410,7 @@
         addLog('达到最大重连次数，停止重连', 'error');
         addLog('请检查：', 'error');
         addLog('1. 服务器是否正在运行', 'error');
-        addLog('2. 端口 (8059) 是否正确', 'error');
+        addLog('2. 端口 (1239) 是否正确', 'error');
         addLog('3. key 是否有效', 'error');
         addLog('4. 网络连接是否正常', 'error');
         updateButton(document.getElementById('connectButton'), '连接', false);

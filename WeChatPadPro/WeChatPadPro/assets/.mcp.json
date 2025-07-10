@@ -6,10 +6,10 @@
         "swagger_loader": {
             "command": "swagger-mcp",
             "args": [
-                "--specUrl=http://localhost:8059/docs/swagger.json",
+                "--specUrl=http://localhost:1239/docs/swagger.json",
                 "-sse",
                 "--sseAddr=:8058",
-                "--baseUrl=http://localhost:8059"
+                "--baseUrl=http://localhost:1239"
 
             ]
         }

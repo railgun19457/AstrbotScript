@@ -18,8 +18,8 @@ services:
     #可选固定mac
     mac_address: "02:42:ac:11:00:02"
     
-    cpus: 2.0
-    mem_limit: 2g
+    cpus: 1.0
+    mem_limit: 1g
 networks:
   astrbot:
     external: true
