@@ -1,18 +1,26 @@
 # AstrBot 一键部署说明
 
-**仅适用于 Linux 环境下使用 Docker 部署**
+> 最近更新：2025-07-10
+- 适配wechatpadpro最新版v18.6 
+
+## **本脚本仅适用于 Linux 环境下使用 Docker 部署**
 
 ## 快速开始
 
-1. 赋予脚本执行权限：
+1. 拉取本仓库：
+   ```bash
+   git clone https://github.com/railgun19457/AstrbotScript.git
+   cd ./AstrbotScript
+   ```
+2. 赋予脚本执行权限：
    ```bash
    chmod +x ./AstrBot.sh
    ```
-2. 运行一键部署脚本：
+3. 运行一键部署脚本：
    ```bash
    sudo ./AstrBot.sh
    ```
-3. 按提示选择要部署的组件（可多选）：
+4. 按提示选择要部署的组件（可多选）：
    - AstrBot
    - NapCat
    - WeChatPadPro
@@ -60,5 +68,15 @@
 - 消息平台配置可参考文件夹内图片
 - 所有服务均基于 Docker Compose 部署，自动创建所需网络
 
-## 官方文档
-[https://astrbot.app/what-is-astrbot.html](https://astrbot.app/what-is-astrbot.html)
+## 官方文档与仓库
+- 官方文档：https://astrbot.app/what-is-astrbot.html
+- 镜像文档站：https://doc.astrbot.misakanet.site/
+- AstrBot 仓库：https://github.com/AstrBotDevs/AstrBot
+- WeChatPadPro 仓库：https://github.com/WeChatPadPro/WeChatPadPro
+
+
+---
+
+## 更新日志
+
+- 2025-07-10：完善文档结构，补充镜像站与仓库链接，权限处理逻辑优化，组件说明细化

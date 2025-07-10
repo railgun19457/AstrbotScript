@@ -18,10 +18,8 @@ check_dir() {
 
 # 检查目录权限
 check_permission() {
-  if [ ! -w "$1" ]; then
-    echo -e "${YELLOW}目录 $1 没有写权限，正在赋予 777 权限...${NC}"
-    chmod -R 777 "$1"
-  fi
+  echo -e "${YELLOW}正在赋予 $1 目录 777 权限...${NC}"
+  chmod -R 777 "$1"
 }
 
 # 组件部署函数
