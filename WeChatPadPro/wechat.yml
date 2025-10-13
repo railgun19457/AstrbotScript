@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     environment:
-      - DB_HOST=mysql_wx
+      - DB_HOST=db_wx
       - REDIS_HOST=redis_wx
       - TZ=${TZ}
       - GH_WXID=${GH_WXID}
@@ -55,17 +55,21 @@ services:
       - MYSQL_CONNECT_STR=${MYSQL_CONNECT_STR}
     volumes:
       - ./.env:/app/.env
+
+    cpus: 0.5
+    mem_limit: 512m
+
     depends_on:
-      mysql:
+      mariadb:
         condition: service_healthy
       redis:
         condition: service_healthy
     networks:
       - astrbot
 
-  mysql:
-    image: mysql:5.7
-    container_name: mysql_wx
+  mariadb:
+    image: mariadb:10.6
+    container_name: db_wx
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123456}
@@ -77,16 +81,20 @@ services:
     #  - "${MYSQL_PORT:-3306}:3306"
     volumes:
       - ./mysql:/var/lib/mysql
+
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root123456}"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 20
+
+    cpus: 0.5
+    mem_limit: 512m
     networks:
       - astrbot
 
   redis:
-    image: redis:6
+    image: redis:7-alpine
     container_name: redis_wx
     restart: always
     command: redis-server --appendonly yes
@@ -95,6 +103,10 @@ services:
     #  - "${REDIS_PORT:-6379}:6379"
     volumes:
       - ./redis:/data
+
+    cpus: 0.5
+    mem_limit: 512m      
+
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s

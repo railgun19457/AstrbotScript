@@ -9,7 +9,7 @@
 
 1. 拉取本仓库：
    ```bash
-   git clone https://github.com/railgun19457/AstrbotScript.git
+   git clone --depth=1 https://github.com/railgun19457/AstrbotScript.git
    cd ./AstrbotScript
    ```
 2. 赋予脚本执行权限：
