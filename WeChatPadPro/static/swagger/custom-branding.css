@@ -1,0 +1,152 @@
+/* WeChatPadPro-861 品牌标识和背景样式 */
+
+/* 背景图案 */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNmMGYwZjAiPjwvcmVjdD4KPC9zdmc+');
+  opacity: 0.6;
+  z-index: -1;
+}
+
+/* 顶部导航栏品牌区域 */
+.swagger-ui .topbar {
+  position: relative;
+  padding: 10px 0;
+}
+
+/* 品牌标识 */
+.swagger-ui .topbar::before {
+  content: "WeChatPadPro-861";
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* 品牌图标 */
+.swagger-ui .topbar::after {
+  content: "";
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgY2xhc3M9ImZlYXRoZXIgZmVhdGhlci1tZXNzYWdlLWNpcmNsZSI+PHBhdGggZD0iTTIxIDExLjVhOC4zOCA4LjM4IDAgMCAxLS45IDMuOCA4LjUgOC41IDAgMCAxLTcuNiA0LjcgOC4zOCA4LjM4IDAgMCAxLTMuOC0uOUwzIDIxbDEuOS01LjdhOC4zOCA4LjM4IDAgMCAxLS45LTMuOCA4LjUgOC41IDAgMCAxIDQuNy03LjYgOC4zOCA4LjM4IDAgMCAxIDMuOC0uOWguNWE4LjQ4IDguNDggMCAwIDEgOCA4di41eiI+PC9wYXRoPjwvc3ZnPg==');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+/* 页脚 */
+.swagger-ui::after {
+  content: "";
+  display: block;
+  text-align: center;
+  padding: 20px;
+  margin-top: 40px;
+  border-top: 1px solid #eee;
+}
+
+/* 信息区域装饰 */
+.swagger-ui .info {
+  position: relative;
+  overflow: hidden;
+}
+
+.swagger-ui .info::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 150px;
+  height: 150px;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTBlMGUwIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgY2xhc3M9ImZlYXRoZXIgZmVhdGhlci1jb2RlIj48cG9seWxpbmUgcG9pbnRzPSIxNiAxOCA2IDEyIDE2IDYiPjwvcG9seWxpbmU+PC9zdmc+');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 80px;
+  opacity: 0.1;
+  transform: rotate(-45deg);
+  z-index: 0;
+}
+
+/* 标签分组装饰 */
+.swagger-ui .opblock-tag {
+  position: relative;
+  overflow: hidden;
+}
+
+.swagger-ui .opblock-tag::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzQ5OGRiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgY2xhc3M9ImZlYXRoZXIgZmVhdGhlci1jaGV2cm9uLWRvd24iPjxwb2x5bGluZSBwb2ludHM9IjYgOSAxMiAxNSAxOCA5Ij48L3BvbHlsaW5lPjwvc3ZnPg==');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.5;
+  transition: transform 0.3s ease;
+}
+
+.swagger-ui .opblock-tag[aria-expanded="true"]::after {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* 美化滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3498db;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2980b9;
+}
+
+/* 加载动画 */
+.swagger-ui .loading-container .loading::before {
+  border-color: #3498db transparent #3498db transparent;
+}
+
+/* 动画效果 */
+.swagger-ui .opblock-summary {
+  transition: transform 0.2s ease;
+}
+
+.swagger-ui .opblock-summary:hover {
+  transform: translateX(5px);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .swagger-ui .topbar::before {
+    font-size: 16px;
+  }
+  
+  .swagger-ui .topbar::after {
+    width: 24px;
+    height: 24px;
+  }
+} 

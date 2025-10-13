@@ -1,6 +1,0 @@
-﻿WeChatPadPro
-Version: 18.6
-Build Time: 20250704_111225
-System: linux
-Architecture: amd64
-Description: Linux PC/Server (64-bit)

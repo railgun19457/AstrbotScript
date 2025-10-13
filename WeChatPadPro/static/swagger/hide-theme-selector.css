@@ -1,0 +1,100 @@
+/* 
+ * WeChatPadPro-861 Swagger UI 主题选择器隐藏 CSS
+ * 此文件专门用于隐藏 Swagger UI 中的主题选择器和相关元素
+ */
+
+/* 隐藏所有主题选择器相关元素 */
+.swagger-ui .topbar,
+.swagger-ui .scheme-container,
+.swagger-ui .scheme-container .schemes-wrapper,
+.swagger-ui select[data-name="themes"],
+.swagger-ui select[data-name="theme"],
+.swagger-ui .select-label[data-name="themes"],
+.swagger-ui .select-label[data-name="theme"],
+.swagger-ui .download-url-wrapper,
+.swagger-ui .servers-title,
+.swagger-ui .servers > label,
+.swagger-ui .servers,
+.swagger-ui section.models,
+.swagger-ui .base-url {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  z-index: -1000 !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+}
+
+/* 隐藏任何包含主题文本的元素 */
+.swagger-ui *[class*="theme"],
+.swagger-ui *[id*="theme"],
+.swagger-ui *[name*="theme"] {
+  display: none !important;
+}
+
+/* 隐藏下拉菜单中的主题选项 */
+.swagger-ui select option[value*="theme"],
+.swagger-ui select option:contains("theme") {
+  display: none !important;
+}
+
+/* 隐藏操作按钮区域中的主题选择器 */
+.swagger-ui .operation-tag-content div[class*="theme"],
+.swagger-ui .opblock-section-header div[class*="theme"] {
+  display: none !important;
+}
+
+/* 隐藏顶部区域的所有可能包含主题选择器的元素 */
+.swagger-ui > div:first-child > div:first-child {
+  display: none !important;
+}
+
+/* 去除主题选择器菜单项的样式 */
+.swagger-ui .swagger-ui-theme-dropdown,
+.swagger-ui .swagger-ui-theme-item {
+  display: none !important;
+}
+
+/* 强制黑白元素使用固定颜色 */
+.swagger-ui .dark-theme,
+.swagger-ui .light-theme {
+  display: none !important;
+}
+
+/* 固定请求方法颜色 */
+.swagger-ui .opblock-get .opblock-summary-method {
+  background-color: #61affe !important;
+}
+
+.swagger-ui .opblock-post .opblock-summary-method {
+  background-color: #49cc90 !important;
+}
+
+.swagger-ui .opblock-put .opblock-summary-method {
+  background-color: #fca130 !important;
+}
+
+.swagger-ui .opblock-delete .opblock-summary-method {
+  background-color: #f93e3e !important;
+}
+
+.swagger-ui .opblock-patch .opblock-summary-method {
+  background-color: #50e3c2 !important;
+}
+
+/* 固定使用自定义主题样式 */
+body {
+  background-color: #f9fafc !important;
+}
+
+/* 确保模态框和对话框中也没有主题选择器 */
+.swagger-ui .dialog-ux .modal-ux div[class*="theme"],
+.swagger-ui .dialog-ux .modal-ux select[data-name*="theme"] {
+  display: none !important;
+} 

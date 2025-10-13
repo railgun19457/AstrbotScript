@@ -1,0 +1,2522 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Swagger UI</title>
+  <link rel="stylesheet" type="text/css" href="./hide-theme-selector.css" />
+  <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
+  <link rel="stylesheet" type="text/css" href="./custom-theme.css" />
+  <link rel="stylesheet" type="text/css" href="./custom-branding.css" />
+  <link rel="stylesheet" type="text/css" href="./enhanced-theme.css" />
+  <link rel="stylesheet" type="text/css" href="./tag-headers.css" />
+  <link rel="stylesheet" type="text/css" href="./professional-layout.css" />
+  <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+  <style>
+    /* Reset */
+    html,
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      overflow-y: scroll;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #f9fafc;
+      color: #333;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: inherit;
+    }
+
+    body {
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    /* Swagger UI Container */
+    #swagger-ui {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0 5%;
+    }
+
+    /* 全局覆盖Swagger UI样式 */
+    .swagger-ui {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .swagger-ui .information-container {
+      padding: 30px 0;
+      margin: 0;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+      max-width: 100%;
+    }
+
+    .swagger-ui .info {
+      margin: 0;
+      padding: 20px;
+      width: 100%;
+    }
+
+    .swagger-ui .info .title {
+      font-weight: 700;
+      font-size: 28px;
+      color: #333;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .swagger-ui .information-container.wrapper {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 隐藏不必要的元素 */
+    .swagger-ui .scheme-container,
+    .swagger-ui .url,
+    .swagger-ui .download-contents,
+    .swagger-ui .schemes-wrapper {
+      display: none !important;
+    }
+
+    .swagger-ui .opblock-tag-section {
+      margin-top: 20px;
+    }
+
+    /* 自定义标签专题背景区域 */
+    .custom-header-banner {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      height: 220px;
+      margin: 0;
+      border-radius: 0;
+      overflow: hidden;
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* 美化操作块 */
+    .swagger-ui .opblock {
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      border: none;
+      margin: 0 0 15px;
+    }
+
+    .swagger-ui .opblock:hover {
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* 美化方法标签 */
+    .swagger-ui .opblock .opblock-summary-method {
+      font-weight: 600;
+      font-size: 14px;
+      min-width: 80px;
+      text-align: center;
+      border-radius: 4px;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 优化路径显示 */
+    .swagger-ui .opblock-summary-path {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 15px;
+      color: #2c3e50;
+    }
+
+    /* 优化表单元素 */
+    .swagger-ui input[type=text],
+    .swagger-ui input[type=password],
+    .swagger-ui input[type=search],
+    .swagger-ui input[type=email],
+    .swagger-ui textarea {
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      padding: 8px 10px;
+      transition: all 0.3s ease;
+    }
+
+    .swagger-ui input[type=text]:focus,
+    .swagger-ui input[type=password]:focus,
+    .swagger-ui input[type=search]:focus,
+    .swagger-ui input[type=email]:focus,
+    .swagger-ui textarea:focus {
+      border-color: #4e54c8;
+      box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.1);
+      outline: none;
+    }
+
+    /* 美化按钮 */
+    .swagger-ui .btn {
+      border-radius: 4px;
+      border: none;
+      padding: 8px 15px;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .swagger-ui .btn.execute {
+      background-color: #4e54c8;
+    }
+
+    .swagger-ui .btn.execute:hover {
+      background-color: #3a3fae;
+    }
+
+    /* 美化信息显示区 */
+    .swagger-ui .info .base-url {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .swagger-ui .info hgroup.main {
+      margin: 0 0 20px;
+    }
+
+    .swagger-ui .info hgroup.main a {
+      font-size: 14px;
+    }
+
+    /* 优化响应和请求部分 */
+    .swagger-ui .responses-inner h4,
+    .swagger-ui .response-col_status {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .swagger-ui .response-col_description__inner p {
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* 隐藏 swagger.json 显示 */
+    .swagger-ui .servers,
+    .swagger-ui .servers-title,
+    .swagger-ui .servers > label {
+      display: none !important;
+    }
+
+    /* 优化头部信息布局 */
+    .swagger-ui .information-container .info-container {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .swagger-ui .information-container .info-container .info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .swagger-ui .information-container .info-container .auth-wrapper {
+      flex: 0 0 auto;
+      margin-left: 20px;
+    }
+
+    .swagger-ui .info .title small {
+      background: #4e54c8;
+    }
+
+    .swagger-ui .info .title small.version-stamp {
+      background-color: #6e72d6;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-weight: 500;
+      font-size: 14px;
+      color: white;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    .swagger-ui .info .title small pre {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(78, 84, 200, 0.1);
+      color: #4e54c8;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+
+    /* 隐藏主题选择 */
+    .swagger-ui .topbar {
+      display: none !important;
+    }
+
+    /* 优化页脚 */
+    .swagger-ui .footer {
+      text-align: center;
+      margin: 30px 0;
+      padding: 20px 0;
+      border-top: 1px solid #eee;
+      color: #666;
+      font-size: 14px;
+    }
+
+    /* Floating Window */
+    .floating-window {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      z-index: 2;
+      animation: glow 2s infinite alternate;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 18px;
+      color: #e74c3c;
+      cursor: pointer;
+    }
+
+    /* Form and Input Styling */
+    #xxcaibi {
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px auto;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      width: 90%;
+    }
+
+    .xxcaibi-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .xxcaibi-label {
+      color: #555;
+      font-size: 14px;
+      width: 120px;
+    }
+
+    .xxcaibi-input,
+    .xxcaibi-switch {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .xxcaibi-input:focus {
+      border-color: #4CAF50;
+      outline: none;
+    }
+
+    .xxcaibi-switch {
+      width: 40px;
+      height: 20px;
+      appearance: none;
+      background-color: #ccc;
+      /* 默认状态下的开关背景颜色 */
+      outline: none;
+      border-radius: 20px;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .xxcaibi-switch:checked {
+      background-color: #4CAF50;
+    }
+
+    .xxcaibi-switch::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: white;
+      top: 1px;
+      left: 1px;
+      transition: transform 0.3s ease;
+    }
+
+    .xxcaibi-switch:checked::before {
+      transform: translateX(20px);
+    }
+
+    /* Radio Button Group */
+    .radio-group {
+      display: flex;
+      justify-content: space-between;
+      width: 80%;
+    }
+
+    .radio-group label {
+      display: flex;
+      align-items: center;
+    }
+
+    .radio-group input[type="radio"] {
+      margin-right: 10px;
+      transform: scale(1.5);
+    }
+
+    .radio-group input[type="radio"]:focus {
+      outline: none;
+    }
+
+    /* Glow Animation */
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+      }
+
+      to {
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+      }
+    }
+
+    /* Link Card */
+    .card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100px;
+      z-index: 2;
+      transition: transform 0.5s ease, filter 0.5s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.2);
+      filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.7));
+    }
+
+    /* Card Movement Animation */
+    @keyframes cardMove {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      50% {
+        transform: translate(50vw, 50vh);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    .base-url {
+      display: none;
+    }
+
+    /* Telegram Link Container */
+    .tg-link {
+      display: flex;
+      margin-top: 20px;
+    }
+
+    /* Telegram Button */
+    .tg-button {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #5cadff !important;
+      color: white !important;
+      font-size: 16px;
+      text-decoration: none;
+      border-radius: 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Telegram Button Hover Effect */
+    .tg-button:hover {
+      background-color: #007ab8 !important;
+      transform: translateY(-2px);
+    }
+
+    /* Telegram Icon */
+    .tg-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .container input[type="text"] {
+      flex: 1;
+      width: 300px;
+      /* 初始宽度 */
+      max-width: 500px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-right: 10px;
+      font-size: 16px;
+    }
+
+    .container button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-left: 12px;
+    }
+
+    .container button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .container button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+
+    #messages {
+      margin-top: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+    }
+
+    .message {
+      color: #333;
+      margin: 5px 0;
+    }
+    .success {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+    .warning {
+      color: #FFA500;
+      font-weight: bold;
+    }
+    .error {
+      color: #F44336;
+      font-weight: bold;
+    }
+
+    /* 自定义标签专题背景区域 */
+    .custom-header-banner {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      height: 220px;
+      margin: 0 auto 30px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .banner-content {
+      position: relative;
+      z-index: 2;
+      padding: 30px 5%;
+      color: white;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .banner-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .banner-subtitle {
+      font-size: 16px;
+      opacity: 0.95;
+      max-width: 700px;
+      line-height: 1.6;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .banner-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: hidden;
+      background: radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 60%);
+    }
+
+    .banner-shape {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      animation: float 20s infinite alternate ease-in-out;
+      filter: blur(1px);
+    }
+
+    .shape-1 {
+      width: 120px;
+      height: 120px;
+      top: -30px;
+      right: 10%;
+      animation-delay: 0s;
+      background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
+    }
+
+    .shape-2 {
+      width: 80px;
+      height: 80px;
+      bottom: 20px;
+      right: 20%;
+      animation-delay: 2s;
+      background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
+    }
+
+    .shape-3 {
+      width: 60px;
+      height: 60px;
+      top: 40%;
+      right: 30%;
+      animation-delay: 4s;
+      background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.1));
+    }
+
+    .shape-4 {
+      width: 100px;
+      height: 100px;
+      bottom: -30px;
+      left: 15%;
+      animation-delay: 1s;
+      background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.1));
+    }
+
+    .shape-5 {
+      width: 50px;
+      height: 50px;
+      top: 30%;
+      left: 10%;
+      animation-delay: 3s;
+      background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
+    }
+
+    .tag-icons {
+      position: absolute;
+      bottom: 20px;
+      right: 5%;
+      display: flex;
+      gap: 15px;
+      z-index: 3;
+    }
+
+    .tag-icon {
+      width: 44px;
+      height: 44px;
+      background-color: rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tag-icon::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .tag-icon:hover {
+      transform: translateY(-5px) scale(1.05);
+      background-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .tag-icon:hover::before {
+      opacity: 1;
+    }
+
+    .tag-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+      }
+      50% {
+        transform: translate(15px, -15px) rotate(180deg) scale(1.05);
+      }
+      100% {
+        transform: translate(-15px, 15px) rotate(360deg) scale(1);
+      }
+    }
+
+    /* 粒子效果 */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      pointer-events: none;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .custom-header-banner {
+        height: 200px;
+      }
+      
+      .banner-title {
+        font-size: 24px;
+      }
+      
+      .banner-subtitle {
+        font-size: 14px;
+      }
+      
+      .tag-icons {
+        bottom: 15px;
+        right: 15px;
+        gap: 10px;
+      }
+      
+      .tag-icon {
+        width: 36px;
+        height: 36px;
+      }
+      
+      .tag-icon svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    /* WebSocket客户端样式 */
+    .ws-client {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 400px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      padding: 15px;
+    }
+    
+    .ws-client h3 {
+      margin: 0 0 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      font-size: 16px;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .ws-status {
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: normal;
+    }
+    
+    .ws-status.connected {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .ws-status.disconnected {
+      background: #f44336;
+      color: white;
+    }
+    
+    .ws-status.connecting {
+      background: #ff9800;
+      color: white;
+    }
+    
+    .ws-messages {
+      height: 200px;
+      overflow-y: auto;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 4px;
+      margin: 10px 0;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    
+    .ws-input {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .ws-input input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .ws-input button {
+      padding: 8px 15px;
+      background: #4e54c8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .ws-input button:hover {
+      background: #3a3fae;
+    }
+    
+    .ws-input button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .ws-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      color: #666;
+    }
+
+    .ws-message {
+      margin: 5px 0;
+      padding: 5px;
+      border-radius: 4px;
+    }
+
+    .ws-message.info {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .ws-message.error {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .ws-message.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .ws-message.warning {
+      background: #fff3e0;
+      color: #f57c00;
+    }
+
+    .ws-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .ws-controls button {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .ws-controls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .ws-controls .connect {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .ws-controls .disconnect {
+      background: #f44336;
+      color: white;
+    }
+
+    .ws-controls .clear {
+      background: #9e9e9e;
+      color: white;
+    }
+
+    /* 性能优化相关样式 */
+    .swagger-ui .loading-container {
+      padding: 40px 0;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+
+    .swagger-ui .loading-container .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .swagger-ui .tag-selector {
+      margin: 10px 0;
+      padding: 10px;
+      background: #fff;
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .swagger-ui .tag-selector select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+    }
+
+    .swagger-ui .performance-toggle {
+      margin: 10px 0;
+      padding: 10px;
+      background: #f0f8ff;
+      border-radius: 4px;
+      border: 1px solid #d9d9d9;
+    }
+
+    .swagger-ui .performance-toggle label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .swagger-ui .performance-toggle input {
+      margin-right: 8px;
+    }
+
+    /* 自定义样式 */
+    .swagger-ui .topbar { 
+      display: none; 
+    }
+
+    .swagger-ui .info {
+      margin: 20px 0;
+    }
+
+    .swagger-ui .info .title {
+      font-size: 36px;
+      margin: 0;
+      font-family: sans-serif;
+      color: #3b4151;
+    }
+
+    .swagger-ui .opblock {
+      margin: 0 0 15px;
+      border-radius: 4px;
+      box-shadow: 0 0 3px rgba(0, 0, 0, 0.19);
+    }
+
+    .swagger-ui .opblock .opblock-summary {
+      padding: 5px;
+    }
+
+    .swagger-ui .opblock .opblock-summary-method {
+      font-size: 14px;
+      font-weight: 700;
+      min-width: 80px;
+      padding: 6px 15px;
+      text-align: center;
+      border-radius: 3px;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+      font-family: sans-serif;
+    }
+
+    .swagger-ui .btn {
+      font-size: 14px;
+      font-weight: 700;
+      padding: 5px 23px;
+      transition: all 0.3s;
+      border: 2px solid #888;
+      border-radius: 4px;
+      background: transparent;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      font-family: sans-serif;
+      color: #3b4151;
+    }
+
+    .swagger-ui .btn:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .swagger-ui .btn.execute {
+      background-color: #4990e2;
+      color: #fff;
+      border-color: #4990e2;
+    }
+
+    .swagger-ui .btn.execute:hover {
+      background-color: #357ebd;
+      border-color: #357ebd;
+    }
+
+    .swagger-ui .parameters-col_description input[type=text] {
+      width: 100%;
+      max-width: 340px;
+      padding: 8px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+    }
+
+    .swagger-ui .parameters-col_description select {
+      padding: 5px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+    }
+
+    .swagger-ui table {
+      width: 100%;
+      padding: 0 10px;
+      border-collapse: collapse;
+    }
+
+    .swagger-ui table tbody tr td {
+      padding: 10px 0;
+      vertical-align: top;
+    }
+
+    .swagger-ui .response-col_status {
+      font-size: 14px;
+      font-family: sans-serif;
+    }
+
+    .swagger-ui .opblock-body pre {
+      font-size: 12px;
+      margin: 0;
+      padding: 10px;
+      white-space: pre-wrap;
+      border-radius: 4px;
+      background: #41444e;
+      overflow-wrap: break-word;
+      font-family: monospace;
+      color: #fff;
+    }
+
+    .swagger-ui .opblock-body pre span {
+      color: #fff !important;
+      font-size: 12px !important;
+    }
+
+    .swagger-ui .opblock-section-header {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    .swagger-ui .opblock-section-header h4 {
+      font-size: 14px;
+      margin: 0;
+      padding: 10px 0;
+      font-family: sans-serif;
+      color: #3b4151;
+    }
+
+    .swagger-ui .model {
+      font-size: 12px;
+      font-weight: 300;
+      font-family: monospace;
+    }
+
+    .swagger-ui .model-toggle {
+      font-size: 10px;
+      position: relative;
+      top: 6px;
+      display: inline-block;
+      margin: 0 5px;
+      padding: 0 5px;
+      cursor: pointer;
+      transition: all 0.5s;
+      border: 1px solid #999;
+      border-radius: 3px;
+    }
+
+    .swagger-ui section.models {
+      margin: 30px 0;
+      border: 1px solid rgba(59, 65, 81, 0.3);
+      border-radius: 4px;
+    }
+
+    .swagger-ui section.models .model-container {
+      margin: 0 20px;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(59, 65, 81, 0.3);
+    }
+
+    .swagger-ui section.models .model-container:last-of-type {
+      border: 0;
+    }
+
+    /* 性能优化提示 */
+    .swagger-ui .performance-notice {
+      padding: 10px;
+      background-color: #fffacd;
+      border-left: 4px solid #ffcc00;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .qr-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    .qr-modal { background: #fff; border-radius: 10px; width: 420px; max-width: 92vw; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .qr-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
+    .qr-title { font-size: 16px; font-weight: 600; color: #333; }
+    .qr-close { cursor: pointer; color: #999; font-size: 18px; line-height: 1; }
+    .qr-close:hover { color: #e74c3c; }
+    .qr-body { padding: 16px; text-align: center; }
+    .qr-img { width: 260px; height: 260px; object-fit: contain; border-radius: 6px; border: 1px solid #eee; background: #fff; }
+    .qr-meta { margin-top: 12px; color: #666; font-size: 13px; word-break: break-all; text-align: left; }
+    .qr-meta-row { margin: 6px 0; }
+    .qr-status { margin-top: 10px; padding: 8px 10px; border-radius: 6px; text-align: left; font-size: 13px; background: #f9fafb; color: #374151; border: 1px solid #eef2f7; }
+    .qr-status.success { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+    .qr-status.warn { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+    .qr-status.error { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+    .qr-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid #f0f0f0; }
+    .qr-btn { border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+    .qr-btn-primary { background: #4e54c8; color: #fff; }
+    .qr-btn-primary:hover { background: #3a3fae; }
+    .qr-btn-secondary { background: #f3f4f6; color: #333; }
+    .qr-countdown { color: #4e54c8; font-weight: 600; }
+
+    .qr-detail { margin-top: 10px; padding: 10px; border: 1px dashed #e5e7eb; border-radius: 8px; background: #fff; text-align: left; }
+    .qr-detail-header { display: flex; align-items: center; }
+    .qr-avatar { width: 48px; height: 48px; border-radius: 6px; margin-right: 10px; border: 1px solid #eee; object-fit: cover; }
+    .qr-nick { font-weight: 600; color: #1f2937; }
+    .qr-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; margin-left: 6px; }
+    .qr-badge.wait { background: #fffbeb; color: #92400e; }
+    .qr-badge.scan { background: #e0f2fe; color: #075985; }
+    .qr-badge.ok { background: #ecfdf5; color: #065f46; }
+    .qr-badge.err { background: #fef2f2; color: #991b1b; }
+    .qr-detail-list { margin-top: 8px; font-size: 12px; color: #4b5563; }
+    .qr-detail-list .row { margin: 2px 0; }
+    .qr-detail-list .label { color: #6b7280; margin-right: 6px; }
+    .qr-raw { margin-top: 10px; background: #f8fafc; border: 1px solid #eef2f7; border-radius: 6px; padding: 8px; font-size: 12px; color: #334155; max-height: 200px; overflow: auto; }
+  </style>
+  <!-- 在<head>标签内添加以下内容 -->
+  <script>
+    // 禁用分页和延迟加载，确保所有端点都能显示
+    window.onload = function() {
+      setTimeout(function() {
+        if (window.ui && window.ui.getConfigs) {
+          var configs = window.ui.getConfigs();
+          // 禁用分页
+          configs.docExpansion = 'list';
+          // 禁用延迟加载
+          configs.maxDisplayedTags = null;
+          // 增加每页显示的模型数量
+          configs.defaultModelsExpandDepth = 1;
+          // 显示所有操作标签
+          configs.filter = false;
+          // 应用配置
+          window.ui.configsActions.update(configs);
+          console.log("已应用Swagger UI优化配置，显示所有端点");
+        }
+      }, 1000);
+    };
+  </script>
+</head>
+
+<body>
+
+  <!-- 自定义标签专题背景区域 -->
+  <div class="custom-header-banner">
+    <div class="banner-content">
+      <h1 class="banner-title">WeChatPadPro-861</h1>
+      <p class="banner-subtitle">最新协议 支持活号登陆自动过滑块 死号登陆自动强开，支持全平台长连接，自动开启心跳，二次登陆,支持小程序获取hostsign</p>
+      <div class="banner-buttons" style="margin-top: 20px; display: flex; gap: 15px;">
+        <button id="showVerificationBtn" style="padding: 8px 15px; background-color: #ffffff; color: #4e54c8; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">显示验证码接口</button>
+        <a href="https://bbs.knowhub.cloud/" target="_blank" style="padding: 8px 15px; background-color: #4CAF50; color: #ffffff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;">
+            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+          </svg>
+          访问技术论坛
+        </a>
+      </div>
+    </div>
+    <div class="banner-background">
+      <div class="banner-shape shape-1"></div>
+      <div class="banner-shape shape-2"></div>
+      <div class="banner-shape shape-3"></div>
+      <div class="banner-shape shape-4"></div>
+      <div class="banner-shape shape-5"></div>
+    </div>
+    <div class="particles"></div>
+    <div class="tag-icons">
+      <div class="tag-icon" title="用户模块" data-tag="user">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      </div>
+      <div class="tag-icon" title="消息模块" data-tag="message">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      </div>
+      <div class="tag-icon" title="朋友圈模块" data-tag="friendcircle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </div>
+      <div class="tag-icon" title="视频号模块" data-tag="finder">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+      </div>
+      <div class="tag-icon" title="群组模块" data-tag="group">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </div>
+      <div class="tag-icon" title="技术论坛" data-tag="forum">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+      </div>
+      <div class="tag-icon" title="AI智能体" data-tag="ai">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      </div>
+    </div>
+  </div>
+
+  <div id="xxcaibi" class="wrapper" style="display: none;">
+    <div class="xxcaibi-group">
+      <label for="admin-key" class="xxcaibi-label">ADMIN_KEY</label>
+      <input type="text" id="admin-key" class="xxcaibi-input" placeholder="管理员接口 ADMIN_KEY">
+    </div>
+
+    <div class="xxcaibi-group">
+      <label for="token-key" class="xxcaibi-label">TOKEN_KEY</label>
+      <input type="text" id="token-key" class="xxcaibi-input" placeholder="普通API TOKEN_KEY">
+    </div>
+
+    <div class="xxcaibi-group">
+      <label class="xxcaibi-label">Swagger 展开方式</label>
+      <div class="radio-group">
+        <label>
+          <input type="radio" name="expand-options" value="none" checked>不展开
+        </label>
+        <label>
+          <input type="radio" name="expand-options" value="list">只展开API
+        </label>
+        <label>
+          <input type="radio" name="expand-options" value="full">展开所有
+        </label>
+      </div>
+    </div>
+
+    <div class="xxcaibi-group">
+      <label for="copy-base-url" class="xxcaibi-label">是否复制根路径</label>
+      <input style="flex: none !important" type="checkbox" id="copy-base-url" class="xxcaibi-switch" checked>
+      <span style="margin-left: 20px;" id="BASE_URL"></span>
+    </div>
+
+    <!-- 论坛相关链接区域 -->
+    <div class="forum-links" style="margin-top: 20px; padding: 15px; background-color: #f5f7fa; border-radius: 8px; border-left: 4px solid #4CAF50;">
+      <h4 style="margin-top: 0; color: #333; font-size: 16px;">📚 技术论坛资源</h4>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+        <a href="https://bbs.knowhub.cloud/forums/ai-agents" target="_blank" style="display: inline-flex; align-items: center; padding: 6px 12px; background-color: #e8f5e9; color: #2e7d32; text-decoration: none; border-radius: 4px; font-size: 14px;">
+          <span style="margin-right: 6px;">🤖</span>AI智能体讨论区
+        </a>
+        <a href="https://bbs.knowhub.cloud/forums/mcp" target="_blank" style="display: inline-flex; align-items: center; padding: 6px 12px; background-color: #e3f2fd; color: #1565c0; text-decoration: none; border-radius: 4px; font-size: 14px;">
+          <span style="margin-right: 6px;">🔄</span>智能体MCP交流
+        </a>
+        <a href="https://bbs.knowhub.cloud/forums/wechatpadpro" target="_blank" style="display: inline-flex; align-items: center; padding: 6px 12px; background-color: #fff3e0; color: #e65100; text-decoration: none; border-radius: 4px; font-size: 14px;">
+          <span style="margin-right: 6px;">💬</span>WeChatPadPro交流群
+        </a>
+        <a href="https://bbs.knowhub.cloud/docs" target="_blank" style="display: inline-flex; align-items: center; padding: 6px 12px; background-color: #f3e5f5; color: #7b1fa2; text-decoration: none; border-radius: 4px; font-size: 14px;">
+          <span style="margin-right: 6px;">📖</span>开发者文档
+        </a>
+      </div>
+      <p style="margin: 10px 0 0; font-size: 13px; color: #666;">加入我们的技术社区，获取最新资讯、技术支持和开发资源！</p>
+    </div>
+
+    <h4 style="text-align: center;line-height: 1;margin-bottom: 10px">WS 客户端 (同步消息)</h4>
+    <div class="container">
+      <input id="urlInput" type="text" placeholder="输入 WebSocket URL" />
+      <button id="connectButton">连接</button>
+      <button id="disconnectButton" disabled>取消连接</button>
+      <button id="clearMessagesButton">清理消息</button>
+    </div>
+    <div id="messages"></div>
+  </div>
+
+  <script>
+    let socket;
+    let reconnectAttempts = 0;
+    let maxReconnectAttempts = 10;
+    let reconnectDelay = 2000; // 初始重连延迟2秒
+    let reconnectTimer;
+    let heartbeatInterval;
+    
+    // 获取正确的 WebSocket 地址
+    function getWebSocketUrl() {
+      // 从全局配置中获取端口号
+      const port = window.xxcaibi.BASE_URL.split(':')[2] || '8059'; // 如果获取不到配置端口，才使用默认值
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const hostname = window.location.hostname || 'localhost';
+      const key = window.xxcaibi.TOKEN_KEY || '';
+      return `${protocol}//${hostname}:${port}/ws/GetSyncMsg?key=${key}`;
+    }
+
+    // 初始化时设置默认地址
+    setTimeout(() => {
+      document.getElementById('urlInput').value = getWebSocketUrl();
+    }, 1000); // 等待配置加载完成
+
+    // 更新按钮文本
+    function updateButton(button, text, isLoading) {
+      button.innerHTML = isLoading ? text + '...' : text;
+      button.disabled = isLoading;
+    }
+
+    // 添加日志消息到界面
+    function addLog(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const logMessage = `<p class="${type}">[${timestamp}] ${message}</p>`;
+      const messages = document.getElementById('messages');
+      messages.innerHTML += logMessage;
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    // 开始心跳
+    function startHeartbeat() {
+      if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+      }
+      heartbeatInterval = setInterval(() => {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          addLog('发送心跳消息');
+          socket.send('ping');
+        }
+      }, 30000); // 每30秒发送一次心跳
+    }
+
+    // 停止心跳
+    function stopHeartbeat() {
+      if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = null;
+      }
+    }
+
+    // 重置重连参数
+    function resetReconnectParams() {
+      reconnectAttempts = 0;
+      reconnectDelay = 2000;
+      if (reconnectTimer) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+      }
+    }
+
+    // 连接 WebSocket
+    function connectWebSocket() {
+      const url = document.getElementById('urlInput').value;
+      if (!url) {
+        addLog('请输入WebSocket连接地址', 'error');
+        return;
+      }
+
+      // 检查 key 是否存在
+      if (!url.includes('key=') || url.split('key=')[1] === '') {
+        addLog('错误: key 参数不能为空', 'error');
+        return;
+      }
+
+      // 如果已经有连接，先关闭
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      }
+
+      try {
+        addLog('正在连接服务器: ' + url);
+        
+        socket = new WebSocket(url);
+
+        // 连接成功时
+        socket.onopen = function() {
+          addLog('已连接到服务器', 'success');
+          updateButton(document.getElementById('connectButton'), '连接', false);
+          document.getElementById('connectButton').disabled = true;
+          document.getElementById('disconnectButton').disabled = false;
+          resetReconnectParams();
+          startHeartbeat();
+        };
+
+        // 接收消息
+        socket.onmessage = function(event) {
+          try {
+            // 尝试解析 JSON
+            const data = JSON.parse(event.data);
+            if (data.error) {
+              addLog('错误: ' + data.error, 'error');
+              return;
+            }
+            addLog('收到服务器消息: ' + JSON.stringify(data, null, 2));
+          } catch (e) {
+            // 不是 JSON，按普通文本处理
+            if (event.data === 'pong') {
+              addLog('收到心跳响应');
+              return;
+            }
+            addLog('收到服务器消息: ' + event.data);
+          }
+        };
+
+        // 连接关闭时
+        socket.onclose = function(event) {
+          const reason = event.reason ? `, 原因: ${event.reason}` : '';
+          addLog(`连接已关闭 (代码: ${event.code}${reason})`, 'warning');
+          stopHeartbeat();
+          
+          if (!event.wasClean) {
+            // 检查是否是因为服务器未启动
+            if (event.code === 1006) {
+              addLog('无法连接到服务器，请确保服务器已启动且端口正确', 'error');
+            }
+            reconnect();
+          } else {
+            updateButton(document.getElementById('connectButton'), '连接', false);
+            document.getElementById('connectButton').disabled = false;
+            document.getElementById('disconnectButton').disabled = true;
+          }
+        };
+
+        // 发生错误时
+        socket.onerror = function(error) {
+          addLog('连接错误: ' + (error.message || '未知错误'), 'error');
+          
+          // 检查是否是因为跨域问题
+          if (error instanceof SecurityError) {
+            addLog('跨域访问被拒绝，请检查服务器配置', 'error');
+          }
+          // 检查是否是因为协议错误
+          else if (error instanceof SyntaxError) {
+            addLog('WebSocket URL 格式错误', 'error');
+          }
+        };
+
+      } catch (error) {
+        addLog('创建连接失败: ' + error.message, 'error');
+        reconnect();
+      }
+    }
+
+    // 重连逻辑
+    function reconnect() {
+      if (reconnectAttempts >= maxReconnectAttempts) {
+        addLog('达到最大重连次数，停止重连', 'error');
+        addLog('请检查：', 'error');
+        addLog('1. 服务器是否正在运行', 'error');
+        addLog('2. 端口 (8059) 是否正确', 'error');
+        addLog('3. key 是否有效', 'error');
+        addLog('4. 网络连接是否正常', 'error');
+        updateButton(document.getElementById('connectButton'), '连接', false);
+        document.getElementById('disconnectButton').disabled = true;
+        resetReconnectParams();
+        return;
+      }
+
+      reconnectAttempts++;
+      addLog(`正在进行第 ${reconnectAttempts} 次重连...`);
+
+      reconnectTimer = setTimeout(() => {
+        connectWebSocket();
+        // 指数退避，最大延迟30秒
+        reconnectDelay = Math.min(reconnectDelay * 2, 30000);
+      }, reconnectDelay);
+    }
+
+    // 连接按钮点击事件
+    document.getElementById('connectButton').onclick = function() {
+      updateButton(this, '连接中', true);
+      connectWebSocket();
+    };
+
+    // 断开连接按钮点击事件
+    document.getElementById('disconnectButton').onclick = function() {
+      if (socket) {
+        addLog('主动断开连接');
+        socket.close(1000, "用户主动断开连接");
+        this.disabled = true;
+        stopHeartbeat();
+        resetReconnectParams();
+      }
+    };
+
+    // 页面关闭时清理
+    window.onbeforeunload = function() {
+      if (socket) {
+        socket.close();
+      }
+      stopHeartbeat();
+      resetReconnectParams();
+    };
+  </script>
+  <div id="swagger-ui"></div>
+
+  <!-- WebSocket 客户端 -->
+  <div class="ws-client" id="wsClient" style="display: none;">
+    <h3>
+      WebSocket 客户端
+      <span class="ws-status disconnected">未连接</span>
+    </h3>
+    <div class="ws-messages" id="wsMessages"></div>
+    <div class="ws-controls">
+      <button class="connect" id="wsConnect">连接</button>
+      <button class="disconnect" id="wsDisconnect" disabled>断开</button>
+      <button class="clear" id="wsClear">清空</button>
+    </div>
+  </div>
+
+  <div class="swagger-ui footer" style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; text-align: center;">
+    <div style="max-width: 800px; margin: 0 auto;">
+      <div style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 20px;">
+        <div style="flex: 1; min-width: 200px; margin: 0 10px 20px; text-align: left;">
+          <h4 style="font-size: 16px; color: #333; margin-bottom: 15px;">WeChatPadPro</h4>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="margin-bottom: 8px;"><a href="https://github.com/WeChatPadPro/WeChatPadPro" target="_blank" style="color: #666; text-decoration: none;">GitHub 仓库</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://t.me/+LK0JuqLxjmk0ZjRh" target="_blank" style="color: #666; text-decoration: none;">Telegram 群组</a></li>
+            <li style="margin-bottom: 8px;"><a href="http://wxmcp.knowhub.cloud/" target="_blank" style="color: #666; text-decoration: none;">MCP 服务地址</a></li>
+          </ul>
+        </div>
+        <div style="flex: 1; min-width: 200px; margin: 0 10px 20px; text-align: left;">
+          <h4 style="font-size: 16px; color: #333; margin-bottom: 15px;">技术论坛</h4>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="margin-bottom: 8px;"><a href="https://bbs.knowhub.cloud/forums/ai-agents" target="_blank" style="color: #666; text-decoration: none;">AI智能体讨论区</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://bbs.knowhub.cloud/forums/mcp" target="_blank" style="color: #666; text-decoration: none;">智能体MCP交流</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://bbs.knowhub.cloud/forums/wechatpadpro" target="_blank" style="color: #666; text-decoration: none;">WeChatPadPro交流群</a></li>
+          </ul>
+        </div>
+        <div style="flex: 1; min-width: 200px; margin: 0 10px 20px; text-align: left;">
+          <h4 style="font-size: 16px; color: #333; margin-bottom: 15px;">资源中心</h4>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="margin-bottom: 8px;"><a href="https://bbs.knowhub.cloud/docs" target="_blank" style="color: #666; text-decoration: none;">开发者文档</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://bbs.knowhub.cloud/api" target="_blank" style="color: #666; text-decoration: none;">API 参考</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://bbs.knowhub.cloud/support" target="_blank" style="color: #666; text-decoration: none;">技术支持</a></li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; color: #888; font-size: 13px;">
+        <p>© 2025 KnowHub. 探索与交流 Know Hub 的无限可能。</p>
+        <p>
+          <a href="https://bbs.knowhub.cloud/" target="_blank" style="color: #4CAF50; text-decoration: none; margin: 0 10px;">官方论坛</a> |
+          <a href="https://bbs.knowhub.cloud/terms" target="_blank" style="color: #666; text-decoration: none; margin: 0 10px;">服务条款</a> |
+          <a href="https://bbs.knowhub.cloud/privacy" target="_blank" style="color: #666; text-decoration: none; margin: 0 10px;">隐私政策</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="./jquery-3.7.1.slim.min.js" charset="UTF-8"></script>
+  <script src="./swagger-ui-bundle.js" charset="UTF-8"></script>
+  <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"></script>
+  <script src="./theme-enforcer.js"></script>
+  <script src="./theme-generator.js"></script>
+  <script src="./enhanced-animations.js"></script>
+  <script src="./tag-effects.js"></script>
+  <script src="./tag-banner.js"></script>
+  <script src="./footer.js"></script>
+  <script src="./quick-nav.js"></script>
+  <script src="./search-enhancer.js"></script>
+
+  <script>
+    function closeDiv(element) {
+      element.parentElement.style.display = 'none';
+    }
+
+    function isAdminApi(pathKey) {
+      if (pathKey.startsWith("/admin/")) {
+        return true
+      }
+      return window.xxcaibi.adminUrls[pathKey]
+    }
+
+    const CustomPlugin = function (system) {
+      return {
+        statePlugins: {
+          spec: {
+            actions: {
+              updateQueryParam: (paramName, paramValue, isAdminKey = false) => (state) => {
+                const spec = state.specSelectors.specJson().toJS();
+                const paths = spec.paths;
+
+                Object.keys(paths).forEach(pathKey => {
+                  if (!isAdminKey && isAdminApi(pathKey)) {
+                    // 非 ADMIN_KEY 并且是 ADMIN 接口
+                    return;
+                  }
+                  if (isAdminKey && !isAdminApi(pathKey)) {
+                    // 是 ADMIN_KEY 并且 不是 ADMIN 接口
+                    return;
+                  }
+                  Object.keys(paths[pathKey]).forEach(method => {
+                    const params = paths[pathKey][method].parameters;
+                    params.forEach(param => {
+                      if (param.name === paramName && param.in === 'query') {
+                        param.default = paramValue;
+                      }
+                    });
+                  });
+                });
+
+                state.specActions.updateSpec(JSON.stringify(spec));
+              },
+              updateConfigs: (spec) => (state) => {
+                state.specActions.updateSpec(JSON.stringify(spec));
+              },
+            },
+            wrapActions: {
+              updateSpec: (oriAction, system) => (...args) => {
+                return oriAction(...args)
+              },
+            },
+          },
+        },
+      };
+    };
+
+    // 检查 Swagger-UI 内的 img.opblock-loading-animation 请求体节点是否加载完成
+    function checkSwaggerLoadingComplete(targetFunc) {
+      const targetNode = document.getElementById('swagger-ui');
+      const config = { childList: true, subtree: true };
+      const callback = function (mutationsList, observer) {
+        const loadingElements = targetNode.querySelectorAll('img.opblock-loading-animation');
+        if (loadingElements.length === 0) {
+          console.log('Swagger UI loaded successfully');
+          observer.disconnect(); // 停止观察
+          targetFunc && targetFunc();
+        }
+      };
+      const observer = new MutationObserver(callback);
+
+      setTimeout(function () {
+        $("#swagger-ui").append("&nbsp;")
+      }, 100)
+      observer.observe(targetNode, config); // DOM 节点无变化则不会触发监听
+    }
+
+    // 粘贴到系统剪切板1
+    function copy(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        // navigator.clipboard 只能在 HTTPS 环境使用; 旧版浏览器兼容性不好
+        navigator.clipboard.writeText(text).then(function () {
+        }).catch(function (error) {
+          console.error('Failed to copy text: ', error);
+          fallbackCopy(text);
+        });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    // 粘贴到系统剪切板2
+    function fallbackCopy(text) {
+      // 使用 textarea 标签 可以复制 pre 代码标签里的换行
+      let textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Fallback copy failed: ', err);
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function setQrStatus(element, message, type) {
+      if (!element) return;
+      element.className = 'qr-status' + (type ? (' ' + type) : '');
+      element.textContent = message || '';
+    }
+
+    function ensureQrDetailStyles() {
+      if (document.getElementById('qr-login-detail-style')) return;
+      const style = document.createElement('style');
+      style.id = 'qr-login-detail-style';
+      style.textContent = `
+        .qr-detail { margin-top: 10px; padding: 10px; border: 1px dashed #e5e7eb; border-radius: 8px; background: #fff; text-align: left; }
+        .qr-detail-header { display: flex; align-items: center; }
+        .qr-avatar { width: 48px; height: 48px; border-radius: 6px; margin-right: 10px; border: 1px solid #eee; object-fit: cover; }
+        .qr-nick { font-weight: 600; color: #1f2937; }
+        .qr-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; margin-left: 6px; }
+        .qr-badge.wait { background: #fffbeb; color: #92400e; }
+        .qr-badge.scan { background: #e0f2fe; color: #075985; }
+        .qr-badge.ok { background: #ecfdf5; color: #065f46; }
+        .qr-badge.err { background: #fef2f2; color: #991b1b; }
+        .qr-detail-list { margin-top: 8px; font-size: 12px; color: #4b5563; }
+        .qr-detail-list .row { margin: 2px 0; }
+        .qr-detail-list .label { color: #6b7280; margin-right: 6px; }
+        .qr-raw { margin-top: 10px; background: #f8fafc; border: 1px solid #eef2f7; border-radius: 6px; padding: 8px; font-size: 12px; color: #334155; max-height: 200px; overflow: auto; }
+      `;
+      document.head.appendChild(style);
+    }
+
+    async function checkQrLoginStatus(payload, statusEl, btnEl, detailEl) {
+      try {
+        if (!payload || !payload.key) {
+          setQrStatus(statusEl, '缺少 key，无法检测扫码状态', 'warn');
+          return;
+        }
+        const base = (window.xxcaibi && window.xxcaibi.BASE_URL ? window.xxcaibi.BASE_URL : '').replace(/\/$/, '');
+        const url = base + '/login/CheckLoginStatus?key=' + encodeURIComponent(payload.key);
+        if (btnEl) { btnEl.disabled = true; btnEl.textContent = '检测中...'; }
+        setQrStatus(statusEl, '正在检测扫码状态...', '');
+        const resp = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
+        const text = await resp.text();
+        let json = null;
+        try { json = JSON.parse(text); } catch (_) { json = null; }
+        if (!resp.ok) {
+          setQrStatus(statusEl, '请求失败: ' + resp.status + ' ' + resp.statusText, 'error');
+          return;
+        }
+        if (!json || typeof json !== 'object') {
+          setQrStatus(statusEl, '返回非 JSON 数据: ' + text.slice(0, 300), 'warn');
+          return;
+        }
+        const code = json.Code || json.code;
+        const data = json.Data || json.data || {};
+        const msg = json.Text || json.text || '';
+        // 常见成功条件：Code==200 或 baseResp.ret==0
+        const ret = (data.baseResp && (data.baseResp.ret ?? data.baseResp.code)) ?? (data.ret ?? undefined);
+        const ok = (code == 200) || (ret === 0) || (data.status === 0) || (data.ok === true);
+        const summary = 'Code: ' + code + (ret !== undefined ? (', ret: ' + ret) : '') + (msg ? (', Msg: ' + msg) : '');
+        setQrStatus(statusEl, (ok ? '已登录/已确认。' : '未登录/未确认。') + ' ' + summary, ok ? 'success' : 'warn');
+
+        // 详细信息渲染
+        try {
+          ensureQrDetailStyles();
+          if (detailEl) {
+            const avatar = data.head_img_url || '';
+            const nick = data.nick_name || '';
+            const uuid = data.uuid || data.uuId || '';
+            const state = Number(data.state);
+            const effective = data.effective_time ?? data.expiredTime ?? '';
+            const pushExpire = data.push_login_url_expired_time ?? '';
+            const othersLogin = data.othersInServerLogin;
+            const targetIp = data.tarGetServerIp || '';
+            const unk = data.unknow;
+            const dmsg = data.msg || '';
+            let stateText = '未知状态', badge = 'err';
+            if (state === 0) { stateText = '待扫码'; badge = 'wait'; }
+            else if (state === 1) { stateText = '已扫码待确认'; badge = 'scan'; }
+            else if (state === 2) { stateText = '已确认/已登录'; badge = 'ok'; }
+
+            const headerHtml = `
+              <div class="qr-detail-header">
+                ${avatar ? `<img class="qr-avatar" src="${avatar}" alt="avatar">` : ''}
+                <div>
+                  <div class="qr-nick">${nick || '（未获取昵称）'} ${stateText ? `<span class="qr-badge ${badge}">${stateText}</span>` : ''}</div>
+                  ${uuid ? `<div style="font-size:12px;color:#6b7280;">uuid: ${uuid}</div>` : ''}
+                </div>
+              </div>`;
+
+            const listHtml = `
+              <div class="qr-detail-list">
+                ${typeof effective === 'number' ? `<div class="row"><span class="label">有效期:</span><span>${effective}s</span></div>` : ''}
+                ${typeof pushExpire === 'number' ? `<div class="row"><span class="label">推送登录URL过期:</span><span>${pushExpire}s</span></div>` : ''}
+                ${typeof othersLogin === 'boolean' ? `<div class="row"><span class="label">其他服务已登录:</span><span>${othersLogin ? '是' : '否'}</span></div>` : ''}
+                ${targetIp ? `<div class="row"><span class="label">目标服务器IP:</span><span>${targetIp}</span></div>` : ''}
+                ${typeof unk !== 'undefined' ? `<div class="row"><span class="label">未知标记:</span><span>${unk}</span></div>` : ''}
+                ${dmsg ? `<div class="row"><span class="label">消息:</span><span>${dmsg}</span></div>` : ''}
+              </div>`;
+
+            // 原始 JSON 展示，保证所有字段可见
+            const escapeHtml = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+            const rawHtml = `<pre class="qr-raw">${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
+
+            detailEl.innerHTML = `<div class="qr-detail">${headerHtml}${listHtml}${rawHtml}</div>`;
+          }
+        } catch(_) {}
+      } catch (e) {
+        setQrStatus(statusEl, '检测异常: ' + (e && e.message ? e.message : e), 'error');
+      } finally {
+        if (btnEl) { btnEl.disabled = false; btnEl.textContent = '检测扫码状态'; }
+      }
+    }
+
+    // 样式已写入全局 <style>，此函数保留以兼容旧调用
+    function ensureQrPopupStyles() {}
+
+    function closeQrPopup() {
+      const overlay = document.getElementById('qr-login-overlay');
+      if (overlay) overlay.remove();
+      if (window.qrPopupController && window.qrPopupController.timer) {
+        clearInterval(window.qrPopupController.timer);
+        window.qrPopupController.timer = null;
+      }
+    }
+
+    function openQrPopup(payload) {
+      ensureQrPopupStyles();
+      closeQrPopup();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'qr-login-overlay';
+      overlay.className = 'qr-overlay';
+
+      const modal = document.createElement('div');
+      modal.className = 'qr-modal';
+
+      const header = document.createElement('div');
+      header.className = 'qr-header';
+      const title = document.createElement('div');
+      title.className = 'qr-title';
+      title.textContent = '请使用微信扫描二维码登录';
+      const close = document.createElement('div');
+      close.className = 'qr-close';
+      close.innerHTML = '&times;';
+      close.addEventListener('click', closeQrPopup);
+      header.appendChild(title);
+      header.appendChild(close);
+
+      const body = document.createElement('div');
+      body.className = 'qr-body';
+      const img = document.createElement('img');
+      img.className = 'qr-img';
+      const imgSrc = payload.qrCodeBase64 || payload.qrCodeUrl || (payload.qrLink ? ('https://api.pwmqr.com/qrcode/create/?url=' + encodeURIComponent(payload.qrLink)) : '');
+      img.src = imgSrc || '';
+      img.alt = '登录二维码';
+      body.appendChild(img);
+
+      const meta = document.createElement('div');
+      meta.className = 'qr-meta';
+      const keyRow = document.createElement('div'); keyRow.className = 'qr-meta-row'; keyRow.textContent = 'Key: ' + (payload.key || '');
+      const uuidRow = document.createElement('div'); uuidRow.className = 'qr-meta-row'; uuidRow.textContent = 'UUID: ' + (payload.uuid || '');
+      const device = payload.deviceInfo || {};
+      const deviceRow = document.createElement('div'); deviceRow.className = 'qr-meta-row'; deviceRow.textContent = '设备: ' + [device.deviceBrand, device.deviceName].filter(Boolean).join(' / ');
+      const linkRow = document.createElement('div'); linkRow.className = 'qr-meta-row'; linkRow.textContent = '链接: ' + (payload.qrLink || payload.qrCodeUrl || '');
+      meta.appendChild(keyRow);
+      meta.appendChild(uuidRow);
+      if (device.deviceBrand || device.deviceName) meta.appendChild(deviceRow);
+      if (payload.qrLink || payload.qrCodeUrl) meta.appendChild(linkRow);
+      body.appendChild(meta);
+
+      const statusEl = document.createElement('div');
+      statusEl.className = 'qr-status';
+      statusEl.textContent = '';
+      body.appendChild(statusEl);
+      const detailEl = document.createElement('div');
+      body.appendChild(detailEl);
+
+      const footer = document.createElement('div');
+      footer.className = 'qr-footer';
+      const countdown = document.createElement('div');
+      countdown.className = 'qr-countdown';
+      countdown.textContent = '二维码有效期: ' + (payload.expiredTime || 0) + 's';
+
+      const btns = document.createElement('div');
+      const checkBtn = document.createElement('button');
+      checkBtn.className = 'qr-btn qr-btn-primary';
+      checkBtn.textContent = '检测扫码状态';
+      checkBtn.addEventListener('click', function() { checkQrLoginStatus(payload, statusEl, checkBtn, detailEl); });
+
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'qr-btn qr-btn-secondary';
+      copyBtn.textContent = '复制链接';
+      copyBtn.addEventListener('click', function() {
+        const text = payload.qrLink || payload.qrCodeUrl || '';
+        if (!text) return;
+        try { copy(text); } catch (e) { console.warn(e); }
+      });
+
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'qr-btn';
+      closeBtn.textContent = '关闭';
+      closeBtn.addEventListener('click', closeQrPopup);
+
+      btns.appendChild(checkBtn);
+      btns.appendChild(copyBtn);
+      btns.appendChild(closeBtn);
+
+      footer.appendChild(countdown);
+      footer.appendChild(btns);
+
+      modal.appendChild(header);
+      modal.appendChild(body);
+      modal.appendChild(footer);
+      overlay.appendChild(modal);
+
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closeQrPopup();
+      });
+
+      document.body.appendChild(overlay);
+
+      if (!window.qrPopupController) window.qrPopupController = { timer: null };
+      if (window.qrPopupController.timer) clearInterval(window.qrPopupController.timer);
+      let remaining = Number(payload.expiredTime || 0);
+      if (remaining > 0) {
+        window.qrPopupController.timer = setInterval(function() {
+          remaining -= 1;
+          if (remaining <= 0) {
+            countdown.textContent = '二维码已过期，请重新获取';
+            clearInterval(window.qrPopupController.timer);
+            window.qrPopupController.timer = null;
+            return;
+          }
+          countdown.textContent = '二维码有效期: ' + remaining + 's';
+        }, 1000);
+      } else {
+        countdown.textContent = '';
+      }
+    }
+
+    // 复制 API 的路径即描述
+    function addCopy1(selector) {
+      let pathElements;
+      // opblock-summary-path opblock-summary-description
+      if (selector) {
+        pathElements = $(selector).parent().find(".opblock-summary-description");
+      } else {
+        pathElements = $(".opblock-summary-description");
+        addCopy2();
+      }
+      if (pathElements.length === 0) {
+        return;
+      }
+      console.log("API数量:", pathElements.length);
+
+      $(".opblock-summary-post").click(function () {
+        let status = $(this).children().first().attr("aria-expanded");
+        if (status === "true") {
+          return;
+        }
+        let curId = $(this).parent().attr("id");
+        // console.log(curId, status);
+        setTimeout(function () {
+          addCopy2(`#${curId}`);
+        }, 100);
+      });
+
+      pathElements.each(function (index, pathElement) {
+        pathElement = $(pathElement);
+        let isCopy = pathElement.attr("copy");
+        if (isCopy === "true") { // 已经添加过 copy 按钮
+          return;
+        }
+        pathElement.after(
+          $("<button>复制</button>").css("cursor", "pointer").css("color", "#FFF").css("background", "#2b85e4").css("border-color", "#2b85e4").css("padding", "4px 8px").css("border-radius", "4px").css("margin-right", "10px").click(function () {
+            // 获取接口文本
+            let api = this.parentNode.children[1].dataset.path;
+            let desc = this.parentNode.children[2].textContent;
+            let text = api + " " + desc;
+            if (window.xxcaibi.copy) {
+              text = window.xxcaibi.BASE_URL + text;
+            }
+            // console.log(api, desc)
+            // 调用函数，复制到剪切板
+            text = text.replace(/([^:])\/+/g, '$1/')
+            copy(text);
+            // 提示复制成功
+            $(this).text("复制成功！");
+            // 定时改变显示文字
+            setTimeout(() => {
+              $(this).text("复制");
+            }, 500);
+            return false;
+          })
+        );
+        pathElement.attr("copy", "true");
+      });
+    }
+
+    // 复制 POST 请求的 JSON 请求体
+    function addCopy2(selector) {
+      if (!selector) {
+        selector = "#swagger-ui"
+      }
+      let lis = $(selector + ' li[role="presentation"]');
+      if (lis.length < 2) {
+        return;
+      }
+
+      lis.each(function (index, element) {
+        if (index % 2 === 0) {
+          return;
+        }
+        element = $(element);
+        let isCopy = element.attr("copy");
+        if (isCopy === "true") { // 已经添加过 copy 按钮
+          return;
+        }
+        element.after(
+          $("<button>复制</button>").css("cursor", "pointer").css("color", "#FFF").css("background", "#515a6e").css("border-color", "#17233d").css("padding", "4px 10px").css("border-radius", "4px").css("margin-right", "10px").click(function () {
+            // 获取接口文本
+            let preTag = $(selector + " .highlight-code pre")[0];
+            if (!preTag) {
+              alert("无法复制");
+              return;
+            }
+            let text = preTag.textContent;
+            // 调用函数，复制到剪切板
+            copy(text);
+            // 提示复制成功
+            $(this).text("复制成功！");
+            // 定时改变显示文字
+            setTimeout(() => {
+              $(this).text("复制");
+            }, 500);
+          })
+        );
+        element.attr("copy", "true");
+      });
+    }
+
+    window.onload = function () {
+      // Initialize Swagger UI
+      const ui = SwaggerUIBundle({
+        url: "swagger.json",
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl,
+          CustomPlugin,
+        ],
+        docExpansion: "list",  // 修改为list，展开所有操作
+        defaultModelsExpandDepth: 1, // 展开Models到第一级
+        displayRequestDuration: true, // 显示请求耗时
+        filter: false, // 禁用过滤功能，显示所有端点
+        persistAuthorization: true, // 持久化授权信息
+        syntaxHighlight: {
+          activated: true,
+          theme: "agate" // 固定使用 agate 主题
+        },
+        defaultModelRendering: "model", // 模型渲染方式
+        showExtensions: true, // 显示扩展
+        showCommonExtensions: true, // 显示通用扩展
+        layout: "StandaloneLayout", // 使用独立布局
+        withCredentials: false, // 禁用凭证
+        tryItOutEnabled: true, // 启用试用功能
+        displayOperationId: true, // 显示操作 ID
+        showMutatedRequest: true, // 显示修改后的请求
+        defaultTheme: "normal", // 默认使用普通主题，不使用暗黑主题
+        disableTopbar: true, // 禁用顶部导航栏
+        disableThemeSwitcher: true, // 禁用主题切换功能
+        showTitle: false, // 不显示标题
+        maxDisplayedTags: null, // 不限制显示的标签数量
+        supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'], // 支持所有方法
+        validatorUrl: null, // 禁用验证器
+        requestInterceptor: function(req) {
+          try {
+            if (!req || !req.url) return req;
+            var urlObj;
+            try { urlObj = new URL(req.url, window.location.origin); } catch (e) { return req; }
+            // 已包含 key 则不处理
+            if (urlObj.searchParams.has('key')) return req;
+            var pathName = urlObj.pathname || '';
+            var isAdmin = false;
+            try {
+              if (typeof isAdminApi === 'function') {
+                isAdmin = !!isAdminApi(pathName);
+              } else {
+                isAdmin = /^\/admin\//i.test(pathName);
+              }
+            } catch (_) {}
+            var tokenKey = (window.xxcaibi && window.xxcaibi.TOKEN_KEY) || '';
+            var adminKey = (window.xxcaibi && window.xxcaibi.ADMIN_KEY) || '';
+            var useKey = isAdmin ? (adminKey || tokenKey) : tokenKey;
+            if (useKey) {
+              urlObj.searchParams.set('key', useKey);
+              req.url = urlObj.toString();
+            }
+          } catch (_) {}
+          return req;
+        },
+        responseInterceptor: function(res) {
+          try {
+            const url = (res && (res.url || (res.config && res.config.url))) || '';
+            const isQrNew = /\/login\/GetLoginQrCodeNew(\b|\/|\?|$)/i.test(url) || /\/login\/GetLoginQrCodeNewX(\b|\/|\?|$)/i.test(url);
+            const isShowQr = /\/login\/ShowQrCode(\b|\/|\?|$)/i.test(url);
+            if (isShowQr) {
+              // 处理返回 HTML，解析出二维码图片地址
+              let body = res && (res.data || res.text || res.body);
+              if (body && typeof body === 'string') {
+                try {
+                  const parser = new DOMParser();
+                  const doc = parser.parseFromString(body, 'text/html');
+                  const imgEl = doc.querySelector('#aa img') || doc.querySelector('img');
+                  if (imgEl && imgEl.getAttribute('src')) {
+                    let src = imgEl.getAttribute('src');
+                    if (!/^https?:\/\//i.test(src) && !/^data:/i.test(src)) {
+                      const base = (window.xxcaibi && window.xxcaibi.BASE_URL ? window.xxcaibi.BASE_URL : '').replace(/\/$/, '');
+                      if (!src.startsWith('/')) src = '/' + src;
+                      src = base + src;
+                    }
+                    let key;
+                    try { key = (new URL(url, window.location.origin)).searchParams.get('key') || undefined; } catch(_) {
+                      const m = url && url.match(/[?&]key=([^&#]+)/i); key = m ? decodeURIComponent(m[1]) : undefined;
+                    }
+                    openQrPopup({ qrCodeUrl: src, expiredTime: 0, deviceInfo: {}, key: key });
+                  }
+                } catch (e) {
+                  console.warn('ShowQrCode HTML 解析失败:', e);
+                }
+              }
+              return res;
+            }
+            if (isQrNew) {
+              let body = res && (res.data || res.text || res.body);
+              if (body && typeof body === 'string') {
+                try { body = JSON.parse(body); } catch (e) { body = null; }
+              }
+              if (!body || typeof body !== 'object') return res;
+              const data = body.Data || body.data || {};
+              const payload = {
+                code: body.Code || body.code,
+                text: body.Text || body.text,
+                key: data.Key || data.key,
+                uuid: data.uuid || data.UUID,
+                qrLink: data.QrLink || data.qrLink,
+                qrCodeUrl: data.QrCodeUrl || data.qrCodeUrl,
+                qrCodeBase64: data.qrCodeBase64,
+                expiredTime: data.expiredTime || data.expireSeconds || 0,
+                deviceInfo: data.deviceInfo || {}
+              };
+              const hasImg = payload.qrCodeBase64 || payload.qrCodeUrl || payload.qrLink;
+              if (hasImg) {
+                openQrPopup(payload);
+              }
+              return res;
+            }
+            // 通用二维码响应识别（适配所有带二维码的接口）
+            try {
+              let body = res && (res.data || res.text || res.body);
+              // 1) 直接为 data:image/png;base64,... 的字符串
+              if (body && typeof body === 'string' && /^data:image\/(png|jpeg);base64,/i.test(body.trim())) {
+                openQrPopup({ qrCodeBase64: body.trim(), expiredTime: 0, deviceInfo: {} });
+                return res;
+              }
+              // 2) JSON 格式包含典型二维码字段
+              let json = body;
+              if (body && typeof body === 'string') {
+                try { json = JSON.parse(body); } catch (_) { json = null; }
+              }
+              if (json && typeof json === 'object') {
+                const container = json.Data || json.data || json;
+                if (container && typeof container === 'object') {
+                  const payload = {
+                    key: container.Key || container.key,
+                    uuid: container.uuid || container.UUID,
+                    qrLink: container.QrLink || container.qrLink,
+                    qrCodeUrl: container.QrCodeUrl || container.qrCodeUrl,
+                    qrCodeBase64: container.qrCodeBase64,
+                    expiredTime: container.expiredTime || container.expireSeconds || 0,
+                    deviceInfo: container.deviceInfo || {},
+                  };
+                  if (payload.qrCodeBase64 || payload.qrCodeUrl || payload.qrLink) {
+                    openQrPopup(payload);
+                    return res;
+                  }
+                }
+              }
+              // 3) HTML 中包含明显二维码 img（/qrcode/ 或 weixin 链接 或 pwmqr）
+              if (body && typeof body === 'string' && /<html[\s\S]*<img[\s\S]*>/i.test(body)) {
+                try {
+                  const parser = new DOMParser();
+                  const doc = parser.parseFromString(body, 'text/html');
+                  const img = Array.from(doc.querySelectorAll('img')).find(img => {
+                    const s = (img.getAttribute('src') || '').toLowerCase();
+                    return s.includes('/qrcode/') || s.includes('weixin.qq.com/x/') || s.includes('pwmqr.com/qrcode');
+                  });
+                  if (img) {
+                    let src = img.getAttribute('src');
+                    if (!/^https?:\/\//i.test(src) && !/^data:/i.test(src)) {
+                      const base = (window.xxcaibi && window.xxcaibi.BASE_URL ? window.xxcaibi.BASE_URL : '').replace(/\/$/, '');
+                      if (!src.startsWith('/')) src = '/' + src;
+                      src = base + src;
+                    }
+                    openQrPopup({ qrCodeUrl: src, expiredTime: 0, deviceInfo: {} });
+                    return res;
+                  }
+                } catch (_) {}
+              }
+            } catch (err) {
+              // 忽略通用识别异常，避免影响其他响应
+            }
+          } catch (e) {
+            console.warn('QR popup interceptor error:', e);
+          }
+          return res;
+        },
+        onComplete: function () {
+          // Swagger-UI 渲染完成后回调; updateSpec 成功也会调用
+          // 但是如果数据太多会导致部分 HTML 元素在此时还未加载完成
+          console.log("Swagger UI onComplete...")
+          console.log("Swagger UI Version:", window.versions.swaggerUi.version)
+          parseBaseUrl();
+          addXXCaiBi();
+          
+          // 隐藏不需要的元素
+          hideUnwantedElements();
+          
+          // 优化布局和样式
+          enhanceLayout();
+          
+          checkSwaggerLoadingComplete(function () {
+            addCopy1();
+            addCopy2();
+
+            // Operations API 接口的点击事件
+            $(".opblock-tag").click(function () {
+              checkSwaggerLoadingComplete(function () {
+                addCopy1();
+                addCopy2();
+              });
+            });
+          });
+        },
+      });
+      window.ui = ui;
+      
+      // 隐藏不需要的元素
+      function hideUnwantedElements() {
+        // 隐藏 swagger.json 显示
+        $('.download-url-wrapper').hide();
+        $('.scheme-container').hide();
+        
+        // 隐藏主题选择器相关元素
+        $('.topbar').hide();
+        $('.scheme-container .schemes-wrapper').hide();
+        $('.select-label').hide();
+        
+        // 移除不必要的模型显示
+        setTimeout(() => {
+          $('.models').hide();
+          
+          // 再次确保主题选择器被隐藏（防止动态加载）
+          $('.topbar').hide();
+          $('.scheme-container .schemes-wrapper').hide();
+          $('.select-label').hide();
+        }, 500);
+        
+        // 添加额外的 CSS 样式确保隐藏
+        const style = document.createElement('style');
+        style.textContent = `
+          .swagger-ui .topbar,
+          .swagger-ui .scheme-container .schemes-wrapper,
+          .swagger-ui .select-label[data-name="themes"],
+          .swagger-ui .select-label[data-name="theme"] {
+            display: none !important;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+      
+      // 增强布局和样式
+      function enhanceLayout() {
+        // 重新组织信息区域
+        setTimeout(() => {
+          // 为版本号添加样式
+          $('.info .title small').addClass('version-stamp');
+          
+          // 添加页脚
+          if (!$('.swagger-ui .footer').length) {
+            $('#swagger-ui').append(
+              `<div class="footer">
+              </div>`
+            );
+          }
+        }, 500);
+      }
+
+      window.xxcaibi = {
+        "BASE_URL": "",
+        "copy": true,
+
+        "ADMIN_KEY": "",
+        "TOKEN_KEY": "",
+
+        "adminUrls": {
+          "/login/GenAuthKey": true,
+          "/login/GenAuthKey2": true,
+        },
+      }
+
+      // 监听状态变化
+      $('#copy-base-url').change(function () {
+        window.xxcaibi.copy = $(this).is(':checked');
+        // console.log(window.xxcaibi);
+      });
+      $('#admin-key').change(function () {
+        window.xxcaibi.ADMIN_KEY = $(this).val().trim();
+        // console.log(window.xxcaibi);
+
+        ui.specActions.updateQueryParam("key", window.xxcaibi.ADMIN_KEY, true);
+        // 若清空 ADMIN_KEY，则用 TOKEN_KEY 回填 admin 接口
+        if (!window.xxcaibi.ADMIN_KEY && window.xxcaibi.TOKEN_KEY) {
+          ui.specActions.updateQueryParam("key", window.xxcaibi.TOKEN_KEY, true);
+        }
+      });
+      $('#token-key').change(function () {
+        window.xxcaibi.TOKEN_KEY = $(this).val().trim();
+        // console.log(window.xxcaibi);
+        if (window.xxcaibi.TOKEN_KEY) {
+          document.getElementById('urlInput').value = window.location.origin.replace(/^http/, 'ws') + '/ws/GetSyncMsg?key=' + window.xxcaibi.TOKEN_KEY
+        }
+
+        ui.specActions.updateQueryParam("key", window.xxcaibi.TOKEN_KEY);
+        // 同步填充 admin 接口（当未设置 ADMIN_KEY 时）
+        if (!window.xxcaibi.ADMIN_KEY) {
+          ui.specActions.updateQueryParam("key", window.xxcaibi.TOKEN_KEY, true);
+        }
+      });
+      $('.radio-group input[type="radio"]').change(function () {
+        let value = $(this).val();
+        let configs = ui.getConfigs();
+        configs.docExpansion = value
+
+        // // 更新整个 UI 数据; 会刷新 UI 导致 onComplete 回调
+        // const spec = ui.specSelectors.specJson().toJS();
+        // ui.specActions.updateConfigs(spec);
+
+        // 只更新配置; 不会刷新 UI 导致 onComplete 回调
+        ui.configsActions.toggle();
+        checkSwaggerLoadingComplete(function () {
+          addCopy1();
+          addCopy2();
+
+          // Operations API 接口的点击事件
+          $(".opblock-tag").click(function () {
+            checkSwaggerLoadingComplete(function () {
+              addCopy1();
+              addCopy2();
+            });
+          });
+        }); // DOM 节点无变化不会触发监听
+      });
+
+      let parseBaseUrl = function () {
+        let config = window.ui.specSelectors.specJson().toJS(); // 获取 spec 对象
+        let basePath = config.basePath || ''; // 获取 basePath
+        basePath = "" ? basePath === "/" : basePath;
+
+        // 获取当前网址的协议、域名和端口
+        let protocol = window.location.protocol;
+        let hostname = window.location.hostname;
+        let port = window.location.port;
+
+        // 组合协议、域名和端口
+        const baseUrl = protocol + "//" + hostname + (port ? ":" + port : "") + basePath;
+
+        // 显示结果
+        console.log("BASE_URL:", baseUrl);
+        window.xxcaibi.BASE_URL = baseUrl;
+      }
+
+      let addXXCaiBi = function () {
+        $("#xxcaibi").insertAfter('.information-container:first').css('display', 'block');
+        // 判断 tg-link 不存在
+        if (!document.getElementsByClassName("tg-link").length) {
+          $(".info__contact").append(
+            '<div class="tg-link">' +
+            '<a href="https://t.me/+LK0JuqLxjmk0ZjRh" target="_blank" class="tg-button">' +
+            '<img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Logo" class="tg-icon">' +
+            '加入 Telegram 群' +
+            '</a>' +
+            '</div>'
+          );
+        }
+
+        $("#BASE_URL").html("BASE_URL: " + window.xxcaibi.BASE_URL);
+
+      }
+
+    };
+    
+    // 添加点击事件，显示验证码接口
+    document.addEventListener('DOMContentLoaded', function() {
+      const button = document.getElementById('showVerificationBtn');
+      if (button) {
+        button.addEventListener('click', function() {
+          // 在swagger UI中创建一个自定义的验证码接口卡片
+          const loginSection = document.querySelector('.opblock-tag[data-tag="login"]');
+          if (loginSection) {
+            // 先尝试展开登录部分
+            loginSection.click();
+            
+            setTimeout(() => {
+              // 检查是否已存在该接口卡片
+              if (!document.getElementById('custom-verification-api')) {
+                // 获取登录区域
+                const loginContent = loginSection.nextElementSibling;
+                if (loginContent) {
+                  // 创建验证码接口卡片
+                  const apiCard = document.createElement('div');
+                  apiCard.id = 'custom-verification-api';
+                  apiCard.className = 'opblock opblock-post';
+                  apiCard.style.marginBottom = '15px';
+                  
+                  apiCard.innerHTML = `
+                    <div class="opblock-summary opblock-summary-post">
+                      <span class="opblock-summary-method" style="background-color: #49cc90;">POST</span>
+                      <span class="opblock-summary-path">
+                        <a><span>/login/YPayVerificationcode</span></a>
+                      </span>
+                      <div class="opblock-summary-description">提交登录验证码</div>
+                      <button style="margin-left: 10px; padding: 4px 8px; background: #2b85e4; color: #FFF; border-color: #2b85e4; border-radius: 4px; cursor: pointer;">复制</button>
+                    </div>
+                    <div class="opblock-body" style="display: none;">
+                      <div class="opblock-section">
+                        <div class="opblock-section-header">
+                          <div class="tab-header">
+                            <div class="tab-item active">
+                              <h4>参数</h4>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="parameters-container">
+                          <div class="table-container">
+                            <table>
+                              <thead>
+                                <tr>
+                                  <th>名称</th>
+                                  <th>位置</th>
+                                  <th>类型</th>
+                                  <th>必填</th>
+                                  <th>描述</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td>key</td>
+                                  <td>query</td>
+                                  <td>string</td>
+                                  <td>是</td>
+                                  <td>授权密钥</td>
+                                </tr>
+                                <tr>
+                                  <td>body</td>
+                                  <td>body</td>
+                                  <td>object</td>
+                                  <td>是</td>
+                                  <td>验证码参数</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="opblock-section">
+                        <div class="opblock-section-header">
+                          <h4>请求体示例</h4>
+                        </div>
+                        <div class="opblock-description-wrapper">
+                          <div class="opblock-description">
+                            <pre style="background: #f0f0f0; padding: 10px; border-radius: 4px;">{
+  "code": "123456"  // 用户输入的验证码，通常是6位数字
+}</pre>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                  
+                  // 插入到登录部分
+                  loginContent.appendChild(apiCard);
+                  
+                  // 添加点击事件，展开/折叠API详情
+                  const summarySection = apiCard.querySelector('.opblock-summary');
+                  const bodySection = apiCard.querySelector('.opblock-body');
+                  
+                  summarySection.addEventListener('click', function(e) {
+                    if (e.target.tagName !== 'BUTTON') {
+                      bodySection.style.display = bodySection.style.display === 'none' ? 'block' : 'none';
+                    }
+                  });
+                  
+                  // 复制按钮点击事件
+                  const copyButton = apiCard.querySelector('button');
+                  copyButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const text = '/login/YPayVerificationcode 提交登录验证码';
+                    navigator.clipboard.writeText(text).then(function() {
+                      copyButton.textContent = '复制成功！';
+                      setTimeout(() => {
+                        copyButton.textContent = '复制';
+                      }, 1000);
+                    });
+                  });
+                  
+                  // 滚动到该元素
+                  apiCard.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }
+              } else {
+                // 如果已存在，则滚动到该元素
+                document.getElementById('custom-verification-api').scrollIntoView({behavior: 'smooth', block: 'center'});
+              }
+            }, 500);
+          } else {
+            alert('未找到登录部分，请确保Swagger UI已正确加载');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

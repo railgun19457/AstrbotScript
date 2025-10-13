@@ -1,0 +1,201 @@
+/* WeChatPadPro-861 标签头部自定义背景样式 */
+
+/* 通用标签头部样式 */
+.swagger-ui .opblock-tag-section {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+/* 标签头部容器 */
+.swagger-ui .opblock-tag-container {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* 标签头部背景 */
+.swagger-ui .opblock-tag {
+  position: relative;
+  z-index: 2;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-left: none !important;
+  padding: 20px !important;
+  margin: 0 !important;
+  overflow: visible !important;
+}
+
+/* 标签头部背景装饰 */
+.swagger-ui .opblock-tag-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 1;
+}
+
+/* 标签头部背景图案 */
+.swagger-ui .opblock-tag-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: contain;
+  opacity: 0.1;
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* 标签头部悬停效果 */
+.swagger-ui .opblock-tag-container:hover::after {
+  opacity: 0.2;
+}
+
+/* 标签名称样式 */
+.swagger-ui .opblock-tag span {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+/* 标签图标 */
+.swagger-ui .opblock-tag span::before {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+/* 标签描述 */
+.swagger-ui .opblock-tag .tag-description {
+  margin-left: 10px;
+  font-size: 14px;
+  color: #7f8c8d;
+  font-weight: normal;
+}
+
+/* 为不同的标签设置不同的背景图案和图标 */
+
+/* Favor - 收藏模块 */
+.swagger-ui .opblock-tag[data-tag="favor"] span::before,
+.swagger-ui .opblock-tag[data-tag="收藏"] span::before {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGU0NGFkIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE5IDIxbC03LTUtNyA1VjVhMiAyIDAgMCAxIDItMmgxMGEyIDIgMCAwIDEgMiAyeiI+PC9wYXRoPjwvc3ZnPg==');
+}
+
+.swagger-ui .opblock-tag-container[data-tag="favor"]::after,
+.swagger-ui .opblock-tag-container[data-tag="收藏"]::after {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGU0NGFkIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE5IDIxbC03LTUtNyA1VjVhMiAyIDAgMCAxIDItMmgxMGEyIDIgMCAwIDEgMiAyeiI+PC9wYXRoPjwvc3ZnPg==');
+}
+
+.swagger-ui .opblock-tag-container[data-tag="favor"]::before,
+.swagger-ui .opblock-tag-container[data-tag="收藏"]::before {
+  background-color: rgba(142, 68, 173, 0.05);
+  border-left: 4px solid #8e44ad;
+}
+
+/* Finder - 视频号模块 */
+.swagger-ui .opblock-tag[data-tag="finder"] span::before,
+.swagger-ui .opblock-tag[data-tag="视频号"] span::before {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjk4MGI5IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBvbHlnb24gcG9pbnRzPSIyMyA3IDIzIDE3IDEgMTcgMSA3Ij48L3BvbHlnb24+PHBvbHlsaW5lIHBvaW50cz0iOCA1IDEyIDkgMTYgNSI+PC9wb2x5bGluZT48bGluZSB4MT0iOCIgeTE9IjE5IiB4Mj0iOCIgeTI9IjIxIj48L2xpbmU+PGxpbmUgeDE9IjE2IiB5MT0iMTkiIHgyPSIxNiIgeTI9IjIxIj48L2xpbmU+PGxpbmUgeDE9IjEyIiB5MT0iMTkiIHgyPSIxMiIgeTI9IjIxIj48L2xpbmU+PC9zdmc+');
+}
+
+.swagger-ui .opblock-tag-container[data-tag="finder"]::after,
+.swagger-ui .opblock-tag-container[data-tag="视频号"]::after {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjk4MGI5IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBvbHlnb24gcG9pbnRzPSIyMyA3IDIzIDE3IDEgMTcgMSA3Ij48L3BvbHlnb24+PHBvbHlsaW5lIHBvaW50cz0iOCA1IDEyIDkgMTYgNSI+PC9wb2x5bGluZT48bGluZSB4MT0iOCIgeTE9IjE5IiB4Mj0iOCIgeTI9IjIxIj48L2xpbmU+PGxpbmUgeDE9IjE2IiB5MT0iMTkiIHgyPSIxNiIgeTI9IjIxIj48L2xpbmU+PGxpbmUgeDE9IjEyIiB5MT0iMTkiIHgyPSIxMiIgeTI9IjIxIj48L2xpbmU+PC9zdmc+');
+}
+
+.swagger-ui .opblock-tag-container[data-tag="finder"]::before,
+.swagger-ui .opblock-tag-container[data-tag="视频号"]::before {
+  background-color: rgba(41, 128, 185, 0.05);
+  border-left: 4px solid #2980b9;
+}
+
+/* Friend - 朋友模块 */
+.swagger-ui .opblock-tag[data-tag="friend"] span::before,
+.swagger-ui .opblock-tag[data-tag="朋友"] span::before {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTZhMDg1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIwIDIxdi0yYTQgNCAwIDAgMC00LTRINGE0IDQgMCAwIDAtNCA0djIiPjwvcGF0aD48Y2lyY2xlIGN4PSI4LjUiIGN5PSI3IiByPSI0Ij48L2NpcmNsZT48bGluZSB4MT0iMTgiIHkxPSI4IiB4Mj0iMjMiIHkyPSIxMyI+PC9saW5lPjxsaW5lIHgxPSIyMyIgeTE9IjgiIHgyPSIxOCIgeTI9IjEzIj48L2xpbmU+PC9zdmc+');
+}
+
+.swagger-ui .opblock-tag-container[data-tag="friend"]::after,
+.swagger-ui .opblock-tag-container[data-tag="朋友"]::after {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTZhMDg1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIwIDIxdi0yYTQgNCAwIDAgMC00LTRINGE0IDQgMCAwIDAtNCA0djIiPjwvcGF0aD48Y2lyY2xlIGN4PSI4LjUiIGN5PSI3IiByPSI0Ij48L2NpcmNsZT48bGluZSB4MT0iMTgiIHkxPSI4IiB4Mj0iMjMiIHkyPSIxMyI+PC9saW5lPjxsaW5lIHgxPSIyMyIgeTE9IjgiIHgyPSIxOCIgeTI9IjEzIj48L2xpbmU+PC9zdmc+');
+}
+
+.swagger-ui .opblock-tag-container[data-tag="friend"]::before,
+.swagger-ui .opblock-tag-container[data-tag="朋友"]::before {
+  background-color: rgba(22, 160, 133, 0.05);
+  border-left: 4px solid #16a085;
+}
+
+/* FriendCircle - 朋友圈模块 */
+.swagger-ui .opblock-tag[data-tag="friendcircle"] span::before,
+.swagger-ui .opblock-tag[data-tag="朋友圈"] span::before {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjdhZTYwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE3IDIxdi0yYTQgNCAwIDAgMC00LTRIN2E0IDQgMCAwIDAtNCA0djIiPjwvcGF0aD48Y2lyY2xlIGN4PSI5IiBjeT0iNyIgcj0iNCIgLz48cGF0aCBkPSJNMjMgMjF2LTJhNCA0IDAgMCAwLTMtMy44NyIgLz48cGF0aCBkPSJNMTYgMy4xM2E0IDQgMCAwIDEgMCA3Ljc1IiAvPjwvc3ZnPg==');
+}
+
+.swagger-ui .opblock-tag-container[data-tag="friendcircle"]::after,
+.swagger-ui .opblock-tag-container[data-tag="朋友圈"]::after {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjdhZTYwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE3IDIxdi0yYTQgNCAwIDAgMC00LTRIN2E0IDQgMCAwIDAtNCA0djIiPjwvcGF0aD48Y2lyY2xlIGN4PSI5IiBjeT0iNyIgcj0iNCIgLz48cGF0aCBkPSJNMjMgMjF2LTJhNCA0IDAgMCAwLTMtMy44NyIgLz48cGF0aCBkPSJNMTYgMy4xM2E0IDQgMCAwIDEgMCA3Ljc1IiAvPjwvc3ZnPg==');
+}
+
+.swagger-ui .opblock-tag-container[data-tag="friendcircle"]::before,
+.swagger-ui .opblock-tag-container[data-tag="朋友圈"]::before {
+  background-color: rgba(39, 174, 96, 0.05);
+  border-left: 4px solid #27ae60;
+}
+
+/* Group - 群组模块 */
+.swagger-ui .opblock-tag[data-tag="group"] span::before,
+.swagger-ui .opblock-tag[data-tag="群组"] span::before {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjM5YzEyIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE3IDIxdi0yYTQgNCAwIDAgMC00LTRIN2E0IDQgMCAwIDAtNCA0djIiPjwvcGF0aD48Y2lyY2xlIGN4PSI5IiBjeT0iNyIgcj0iNCIgLz48cGF0aCBkPSJNMjMgMjF2LTJhNCA0IDAgMCAwLTMtMy44NyIgLz48cGF0aCBkPSJNMTYgMy4xM2E0IDQgMCAwIDEgMCA3Ljc1IiAvPjwvc3ZnPg==');
+}
+
+.swagger-ui .opblock-tag-container[data-tag="group"]::after,
+.swagger-ui .opblock-tag-container[data-tag="群组"]::after {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjM5YzEyIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE3IDIxdi0yYTQgNCAwIDAgMC00LTRIN2E0IDQgMCAwIDAtNCA0djIiPjwvcGF0aD48Y2lyY2xlIGN4PSI5IiBjeT0iNyIgcj0iNCIgLz48cGF0aCBkPSJNMjMgMjF2LTJhNCA0IDAgMCAwLTMtMy44NyIgLz48cGF0aCBkPSJNMTYgMy4xM2E0IDQgMCAwIDEgMCA3Ljc1IiAvPjwvc3ZnPg==');
+}
+
+.swagger-ui .opblock-tag-container[data-tag="group"]::before,
+.swagger-ui .opblock-tag-container[data-tag="群组"]::before {
+  background-color: rgba(243, 156, 18, 0.05);
+  border-left: 4px solid #f39c12;
+}
+
+/* 其他标签样式... 可以继续添加更多标签的自定义样式 */
+
+/* Admin - 管理模块 */
+.swagger-ui .opblock-tag[data-tag="admin"] span::before,
+.swagger-ui .opblock-tag[data-tag="管理"] span::before {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTc0YzNjIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE3IDIxdi0yYTQgNCAwIDAgMC00LTRIN2E0IDQgMCAwIDAtNCA0djIiPjwvcGF0aD48Y2lyY2xlIGN4PSI5IiBjeT0iNyIgcj0iNCIgLz48cGF0aCBkPSJNMjMgMjF2LTJhNCA0IDAgMCAwLTMtMy44NyIgLz48cGF0aCBkPSJNMTYgMy4xM2E0IDQgMCAwIDEgMCA3Ljc1IiAvPjwvc3ZnPg==');
+}
+
+/* 标签展开/折叠动画 */
+.swagger-ui .opblock-tag-section .opblock-tag + .no-margin {
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  overflow: hidden;
+}
+
+.swagger-ui .opblock-tag[aria-expanded="false"] + .no-margin {
+  max-height: 0;
+  opacity: 0;
+}
+
+.swagger-ui .opblock-tag[aria-expanded="true"] + .no-margin {
+  max-height: 2000px; /* 足够大的值以确保内容可以完全展开 */
+  opacity: 1;
+} 
