@@ -19,6 +19,9 @@
 3. 运行一键部署脚本：
    ```bash
    sudo ./AstrBot.sh
+   #或者使用
+   #sudo bash ./AstrBot.sh
+   #使用该命令可以略过第二部赋权
    ```
 4. 按提示选择要部署的组件（可多选）：
    - AstrBot

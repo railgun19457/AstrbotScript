@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# 项目地址 https://github.com/railgun19457/AstrbotScript
 set -e
 
 # 颜色输出
@@ -57,10 +57,8 @@ case $choice in
     docker compose -f ./astrbot.yml up -d
     echo -e "${GREEN}正在部署 WeChatPadPro...${NC}"
     check_dir ./WeChatPadPro
-    check_dir ./WeChatPadPro/mysql/data
-    check_dir ./WeChatPadPro/redis/data
-    check_dir ./WeChatPadPro/redis/conf
-    check_permission ./WeChatPadPro/redis/conf
+    check_dir ./WeChatPadPro/mysql
+    check_dir ./WeChatPadPro/redis
     docker compose -f ./WeChatPadPro/wechat.yml up -d
     ;;
   3)
@@ -73,10 +71,8 @@ case $choice in
     docker compose -f ./napcat/napcat.yml up -d
     echo -e "${GREEN}正在部署 WeChatPadPro...${NC}"
     check_dir ./WeChatPadPro
-    check_dir ./WeChatPadPro/mysql/data
-    check_dir ./WeChatPadPro/redis/data
-    check_dir ./WeChatPadPro/redis/conf
-    check_permission ./WeChatPadPro/redis/conf
+    check_dir ./WeChatPadPro/mysql
+    check_dir ./WeChatPadPro/redis
     docker compose -f ./WeChatPadPro/wechat.yml up -d
     ;;
   *)
