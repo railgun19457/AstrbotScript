@@ -8,9 +8,8 @@ services:
     ports:
       - "6185:6185"
     volumes:
-      - ./data:/AstrBot/data
-      - ./napcat/napcat/config:/app/napcat/config
-      - ./napcat/ntqq:/app/.config/QQ
+      - ./AstrBot/data:/AstrBot/data
+      - ./NapCat/ntqq:/app/.config/QQ
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - astrbot
