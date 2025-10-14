@@ -59,19 +59,19 @@
   - 反向 Websocket 主机地址: `0.0.0.0`或 `astrbot`
   - 反向 Websocket 端口: `6199`
   - 反向 Websocket Token: 与NapCat中一致
-    ![alt text](AstrBot_napcat.png)
+  - ![alt text](AstrBot_napcat.png)
   - 在NapCat面板中打开 `网络配置` 添加 `Websocket客户端`
   - URL: `ws://astrbot:6199/ws`
   - 消息格式: `Array`
   - Token: 和AstrBot配置中一致即可
-    ![alt text](napcat.png)
+  - ![alt text](napcat.png)
 
 - ### WeChatPadPro
   - 在AstrBot消息平台添加 `微信个人号(WeChatPadPro)`
   - admin_key: `wxpadpro1238`
   - host: `wechatpadpro`
   - port: `1238`
-    ![alt text](AstrBot_wxpadpro.png)
+  - ![alt text](AstrBot_wxpadpro.png)
 
 ## 官方文档与仓库
 - 官方文档：https://docs.astrbot.app
