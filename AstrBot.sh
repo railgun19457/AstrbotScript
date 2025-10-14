@@ -38,22 +38,22 @@ case $choice in
   0)
     docker network create --driver bridge astrbot || true
     echo -e "${GREEN}正在部署 AstrBot...${NC}"
-    check_dir ./data
+    check_dir ./AstrBot/data
     docker compose -f ./astrbot.yml up -d
     ;;
   1)
     docker network create --driver bridge astrbot || true
     echo -e "${GREEN}正在部署 AstrBot...${NC}"
-    check_dir ./data
+    check_dir ./AstrBot/data
     docker compose -f ./astrbot_napcat.yml up -d
     echo -e "${GREEN}正在部署 NapCat...${NC}"
-    check_dir ./napcat/ntqq
-    docker compose -f ./napcat/napcat.yml up -d
+    check_dir ./NapCat/ntqq
+    docker compose -f ./NapCat/napcat.yml up -d
     ;;
   2)
     docker network create --driver bridge astrbot || true
     echo -e "${GREEN}正在部署 AstrBot...${NC}"
-    check_dir ./data
+    check_dir ./AstrBot/data
     docker compose -f ./astrbot.yml up -d
     echo -e "${GREEN}正在部署 WeChatPadPro...${NC}"
     check_dir ./WeChatPadPro
@@ -64,11 +64,11 @@ case $choice in
   3)
     docker network create --driver bridge astrbot || true
     echo -e "${GREEN}正在部署 AstrBot...${NC}"
-    check_dir ./data
+    check_dir ./AstrBot/data
     docker compose -f ./astrbot_napcat.yml up -d
     echo -e "${GREEN}正在部署 NapCat...${NC}"
-    check_dir ./napcat/ntqq
-    docker compose -f ./napcat/napcat.yml up -d
+    check_dir ./NapCat/ntqq
+    docker compose -f ./NapCat/napcat.yml up -d
     echo -e "${GREEN}正在部署 WeChatPadPro...${NC}"
     check_dir ./WeChatPadPro
     check_dir ./WeChatPadPro/mysql
