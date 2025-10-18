@@ -48,6 +48,7 @@ case $choice in
     docker compose -f ./astrbot_napcat.yml up -d
     echo -e "${GREEN}正在部署 NapCat...${NC}"
     check_dir ./NapCat/ntqq
+    check_dir ./NapCat/config    
     docker compose -f ./NapCat/napcat.yml up -d
     ;;
   2)
@@ -68,6 +69,7 @@ case $choice in
     docker compose -f ./astrbot_napcat.yml up -d
     echo -e "${GREEN}正在部署 NapCat...${NC}"
     check_dir ./NapCat/ntqq
+    check_dir ./NapCat/config
     docker compose -f ./NapCat/napcat.yml up -d
     echo -e "${GREEN}正在部署 WeChatPadPro...${NC}"
     check_dir ./WeChatPadPro
