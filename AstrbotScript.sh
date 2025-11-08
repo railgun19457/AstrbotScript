@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-SCRIPT_VERSION="2.0.0"
+SCRIPT_VERSION="2.0.1"
 
 # ==================== 配置文件加载 ====================
 # 获取脚本所在的目录
@@ -37,47 +37,25 @@ NETWORK_NAME="astrbot"
 EOF
 fi
 
-# ==================== 颜色定义 ====================
-# 基础颜色
-C_RESET=$'\033[0m'
-C_BOLD=$'\033[1m'
-C_DIM=$'\033[2m'
-C_UNDERLINE=$'\033[4m'
-
-# 前景色
-C_BLACK=$'\033[30m'
-C_RED=$'\033[31m'
-C_GREEN=$'\033[32m'
-C_YELLOW=$'\033[33m'
-C_BLUE=$'\033[34m'
-C_MAGENTA=$'\033[35m'
-C_CYAN=$'\033[36m'
-C_WHITE=$'\033[37m'
-
-# 亮色
-C_BRIGHT_BLACK=$'\033[90m'
-C_BRIGHT_RED=$'\033[91m'
-C_BRIGHT_GREEN=$'\033[92m'
-C_BRIGHT_YELLOW=$'\033[93m'
-C_BRIGHT_BLUE=$'\033[94m'
-C_BRIGHT_MAGENTA=$'\033[95m'
-C_BRIGHT_CYAN=$'\033[96m'
-C_BRIGHT_WHITE=$'\033[97m'
-
-# 背景色
-C_BG_RED=$'\033[41m'
-C_BG_GREEN=$'\033[42m'
-C_BG_YELLOW=$'\033[43m'
-C_BG_BLUE=$'\033[44m'
-C_BG_MAGENTA=$'\033[45m'
-C_BG_CYAN=$'\033[46m'
+# 如果使用 --no-color 或环境变量 NO_COLOR，则禁用彩色输出
+if [[ "${1:-}" == "--no-color" ]]; then NO_COLOR=1; shift; fi
+if [[ -n "${NO_COLOR:-}" ]]; then
+  C_RESET=""; C_BOLD=""; C_DIM=""; C_UNDERLINE="";
+  C_RED=""; C_GREEN=""; C_YELLOW=""; C_BLUE=""; C_MAGENTA=""; C_CYAN=""; C_WHITE="";
+  C_BRIGHT_RED=""; C_BRIGHT_GREEN=""; C_BRIGHT_YELLOW=""; C_BRIGHT_BLUE=""; C_BRIGHT_MAGENTA=""; C_BRIGHT_CYAN=""; C_BRIGHT_WHITE="";
+else
+  # ==================== 颜色定义 ====================
+  C_RESET=$'\033[0m'; C_BOLD=$'\033[1m'; C_DIM=$'\033[2m'; C_UNDERLINE=$'\033[4m'
+  C_RED=$'\033[31m'; C_GREEN=$'\033[32m'; C_YELLOW=$'\033[33m'; C_BLUE=$'\033[34m'; C_MAGENTA=$'\033[35m'; C_CYAN=$'\033[36m'; C_WHITE=$'\033[37m'
+  C_BRIGHT_RED=$'\033[91m'; C_BRIGHT_GREEN=$'\033[92m'; C_BRIGHT_YELLOW=$'\033[93m'; C_BRIGHT_BLUE=$'\033[94m'; C_BRIGHT_MAGENTA=$'\033[95m'; C_BRIGHT_CYAN=$'\033[96m'; C_BRIGHT_WHITE=$'\033[97m'
+fi
 
 # ==================== 日志函数 ====================
-info()  { printf "%s\n" "${C_GREEN}[✓ INFO]${C_RESET} $*" >&2; }
-warn()  { printf "%s\n" "${C_YELLOW}[⚠ WARN]${C_RESET} $*" >&2; }
-err()   { printf "%s\n" "${C_RED}[✗ ERROR]${C_RESET} $*" >&2; }
-success() { printf "%s\n" "${C_BRIGHT_GREEN}${C_BOLD}[✔ SUCCESS]${C_RESET} $*" >&2; }
-debug() { printf "%s\n" "${C_BRIGHT_CYAN}[◆ DEBUG]${C_RESET} $*" >&2; }
+info()    { printf "%s\n" "${C_GREEN}[INFO]${C_RESET} $*" >&2; }
+warn()    { printf "%s\n" "${C_YELLOW}[WARN]${C_RESET} $*" >&2; }
+err()     { printf "%s\n" "${C_RED}[ERROR]${C_RESET} $*" >&2; }
+success() { printf "%s\n" "${C_BRIGHT_GREEN}${C_BOLD}[SUCCESS]${C_RESET} $*" >&2; }
+debug()   { [[ -n "${DEBUG_LOG:-}" ]] && printf "%s\n" "${C_BRIGHT_CYAN}[DEBUG]${C_RESET} $*" >&2; }
 
 # ==================== 工具函数 ====================
 require_root(){ 
@@ -101,57 +79,19 @@ clear_screen(){
 }
 
 # ==================== Docker 检测与安装 ====================
-detect_compose_cmd(){
-  if docker compose version >/dev/null 2>&1; then
-    echo "docker compose"
-  elif has_cmd docker-compose; then
-    echo "docker-compose"
-  else
-    echo ""
-  fi
-}
+detect_compose_cmd(){ docker compose version >/dev/null 2>&1 && echo "docker compose" && return || has_cmd docker-compose && echo "docker-compose" || echo ""; }
 
-check_docker_installed(){
-  if has_cmd docker; then
-    return 0
-  else
-    return 1
-  fi
-}
+check_docker_installed(){ has_cmd docker; }
 
 install_docker(){
-  if ! require_root; then
-    warn "安装 Docker 需要 root 权限，请使用 sudo 重新运行"
-    pause
-    return 1
-  fi
-
-  info "准备安装并配置 Docker 环境（包含镜像加速）..."
-  
-  if has_cmd curl; then
-    info "使用 curl 下载安装脚本..."
-    curl -fsSL https://linuxmirrors.cn/docker.sh | bash
-  elif has_cmd wget; then
-    info "使用 wget 下载安装脚本..."
-    wget -qO- https://linuxmirrors.cn/docker.sh | bash
-  else
-    err "系统缺少 curl/wget，无法下载安装脚本"
-    pause
-    return 1
-  fi
-
-  if ! check_docker_installed; then
-    err "Docker 安装失败或未加入 PATH"
-    pause
-    return 1
-  fi
-
-  DOCKER_COMPOSE_CMD="$(detect_compose_cmd || true)"
-  if [[ -z "$DOCKER_COMPOSE_CMD" ]]; then
-    warn "⚠️  Compose 未检测到，可能需要手动安装"
-  fi
-  
-  info "✓ Docker 环境安装和配置完成"
+  require_root || { warn "安装 Docker 需要 root 权限"; pause; return 1; }
+  info "安装 Docker 环境 (含镜像加速) ..."
+  local downloader="";
+  has_cmd curl && downloader="curl -fsSL" || has_cmd wget && downloader="wget -qO-" || { err "缺少 curl / wget"; pause; return 1; }
+  if ! $downloader https://linuxmirrors.cn/docker.sh | bash; then err "执行安装脚本失败"; pause; return 1; fi
+  check_docker_installed || { err "Docker 未正确安装"; pause; return 1; }
+  [[ -z "$(detect_compose_cmd)" ]] && warn "未检测到 Compose，可能需要手动安装" || info "Compose 已检测"
+  success "Docker 安装完成"
   pause
 }
 
@@ -181,16 +121,7 @@ init_base_dir(){
   return 0
 }
 
-ensure_dirs(){
-  local base="$1"; shift
-  for d in "$@"; do
-    mkdir -p -- "$base/$d" || {
-      err "无法创建目录: $base/$d"
-      return 1
-    }
-  done
-  return 0
-}
+ensure_dirs(){ local base="$1"; shift; for d in "$@"; do mkdir -p -- "$base/$d" || { err "无法创建目录: $base/$d"; return 1; }; done; }
 
 # ==================== 服务配置生成 ====================
 ensure_wechat_env(){
@@ -659,312 +590,81 @@ EOF
 }
 
 install_service_begin(){
-  local -a service_types=("$@")
-  
-  if ! require_root; then
-    warn "安装服务需要 root 权限"
-    pause
-    return 1
-  fi
-
-  # 检查 Docker
-  if [[ -z "$(detect_compose_cmd)" ]]; then
-    warn "未检测到 Docker Compose，准备安装..."
-    if ! install_docker; then
-      err "Docker 安装失败"
-      pause
-      return 1
-    fi
-  fi
-
-  # 初始化网络和目录
-  if ! init_network || ! init_base_dir; then
-    pause
-    return 1
-  fi
-
-  if [[ ${#service_types[@]} -eq 0 ]]; then
-    err "没有选择任何服务"
-    pause
-    return 1
-  fi
-
-  info "本次将部署的服务: $(printf '%s ' "${service_types[@]}")"
-  
-  # 创建各服务的数据目录
+  local -a service_types=("$@"); require_root || { warn "需要 root"; pause; return 1; }
+  [[ -z "$(detect_compose_cmd)" ]] && { warn "未检测到 Compose，尝试安装 Docker"; install_docker || { err "Docker 安装失败"; pause; return 1; }; }
+  init_network || { pause; return 1; }; init_base_dir || { pause; return 1; }
+  [[ ${#service_types[@]} -eq 0 ]] && { err "未选择服务"; pause; return 1; }
+  info "准备部署: ${service_types[*]}"
   for svc_type in "${service_types[@]}"; do
     case "$svc_type" in
-      astrbot)
-        ensure_dirs "$BASE_DIR/astrbot" "data" || return 1
-        ;;
-      napcat)
-        ensure_dirs "$BASE_DIR/napcat" "ntqq" "config" || return 1
-        ;;
-      wechatpadpro)
-        ensure_dirs "$BASE_DIR/wechatpadpro" "mysql" "redis" || return 1
-        # 仅在第一次创建 wechatpadpro 时生成 .env
-        if [[ ! -f "$BASE_DIR/wechatpadpro/.env" ]]; then
-          ensure_wechat_env "$BASE_DIR/wechatpadpro" || return 1
-        else
-          info "✓ WeChatPadPro .env 文件已存在，跳过生成"
-        fi
-        ;;
+      astrbot)      ensure_dirs "$BASE_DIR/astrbot" data || return 1 ;;
+      napcat)       ensure_dirs "$BASE_DIR/napcat" ntqq config || return 1 ;;
+      wechatpadpro) ensure_dirs "$BASE_DIR/wechatpadpro" mysql redis || return 1; [[ ! -f "$BASE_DIR/wechatpadpro/.env" ]] && ensure_wechat_env "$BASE_DIR/wechatpadpro" || info "WeChatPadPro .env 已存在" ;;
     esac
   done
-
-  # 在基目录生成完整的 compose.yml（包含所有服务定义）
-  local compose_file="$BASE_DIR/$COMPOSE_FILENAME"
-  generate_full_compose "$compose_file" || return 1
-  
-  # 启动选中的服务
-  info "正在启动选中的服务..."
-  local compose_cmd
-  compose_cmd="$(detect_compose_cmd)"
-  
-  if [[ -z "$compose_cmd" ]]; then
-    warn "未检测到 compose 命令，请手动运行: cd '$BASE_DIR' && docker compose up -d ${service_types[*]}"
-  else
-    local start_cmd="cd '$BASE_DIR'"
-    
-    # 如果包含 wechatpadpro，则需要加载 .env
-    if printf '%s\n' "${service_types[@]}" | grep -q "wechatpadpro"; then
-      if [[ -f "$BASE_DIR/wechatpadpro/.env" ]]; then
-        start_cmd="$start_cmd && set -a && source ./wechatpadpro/.env && set +a"
-      fi
-    fi
-    
-    # 启动指定的服务
-    start_cmd="$start_cmd && $compose_cmd up -d ${service_types[*]}"
-    
-    if eval "$start_cmd"; then
-      info "✓ 服务部署成功！"
-      info "   已部署的服务: $(printf '%s ' "${service_types[@]}")"
-      info "   基目录: $BASE_DIR"
-      info "   网络: $NETWORK_NAME"
-    else
-      err "服务启动失败，请检查配置"
-      pause
-      return 1
-    fi
-  fi
-  
+  generate_full_compose "$BASE_DIR/$COMPOSE_FILENAME" || return 1
+  local cmd="cd '$BASE_DIR'"; printf '%s\n' "${service_types[@]}" | grep -q wechatpadpro && [[ -f "$BASE_DIR/wechatpadpro/.env" ]] && cmd="$cmd && set -a && source ./wechatpadpro/.env && set +a"
+  cmd="$cmd && $(detect_compose_cmd) up -d ${service_types[*]}"
+  if eval "$cmd"; then success "部署完成"; info "目录: $BASE_DIR 网络: $NETWORK_NAME"; else err "部署失败"; pause; return 1; fi
   pause
 }
 
 # ==================== Compose 命令执行 ====================
-compose_exec(){
-  local dir="$1"; shift
-  local compose_cmd
-  compose_cmd="$(detect_compose_cmd)"
-  
-  if [[ -z "$compose_cmd" ]]; then
-    err "未检测到 docker compose 命令"
-    return 2
+compose_exec(){ local dir="$1"; shift; local compose_cmd="$(detect_compose_cmd)"; [[ -z "$compose_cmd" ]] && { err "缺少 compose"; return 2; }; local cmd="cd '$dir'"; [[ -f "$dir/wechatpadpro/.env" ]] && cmd="$cmd && set -a && source ./wechatpadpro/.env && set +a"; cmd="$cmd && $compose_cmd $*"; eval "$cmd"; }
+
+# ==================== 统一服务依赖与操作 ====================
+service_dependencies(){ case "$1" in wechatpadpro) echo "db_wx redis_wx" ;; *) echo "" ;; esac }
+
+service_action(){
+  local action="$1" base="$2" svc="$3"; shift 3
+  local deps="$(service_dependencies "$svc")"
+  # 依赖处理（仅 start/restart 时启动依赖）
+  if [[ "$action" =~ ^(start|restart)$ && -n "$deps" ]]; then
+    for d in $deps; do docker start "$d" >/dev/null 2>&1 || docker restart "$d" >/dev/null 2>&1 || true; done
   fi
-  
-  # 检查是否有 wechatpadpro .env 文件，如果有则在 subshell 中加载
-  local cmd="cd '$dir'"
-  
-  if [[ -f "$dir/wechatpadpro/.env" ]]; then
-    cmd="$cmd && set -a && source ./wechatpadpro/.env && set +a"
-  fi
-  cmd="$cmd && $compose_cmd"
-  for arg in "$@"; do
-    cmd="$cmd '$arg'"
-  done
-  
-  eval "$cmd"
+  case "$action" in
+    start)   info "启动 $svc ..."; compose_exec "$base" up -d "$svc" 2>/dev/null || docker start "$svc" 2>/dev/null || err "启动失败" ;;
+    stop)    info "停止 $svc ..."; compose_exec "$base" stop "$svc" 2>/dev/null || docker stop "$svc" 2>/dev/null || warn "容器不存在" ;;
+    restart) info "重启 $svc ..."; compose_exec "$base" restart "$svc" 2>/dev/null || docker restart "$svc" 2>/dev/null || err "重启失败" ;;
+    rebuild) info "重建(更新) $svc ..."; compose_exec "$base" pull "$svc" && compose_exec "$base" up -d --build "$svc" || err "重建失败" ;;
+    delete)  docker rm -fv "$svc" 2>/dev/null || warn "容器不存在" ;;
+  esac
+  # 停止或删除依赖
+  if [[ "$action" == "stop" && -n "$deps" ]]; then for d in $deps; do docker stop "$d" 2>/dev/null || true; done; fi
+  success "$svc $action 完成"
 }
 
 # ==================== 服务操作 ====================
-start_service(){
-  local base="$1" service_name="$2"
-  info "正在启动 $service_name 服务..."
-  
-  # 如果启动 wechatpadpro，先启动其依赖的 redis 和 mariadb
-  if [[ "$service_name" == "wechatpadpro" ]]; then
-    for dep_svc in db_wx redis_wx; do
-      docker start "$dep_svc" 2>/dev/null || true
-    done
-    info "✓ 已同时启动依赖服务: db_wx (MariaDB), redis_wx (Redis)"
-  fi
-  
-  # 先尝试通过 docker compose 启动
-  if compose_exec "$base" up -d "$service_name" 2>/dev/null; then
-    info "✓ $service_name 服务已启动"
-  else
-    # 如果 compose 启动失败，直接用 docker start 尝试启动已存在的容器
-    if docker start "$service_name" 2>/dev/null; then
-      info "✓ $service_name 容器已启动"
-    else
-      err "启动失败 - 容器不存在或启动出错"
-    fi
-  fi
-  pause
-}
-
-stop_service(){
-  local base="$1" service_name="$2"
-  info "正在停止 $service_name 服务..."
-  
-  # 先尝试通过 docker compose 停止
-  if compose_exec "$base" stop "$service_name" 2>/dev/null; then
-    info "✓ $service_name 服务已停止"
-  else
-    # 如果 compose 停止失败，直接用 docker stop 尝试停止容器
-    if docker stop "$service_name" 2>/dev/null; then
-      info "✓ $service_name 容器已停止"
-    else
-      warn "容器已停止或不存在"
-    fi
-  fi
-  
-  # 如果停止 wechatpadpro，也停止其依赖的 redis 和 mariadb
-  if [[ "$service_name" == "wechatpadpro" ]]; then
-    for dep_svc in redis_wx db_wx; do
-      docker stop "$dep_svc" 2>/dev/null || true
-    done
-    info "✓ 已同时停止依赖服务: db_wx (MariaDB), redis_wx (Redis)"
-  fi
-  
-  pause
-}
-
-restart_service(){
-  local base="$1" service_name="$2"
-  info "正在重启 $service_name 服务..."
-  
-  # 如果重启 wechatpadpro，先重启其依赖的 redis 和 mariadb
-  if [[ "$service_name" == "wechatpadpro" ]]; then
-    for dep_svc in db_wx redis_wx; do
-      docker restart "$dep_svc" 2>/dev/null || true
-    done
-    info "✓ 已同时重启依赖服务: db_wx (MariaDB), redis_wx (Redis)"
-  fi
-  
-  # 先尝试通过 docker compose 重启
-  if compose_exec "$base" restart "$service_name" 2>/dev/null; then
-    info "✓ $service_name 服务已重启"
-  else
-    # 如果 compose 重启失败，直接用 docker restart 尝试重启容器
-    if docker restart "$service_name" 2>/dev/null; then
-      info "✓ $service_name 容器已重启"
-    else
-      err "重启失败 - 容器不存在或不在运行状态"
-    fi
-  fi
-  pause
-}
-
+start_service(){ service_action start "$1" "$2"; pause; }
+stop_service(){ service_action stop "$1" "$2"; pause; }
+restart_service(){ service_action restart "$1" "$2"; pause; }
 show_service_logs(){
   local base="$1" service_name="$2"
-  
   info "正在获取 $service_name 服务的日志（按 Ctrl+C 退出）..."
   docker logs -f --tail 100 "$service_name" 2>/dev/null || err "无法获取日志 - 容器不存在"
 }
-
-rebuild_service(){
-  local base="$1" service_name="$2"
-  
-  warn "这会重新拉取 $service_name 镜像和重建容器"
-  read -r -p "确认? (Y/N): " confirm || true
-  
-  if [[ "$confirm" != "Y" && "$confirm" != "y" ]]; then
-    info "已取消"
-    pause
-    return 0
-  fi
-
-  info "正在重新构建 $service_name 服务..."
-  if compose_exec "$base" pull "$service_name" && compose_exec "$base" up -d --build "$service_name"; then
-    info "✓ $service_name 服务重建成功"
-    
-    # 如果重建 wechatpadpro，也重建其依赖的 redis 和 mariadb
-    if [[ "$service_name" == "wechatpadpro" ]]; then
-      info "正在重建 WeChatPadPro 的依赖服务..."
-      for dep_svc in mariadb redis; do
-        if compose_exec "$base" pull "$dep_svc" && compose_exec "$base" up -d --build "$dep_svc"; then
-          info "✓ $dep_svc 重建成功"
-        else
-          warn "⚠️  $dep_svc 重建失败"
-        fi
-      done
-      info "✓ 已同时重建依赖服务: mariadb (MariaDB), redis (Redis)"
-    fi
-  else
-    err "重建失败"
-  fi
-  pause
-}
+rebuild_service(){ local base="$1" service_name="$2"; warn "这会拉取最新镜像并重建 $service_name"; read -r -p "确认? (Y/N): " c || true; [[ "$c" =~ ^[Yy]$ ]] || { info "已取消"; pause; return 0; }; service_action rebuild "$base" "$service_name"; pause; }
 
 # ==================== Compose 文件操作 ====================
 delete_service(){
-  local base="$1" service_name="$2"
-  
-  clear_screen
-  cat <<EOF
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          删除 $service_name 服务确认
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  local base="$1" service_name="$2"; clear_screen; cat <<EOF
+${C_BRIGHT_RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
+${C_BRIGHT_RED}${C_BOLD}      ⚠ 删除 ${C_BRIGHT_WHITE}$service_name${C_RESET}${C_BRIGHT_RED} 服务确认${C_RESET}
+${C_BRIGHT_RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
-  1) 删除容器 (保留数据)
-  2) 删除容器和数据 (完全删除)
-  3) 取消
+  ${C_YELLOW}1)${C_RESET} 仅删除容器  ${C_DIM}(保留数据: ${C_BRIGHT_WHITE}$base/$service_name${C_RESET}${C_DIM})${C_RESET}
+  ${C_YELLOW}2)${C_RESET} 删除容器与数据  ${C_RED}(不可恢复)${C_RESET}
+  ${C_YELLOW}3)${C_RESET} 取消
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${C_BRIGHT_RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 EOF
-  
-  read -r -p "选择 (1-3): " delete_choice || true
-
-  case "$delete_choice" in
-    1)
-      warn "删除 $service_name 容器（保留数据目录: $base/$service_name）"
-      read -r -p "确认? (Y/N): " confirm || true
-      if [[ "$confirm" == "Y" || "$confirm" == "y" ]]; then
-        docker rm -f "$service_name" 2>/dev/null || true
-        info "✓ $service_name 容器已删除，数据已保留"
-      fi
-      ;;
-    2)
-      err "⚠️  删除 $service_name 容器和所有数据"
-      read -r -p "确认完全删除? (Y/N): " confirm || true
-      if [[ "$confirm" == "Y" || "$confirm" == "y" ]]; then
-        # 删除指定服务及其关联的依赖服务
-        local services_to_delete=("$service_name")
-        
-        # 如果删除 wechatpadpro，也删除其依赖的 redis 和 mariadb
-        if [[ "$service_name" == "wechatpadpro" ]]; then
-          services_to_delete+=("redis_wx" "db_wx")
-        fi
-        
-        # 删除所有相关容器
-        for svc in "${services_to_delete[@]}"; do
-          docker rm -fv "$svc" 2>/dev/null || true
-        done
-        
-        # 删除该服务的数据目录
-        rm -rf -- "$base/$service_name"
-        
-        # 如果删除了 wechatpadpro，也删除 redis 和 mariadb 的数据
-        if [[ "$service_name" == "wechatpadpro" ]]; then
-          rm -rf -- "$base/wechatpadpro/redis"
-          rm -rf -- "$base/wechatpadpro/mysql"
-        fi
-        
-        info "✓ $service_name 服务已完全删除"
-        if [[ "$service_name" == "wechatpadpro" ]]; then
-          info "   已同时删除依赖服务: db_wx (MariaDB), redis_wx (Redis)"
-        fi
-      fi
-      ;;
-    3)
-      info "已取消"
-      ;;
-    *)
-      warn "无效选择"
-      ;;
+  read -r -p "${C_BRIGHT_BLUE}选择 (1-3):${C_RESET} " ch || true
+  case "$ch" in
+    1) read -r -p "${C_BRIGHT_BLUE}确认? (Y/N):${C_RESET} " c || true; [[ "$c" =~ ^[Yy]$ ]] && service_action delete "$base" "$service_name" && info "保留数据: $base/$service_name" ;;
+    2) read -r -p "${C_BRIGHT_RED}${C_BOLD}确认完全删除? (Y/N):${C_RESET} " c || true; [[ "$c" =~ ^[Yy]$ ]] || { info "已取消"; pause; return 0; }; service_action delete "$base" "$service_name"; if [[ "$service_name" == "wechatpadpro" ]]; then for d in db_wx redis_wx; do docker rm -fv "$d" 2>/dev/null || true; done; fi; rm -rf -- "$base/$service_name"; if [[ "$service_name" == "wechatpadpro" ]]; then rm -rf -- "$base/wechatpadpro/redis" "$base/wechatpadpro/mysql"; fi; info "${C_RED}数据目录已删除${C_RESET}" ;;
+    3) info "已取消" ;;
+    *) warn "无效选择" ;;
   esac
-  
   pause
 }
 
@@ -977,17 +677,6 @@ ${C_BRIGHT_GREEN}━━━━━━━━━━━━━━━━━━━━━
 ${C_BRIGHT_BLUE}${C_BOLD}                                        📊 服务状态${C_RESET}
 ${C_BRIGHT_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 EOF
-
-  local compose_cmd="$(detect_compose_cmd)"
-  [[ -z "$compose_cmd" ]] && { err "Docker Compose 未安装"; pause; return 1; }
-  
-  if [[ ! -d "$BASE_DIR" ]]; then
-    err "基目录不存在: $BASE_DIR"
-    pause
-    return 1
-  fi
-  
-  cd "$BASE_DIR" || { err "无法进入 $BASE_DIR"; pause; return 1; }
   
   # 表头（调整列宽以适应内容）
   printf "${C_BRIGHT_CYAN}%-12s %-14s %-18s %-22s %-36s${C_RESET}\n" "状态" "服务名" "容器IP" "镜像" "端口"
@@ -999,18 +688,12 @@ EOF
   for svc in "${all_services[@]}"; do
     local container_name="$svc"
     
-    # 检查该服务是否已安装
-    if [[ ! -d "$BASE_DIR/$svc" ]]; then
-      printf "%-12s %-14s %-16s %-20s %-30s\n" "⚠️  未安装" "$svc" "-" "-" "-"
-      continue
-    fi
-    
     # 检查容器是否存在和运行状态
     local container_exists
     container_exists=$(docker ps -a --filter "name=$container_name" --format '{{.Names}}' 2>/dev/null | head -1)
     
     if [[ -z "$container_exists" ]]; then
-      printf "%-12s %-14s %-16s %-20s %-30s\n" "❌ 未运行" "$svc" "-" "-" "-"
+      printf "%-12s %-14s %-16s %-20s %-30s\n" "⚠️  未安装" "$svc" "-" "-" "-"
       continue
     fi
     

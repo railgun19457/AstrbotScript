@@ -1,7 +1,7 @@
 # AstrBot 一键部署说明
 
-> 最近更新：2025-11-9
-> - 重构脚本
+> 最近更新：2025-11-09
+> - 脚本 2.0.1 精简：统一服务操作函数、支持 --no-color、减少重复代码
 
 ## 兼容性
 - 适用于 `Linux/WSL`
@@ -9,14 +9,15 @@
 
 ## 快速开始
 
-1. 拉取并运行脚本
-
+### 拉取并运行脚本
+   
    使用`curl`
    ```bash
     curl -sSL https://raw.githubusercontent.com/railgun19457/AstrbotScript/main/AstrbotScript.sh -o AstrbotScript.sh
     chmod +x AstrbotScript.sh
     sudo ./AstrbotScript.sh
    ```
+  > sudo ./AstrbotScript.sh --no-color (可选禁用彩色输出)
 
    使用`wget`
    ```bash
@@ -24,22 +25,23 @@
     chmod +x AstrbotScript.sh
     sudo ./AstrbotScript.sh
    ```
+  > sudo ./AstrbotScript.sh --no-color (可选禁用彩色输出)
 
-2. 选择`安装并配置 Docker 环境`**(可选)**
+### 选择`安装并配置 Docker 环境`**(可选)**
    - 脚本会自动完成Docker安装和换源
 
-3. 修改 `环境设置`**(可选)**
+### 修改 `环境设置`**(可选)**
    - 包含`安装目录`和`容器网络`
    - 默认安装目录`/opt/AstrBot`
    - 默认容器网络`astrbot`
   
-4. 选择 `部署新服务`
+### 选择 `部署新服务`
    - 选择需要部署的服务
    - 每次可选一个选项，可多次选择
    - 选好需要的项目后，选择开始安装
    - 等待安装完成
   
-5. 后续管理
+### 后续管理
    - 可使用 查看服务状态 查看所有项目的运行状态
    - 选择对应的项目可以进行进一步管理
      - 启动容器
@@ -111,10 +113,18 @@
 ---
 
 ## 更新日志
-- **2025-11-9**：
-  - 彻底重构脚本实现,不需要拉取任何额外文件，单脚本文件即可
-  - 为脚本添加完善的管理功能
-  - 为脚本添加自动配置docker环境的功能
+- **2025-11-09 (v2.0.1)**：
+  - 合并重复 start/stop/restart/rebuild/delete 逻辑为统一函数，减少维护成本
+  - 新增 `--no-color` / `NO_COLOR=1` 关闭彩色输出（便于日志重定向）
+  - Docker / Compose 检测与安装逻辑压缩为一段更安全的流程
+  - 目录创建、依赖容器处理逻辑统一
+  - 删除 wechatpadpro 时同步删依赖容器 (db_wx, redis_wx) 与数据目录
+  - 版本号更新为 2.0.1
+  
+- **2025-11-09 (v2.0.0)**：
+  - 彻底重构脚本实现, 不需要拉取任何额外文件，单脚本文件即可
+  - 添加完善的管理功能
+  - 添加自动配置 Docker 环境功能
 
 - **2025-10-14**：
   - 更新适配wechatpadpro 861版本
