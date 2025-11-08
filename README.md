@@ -1,33 +1,54 @@
 # AstrBot 一键部署说明
 
-> 最近更新：2025-10-14
-- 适配wechatpadpro最新861版本
+> 最近更新：2025-11-9
+> - 重构脚本
 
-## **本脚本仅适用于 Linux 环境下使用 Docker 部署**
+## 兼容性
+- 适用于 `Linux/WSL`
+- 基于 `Docker` 部署
 
 ## 快速开始
-> 请确保已安装`docker compose`,机器可以连接到`Docker Hub`或已配置镜像源
-1. 拉取本仓库：
+
+1. 拉取并运行脚本
+
+   使用`curl`
    ```bash
-   git clone --depth=1 https://github.com/railgun19457/AstrbotScript.git
-   cd ./AstrbotScript
+    curl -sSL https://raw.githubusercontent.com/railgun19457/AstrbotScript/main/AstrbotScript.sh -o AstrbotScript.sh
+    chmod +x AstrbotScript.sh
+    ./AstrbotScript.sh
    ```
-2. 赋予脚本执行权限：
+
+   使用`wget`
    ```bash
-   chmod +x ./AstrBot.sh
+    curl -sSL https://raw.githubusercontent.com/railgun19457/AstrbotScript/main/AstrbotScript.sh -o AstrbotScript.sh
+    chmod +x AstrbotScript.sh
+    ./AstrbotScript.sh
    ```
-3. 运行一键部署脚本：
-   ```bash
-   sudo ./AstrBot.sh
-   #或者使用
-   #sudo bash ./AstrBot.sh
-   #使用该命令可以略过第二部赋权
-   ```
-4. 按提示选择要部署的组件（可多选）：
-   - AstrBot
-   - NapCat
-   - WeChatPadPro
-   - 全部部署
+
+2. 选择`安装并配置 Docker 环境`**(可选)**
+   - 脚本会自动完成Docker安装和换源
+
+3. 修改 `环境设置`**(可选)**
+   - 包含`安装目录`和`容器网络`
+   - 默认安装目录`/opt/AstrBot`
+   - 默认容器网络`astrbot`
+  
+4. 选择 `部署新服务`
+   - 选择需要部署的服务
+   - 每次可选一个选项，可多次选择
+   - 选好需要的项目后，选择开始安装
+   - 等待安装完成
+  
+5. 后续管理
+   - 可使用 查看服务状态 查看所有项目的运行状态
+   - 选择对应的项目可以进行进一步管理
+     - 启动容器
+     - 停止容器
+     - 重启容器
+     - 查看日志
+     - 升级重建容器
+     - 删除容器和挂载文件夹
+
 
 ## 组件说明
 
@@ -84,19 +105,27 @@
 - NapCat文档：https://napcat.napneko.icu
 - WeChatPadPro 仓库：https://github.com/WeChatPadPro/WeChatPadPro
 
+## 特别感谢
+- LinuxMirrors：https://linuxmirrors.cn 本项目的docker环境配置使用了他们的脚本
+
 ---
 
 ## 更新日志
-- 2025-10-14：
+- **2025-11-9**：
+  - 彻底重构脚本实现,不需要拉取任何额外文件，单脚本文件即可
+  - 为脚本添加完善的管理功能
+  - 为脚本添加自动配置docker环境的功能
+
+- **2025-10-14**：
   - 更新适配wechatpadpro 861版本
   - 升级脚本
   - 文档中添加连接教程
   
-- 2025-07-10：
+- **2025-07-10**：
   - 完善文档结构，补充镜像站与仓库链接，权限处理逻辑优化，组件说明细化
   - 适配新版wechatpadpro
   - 将原本3个独立的脚本合成一个，添加目录检查和自动提权（提权仅针对redis/conf文件夹）
   - 脚本结构优化：部署逻辑全部内联到 case 分支，支持更灵活组合，网络创建步骤提前
   
-- 2025-06-13: 
+- **2025-06-13**: 
   - 首次提交，实现基本功能
