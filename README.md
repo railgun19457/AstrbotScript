@@ -15,14 +15,14 @@
    ```bash
     curl -sSL https://raw.githubusercontent.com/railgun19457/AstrbotScript/main/AstrbotScript.sh -o AstrbotScript.sh
     chmod +x AstrbotScript.sh
-    ./AstrbotScript.sh
+    sudo ./AstrbotScript.sh
    ```
 
    使用`wget`
    ```bash
     curl -sSL https://raw.githubusercontent.com/railgun19457/AstrbotScript/main/AstrbotScript.sh -o AstrbotScript.sh
     chmod +x AstrbotScript.sh
-    ./AstrbotScript.sh
+    sudo ./AstrbotScript.sh
    ```
 
 2. 选择`安装并配置 Docker 环境`**(可选)**

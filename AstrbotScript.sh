@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # AstrBot / NapCat / WeChatPadPro 一键部署与管理脚本
 # 项目地址:https://github.com/railgun19457/AstrbotScript
-# 容器配置脚本: https://linuxmirrors.cn
+# 容器配置脚本来源: https://linuxmirrors.cn
 
 set -euo pipefail
 
@@ -38,16 +38,46 @@ EOF
 fi
 
 # ==================== 颜色定义 ====================
+# 基础颜色
 C_RESET=$'\033[0m'
-C_GREEN=$'\033[32m'
+C_BOLD=$'\033[1m'
+C_DIM=$'\033[2m'
+C_UNDERLINE=$'\033[4m'
+
+# 前景色
+C_BLACK=$'\033[30m'
 C_RED=$'\033[31m'
+C_GREEN=$'\033[32m'
 C_YELLOW=$'\033[33m'
 C_BLUE=$'\033[34m'
+C_MAGENTA=$'\033[35m'
+C_CYAN=$'\033[36m'
+C_WHITE=$'\033[37m'
+
+# 亮色
+C_BRIGHT_BLACK=$'\033[90m'
+C_BRIGHT_RED=$'\033[91m'
+C_BRIGHT_GREEN=$'\033[92m'
+C_BRIGHT_YELLOW=$'\033[93m'
+C_BRIGHT_BLUE=$'\033[94m'
+C_BRIGHT_MAGENTA=$'\033[95m'
+C_BRIGHT_CYAN=$'\033[96m'
+C_BRIGHT_WHITE=$'\033[97m'
+
+# 背景色
+C_BG_RED=$'\033[41m'
+C_BG_GREEN=$'\033[42m'
+C_BG_YELLOW=$'\033[43m'
+C_BG_BLUE=$'\033[44m'
+C_BG_MAGENTA=$'\033[45m'
+C_BG_CYAN=$'\033[46m'
 
 # ==================== 日志函数 ====================
-info() { printf "%s\n" "${C_GREEN}[INFO]${C_RESET} $*" >&2; }
-warn() { printf "%s\n" "${C_YELLOW}[WARN]${C_RESET} $*" >&2; }
-err()  { printf "%s\n" "${C_RED}[ERROR]${C_RESET} $*" >&2; }
+info()  { printf "%s\n" "${C_GREEN}[✓ INFO]${C_RESET} $*" >&2; }
+warn()  { printf "%s\n" "${C_YELLOW}[⚠ WARN]${C_RESET} $*" >&2; }
+err()   { printf "%s\n" "${C_RED}[✗ ERROR]${C_RESET} $*" >&2; }
+success() { printf "%s\n" "${C_BRIGHT_GREEN}${C_BOLD}[✔ SUCCESS]${C_RESET} $*" >&2; }
+debug() { printf "%s\n" "${C_BRIGHT_CYAN}[◆ DEBUG]${C_RESET} $*" >&2; }
 
 # ==================== 工具函数 ====================
 require_root(){ 
@@ -517,53 +547,53 @@ menu_settings(){
   while true; do
     clear_screen
     cat <<EOF
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-           环境配置设置
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${C_BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
+${C_BRIGHT_BLUE}${C_BOLD}           环境配置设置${C_RESET}
+${C_BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
-当前配置:
-  📁 安装目录:  $BASE_DIR
-  🌐 网络名称:  $NETWORK_NAME
+${C_BRIGHT_YELLOW}当前配置:${C_RESET}
+  ${C_CYAN}📁 安装目录:${C_RESET}  ${C_BRIGHT_WHITE}$BASE_DIR${C_RESET}
+  ${C_CYAN}🌐 网络名称:${C_RESET}  ${C_BRIGHT_WHITE}$NETWORK_NAME${C_RESET}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${C_BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
-修改选项:
-  1) 修改安装目录
-  2) 修改网络名称
+${C_BRIGHT_YELLOW}修改选项:${C_RESET}
+  ${C_GREEN}1)${C_RESET} 修改安装目录
+  ${C_GREEN}2)${C_RESET} 修改网络名称
   
-  0) 返回主菜单
+  ${C_BRIGHT_RED}0)${C_RESET} 返回主菜单
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${C_BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 EOF
 
-    read -r -p "请选择 (0-2): " opt || true
+    read -r -p "${C_BRIGHT_BLUE}请选择 (0-2):${C_RESET} " opt || true
 
     case "$opt" in
       1)
         clear_screen
-        echo "当前安装目录: $BASE_DIR"
-        read -r -p "请输入新的安装目录 (留空保持不变): " new_base || true
+        echo "${C_CYAN}当前安装目录: ${C_BRIGHT_WHITE}$BASE_DIR${C_RESET}"
+        read -r -p "${C_BRIGHT_BLUE}请输入新的安装目录 (留空保持不变):${C_RESET} " new_base || true
         if [[ -n "$new_base" ]]; then
           BASE_DIR="$new_base"
           save_config
-          info "✓ 安装目录已更新为: $BASE_DIR"
-          info "✓ 配置已保存到: $CONFIG_FILE"
+          success "安装目录已更新为: $BASE_DIR"
+          info "配置已保存到: $CONFIG_FILE"
         else
-          info "✓ 安装目录保持不变"
+          info "安装目录保持不变"
         fi
         pause
         ;;
       2)
         clear_screen
-        echo "当前网络名称: $NETWORK_NAME"
-        read -r -p "请输入新的网络名称 (留空保持不变): " new_network || true
+        echo "${C_CYAN}当前网络名称: ${C_BRIGHT_WHITE}$NETWORK_NAME${C_RESET}"
+        read -r -p "${C_BRIGHT_BLUE}请输入新的网络名称 (留空保持不变):${C_RESET} " new_network || true
         if [[ -n "$new_network" ]]; then
           NETWORK_NAME="$new_network"
           save_config
-          info "✓ 网络名称已更新为: $NETWORK_NAME"
-          info "✓ 配置已保存到: $CONFIG_FILE"
+          success "网络名称已更新为: $NETWORK_NAME"
+          info "配置已保存到: $CONFIG_FILE"
         else
-          info "✓ 网络名称保持不变"
+          info "网络名称保持不变"
         fi
         pause
         ;;
@@ -581,24 +611,25 @@ menu_install_services(){
     clear_screen
     
     local astrbot_mark="[ ]" napcat_mark="[ ]" wechat_mark="[ ]"
-    [[ $selected_astrbot -eq 1 ]] && astrbot_mark="[✓]"
-    [[ $selected_napcat -eq 1 ]] && napcat_mark="[✓]"
-    [[ $selected_wechat -eq 1 ]] && wechat_mark="[✓]"
+    [[ $selected_astrbot -eq 1 ]] && astrbot_mark="${C_BRIGHT_GREEN}[✓]${C_RESET}"
+    [[ $selected_napcat -eq 1 ]] && napcat_mark="${C_BRIGHT_GREEN}[✓]${C_RESET}"
+    [[ $selected_wechat -eq 1 ]] && wechat_mark="${C_BRIGHT_GREEN}[✓]${C_RESET}"
 
     cat <<EOF
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          选择需要部署的服务
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${astrbot_mark} 1) AstrBot
-${napcat_mark} 2) NapCat
-${wechat_mark} 3) WeChatPadPro
+${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
+${C_BRIGHT_BLUE}${C_BOLD}          选择需要部署的服务${C_RESET}
+${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
+${astrbot_mark} ${C_GREEN}1)${C_RESET} ${C_BRIGHT_WHITE}AstrBot${C_RESET}
+${napcat_mark} ${C_GREEN}2)${C_RESET} ${C_BRIGHT_WHITE}NapCat${C_RESET}
+${wechat_mark} ${C_GREEN}3)${C_RESET} ${C_BRIGHT_WHITE}WeChatPadPro${C_RESET}
 
-      4) 开始安装
-      5) 返回主菜单
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      ${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
+      ${C_BRIGHT_GREEN}4)${C_RESET} 开始安装
+      ${C_BRIGHT_RED}5)${C_RESET} 返回主菜单
+${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 EOF
 
-    read -r -p "请选择 (1-5): " opt || true
+    read -r -p "${C_BRIGHT_BLUE}请选择 (1-5):${C_RESET} " opt || true
 
     case "$opt" in
       1) selected_astrbot=$((1-selected_astrbot)) ;;
@@ -942,9 +973,9 @@ show_all_services_status(){
   clear_screen
   
   cat <<EOF
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                                        服务状态
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${C_BRIGHT_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
+${C_BRIGHT_BLUE}${C_BOLD}                                        📊 服务状态${C_RESET}
+${C_BRIGHT_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 EOF
 
   local compose_cmd="$(detect_compose_cmd)"
@@ -959,8 +990,8 @@ EOF
   cd "$BASE_DIR" || { err "无法进入 $BASE_DIR"; pause; return 1; }
   
   # 表头（调整列宽以适应内容）
-  printf "%-12s %-14s %-18s %-22s %-36s\n" "状态" "服务名" "容器IP" "镜像" "端口"
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  printf "${C_BRIGHT_CYAN}%-12s %-14s %-18s %-22s %-36s${C_RESET}\n" "状态" "服务名" "容器IP" "镜像" "端口"
+  echo "${C_BRIGHT_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}"
   
   # 定义所有可能的服务
   local all_services=("astrbot" "napcat" "wechatpadpro")
@@ -998,7 +1029,7 @@ EOF
     printf "%-12s %-14s %-16s %-20s %-30s\n" "$status_icon" "$svc" "$container_ip" "$image" "$ports"
   done
   
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "${C_BRIGHT_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}"
   echo ""
   pause
 }
@@ -1040,30 +1071,29 @@ menu_service_submenu(){
     fi
     
     cat <<EOF
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      $service_name 管理菜单
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${C_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
+  ${C_BRIGHT_BLUE}${C_BOLD}⚙️  $service_name 管理菜单${C_RESET}
+${C_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
-服务状态: $status_icon
-容器名称: $service_name
-镜像名称: $image
-容器IP: $container_ip
-端口映射: $ports
+  ${C_CYAN}服务状态:${C_RESET} ${C_BRIGHT_WHITE}$status_icon${C_RESET}
+  ${C_CYAN}容器名称:${C_RESET} ${C_BRIGHT_WHITE}$service_name${C_RESET}
+  ${C_CYAN}镜像名称:${C_RESET} ${C_BRIGHT_WHITE}$image${C_RESET}
+  ${C_CYAN}容器IP:${C_RESET} ${C_BRIGHT_WHITE}$container_ip${C_RESET}
+  ${C_CYAN}端口映射:${C_RESET} ${C_BRIGHT_WHITE}$ports${C_RESET}
 
-操作选项:
-  1) 启动服务
-  2) 停止服务
-  3) 重启服务
-  4) 查看服务日志
-  5) 重建服务 (更新镜像)
-  6) 删除服务
+${C_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
+${C_MAGENTA}  📋 操作选项:${C_RESET}
+${C_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
-  0) 返回上级菜单
+  ${C_GREEN}[1]${C_RESET} 启动服务               ${C_GREEN}[2]${C_RESET} 停止服务
+  ${C_GREEN}[3]${C_RESET} 重启服务               ${C_GREEN}[4]${C_RESET} 查看日志
+  ${C_GREEN}[5]${C_RESET} 重建服务 (更新镜像)    ${C_BRIGHT_RED}[6]${C_RESET} 删除服务
+  ${C_BRIGHT_BLUE}[0]${C_RESET} 返回上级菜单
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${C_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 EOF
 
-    read -r -p "请选择 (0-6): " opt || true
+    read -r -p "${C_BRIGHT_BLUE}请选择 (0-6):${C_RESET} " opt || true
 
     case "$opt" in
       1) start_service "$BASE_DIR" "$service_name" ;;
@@ -1073,7 +1103,7 @@ EOF
       5) rebuild_service "$BASE_DIR" "$service_name" ;;
       6) delete_service "$BASE_DIR" "$service_name" ;;
       0) break ;;
-      *) warn "❌ 无效选择" && sleep 1 ;;
+      *) warn "无效选择" && sleep 1 ;;
     esac
   done
 }
@@ -1083,31 +1113,31 @@ main_menu(){
   while true; do
     clear_screen
     cat <<EOF
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      AstrBot 集成部署与管理脚本 v2.0.0
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
+${C_BRIGHT_BLUE}${C_BOLD}      AstrBot 集成部署与管理脚本 v2.0.0${C_RESET}
+${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
- 环境配置:
-  1) 安装并配置 Docker 环境
-     (使用Linuxmirrors脚本)
-  2) ⚙️  环境设置
-     (修改安装目录和网络名称)
+${C_BRIGHT_YELLOW}📋 环境配置:${C_RESET}
+  ${C_GREEN}1)${C_RESET} 安装并配置 Docker 环境
+     ${C_DIM}(使用Linuxmirrors脚本)${C_RESET}
+  ${C_GREEN}2)${C_RESET} ⚙️  环境设置
+     ${C_DIM}(修改安装目录和网络名称)${C_RESET}
 
- 服务管理:
-  3) 部署新服务
-  4) 查看服务状态
+${C_BRIGHT_MAGENTA}🚀 服务管理:${C_RESET}
+  ${C_GREEN}3)${C_RESET} 部署新服务
+  ${C_GREEN}4)${C_RESET} 查看服务状态
 
- 已部署服务管理:
-  5) AstrBot
-  6) NapCat
-  7) WeChatPadPro
+${C_BRIGHT_GREEN}⚡ 已部署服务管理:${C_RESET}
+  ${C_GREEN}5)${C_RESET} AstrBot
+  ${C_GREEN}6)${C_RESET} NapCat
+  ${C_GREEN}7)${C_RESET} WeChatPadPro
 
-  0) 退出脚本
+  ${C_BRIGHT_RED}0)${C_RESET} 退出脚本
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 EOF
 
-    read -r -p "请选择 (0-7): " opt || true
+    read -r -p "${C_BRIGHT_BLUE}请选择 (0-7):${C_RESET} " opt || true
 
     case "$opt" in
       1) install_docker ;;
@@ -1119,7 +1149,7 @@ EOF
       7) menu_service_submenu "wechatpadpro" ;;
       0) 
         clear_screen
-        info "感谢使用，再见！"
+        success "感谢使用，再见！"
         break 
         ;;
       *) warn "❌ 无效选择" && sleep 1 ;;
