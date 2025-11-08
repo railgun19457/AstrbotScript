@@ -19,12 +19,12 @@
    ```
   > sudo ./AstrbotScript.sh --no-color (可选禁用彩色输出)
 
-   使用`wget`
-   ```bash
-    curl -sSL https://raw.githubusercontent.com/railgun19457/AstrbotScript/main/AstrbotScript.sh -o AstrbotScript.sh
-    chmod +x AstrbotScript.sh
-    sudo ./AstrbotScript.sh
-   ```
+  使用`wget`
+  ```bash
+   wget -qO AstrbotScript.sh https://raw.githubusercontent.com/railgun19457/AstrbotScript/main/AstrbotScript.sh
+   chmod +x AstrbotScript.sh
+   sudo ./AstrbotScript.sh
+  ```
   > sudo ./AstrbotScript.sh --no-color (可选禁用彩色输出)
 
 ### 选择`安装并配置 Docker 环境`**(可选)**
