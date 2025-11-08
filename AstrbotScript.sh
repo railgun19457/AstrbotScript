@@ -797,7 +797,7 @@ main_menu(){
     clear_screen
     cat <<EOF
 ${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-${C_BRIGHT_BLUE}${C_BOLD}      AstrBot 集成部署与管理脚本 v2.0.0${C_RESET}
+${C_BRIGHT_BLUE}${C_BOLD}      AstrBot 集成部署与管理脚本 v2.0.1${C_RESET}
 ${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
 ${C_BRIGHT_YELLOW}📋 环境配置:${C_RESET}
