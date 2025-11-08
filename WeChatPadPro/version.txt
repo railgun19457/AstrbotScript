@@ -1,6 +1,0 @@
-﻿WeChatPadPro
-Version: ios18.61-861
-Build Time: 20250822_153444
-System: linux
-Architecture: amd64
-Description: Linux PC/Server (64-bit)
