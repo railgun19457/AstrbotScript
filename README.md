@@ -3,6 +3,8 @@
 > 最近更新：2025-11-09
 > - 脚本 2.0.1 精简：统一服务操作函数、支持 --no-color、减少重复代码
 
+![:name](https://count.getloli.com/@AstrbotScript?name=AstrbotScript&theme=miku&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto)
+
 ## 兼容性
 - 适用于 `Linux/WSL`
 - 基于 `Docker` 部署
