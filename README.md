@@ -1,5 +1,7 @@
 # AstrBot 一键部署说明
 
+### 支持AstrBot/NapCat部署和管理
+
 > 最近更新：2025-12-18
 > - 脚本 2.1.0 移除wechatpadpro支持 优化管理功能
 
@@ -11,6 +13,11 @@
 ## 兼容性
 - 适用于 `Linux/WSL`
 - 基于 `Docker` 部署
+
+## 实机截图
+![alt text](image.png)
+![alt text](image-1.png) 
+![alt text](image-3.png)
 
 ## 快速开始
 
@@ -59,6 +66,8 @@
      - 升级容器
      - 管理密码
      - 删除容器和挂载文件夹
+
+
 ## 组件说明
 
 ### AstrBot
