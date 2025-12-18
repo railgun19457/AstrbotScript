@@ -1,9 +1,12 @@
 # AstrBot 一键部署说明
 
-> 最近更新：2025-11-09
-> - 脚本 2.0.1 精简：统一服务操作函数、支持 --no-color、减少重复代码
+> 最近更新：2025-12-18
+> - 脚本 2.1.0 移除wechatpadpro支持 优化管理功能
 
 ![:name](https://count.getloli.com/@AstrbotScript?name=AstrbotScript&theme=miku&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto)
+
+> [!note]
+> 由于各种原因，之后不再维护WeChatPadPro部署，最后支持的版本可以去[wechatpadpro](https://github.com/railgun19457/AstrbotScript/tree/wechatpadpro)分支查看
 
 ## 兼容性
 - 适用于 `Linux/WSL`
@@ -15,27 +18,30 @@
    
    使用`curl`
    ```bash
-    curl -sSL https://raw.githubusercontent.com/railgun19457/AstrbotScript/main/AstrbotScript.sh -o AstrbotScript.sh
-    chmod +x AstrbotScript.sh
+    sudo curl -sSL https://raw.githubusercontent.com/railgun19457/AstrbotScript/main/AstrbotScript.sh -o AstrbotScript.sh
+    sudo chmod +x AstrbotScript.sh
     sudo ./AstrbotScript.sh
    ```
   > sudo ./AstrbotScript.sh --no-color (可选禁用彩色输出)
 
   使用`wget`
   ```bash
-   wget -qO AstrbotScript.sh https://raw.githubusercontent.com/railgun19457/AstrbotScript/main/AstrbotScript.sh
-   chmod +x AstrbotScript.sh
+   sudo wget -qO AstrbotScript.sh https://raw.githubusercontent.com/railgun19457/AstrbotScript/main/AstrbotScript.sh
+   sudo chmod +x AstrbotScript.sh
    sudo ./AstrbotScript.sh
   ```
   > sudo ./AstrbotScript.sh --no-color (可选禁用彩色输出)
 
 ### 选择`安装并配置 Docker 环境`**(可选)**
    - 脚本会自动完成Docker安装和换源
+   - 使用Linuxmirror脚本实现
 
 ### 修改 `环境设置`**(可选)**
    - 包含`安装目录`和`容器网络`
    - 默认安装目录`/opt/AstrBot`
    - 默认容器网络`astrbot`
+   - Astrbot端口映射
+   - NapCat端口映射
   
 ### 选择 `部署新服务`
    - 选择需要部署的服务
@@ -50,9 +56,8 @@
      - 停止容器
      - 重启容器
      - 查看日志
-     - 升级重建容器
+     - 升级容器
      - 删除容器和挂载文件夹
-
 
 ## 组件说明
 
@@ -66,40 +71,18 @@
 - 面板端口：6099
 - 默认密码：`见控制台`(新版napcat会在首次启动时生成随机密码)
 
-### WeChatPadPro
-- 主程序容器名称：`wechatpadpro`
-- 管理面板端口：`1238`
-- Admin_key：`wxpadpro1238`
-- MariaDB 容器名称：`db_wx`
-  - 用于替代 `mysql5.7`，大幅降低内存占用
-  - 端口：容器内 3306（未对外映射）
-  - 数据库名：`weixin`
-  - 用户名：`weixin`
-  - 密码：`wxpadprodb`
-  - Root 密码：`wxpadprodbroot`
-- Redis 容器名称：`redis_wx`
-  - 端口：容器内 6379（未对外映射）
-  - 密码：`wxpadproredis`
-
 ## 连接教程
-- ### NapCat
-  - 在AstrBot消息平台添加 `QQ个人号(aiocqhttp)`
-  - 反向 Websocket 主机地址: `0.0.0.0`或 `astrbot`
-  - 反向 Websocket 端口: `6199`
-  - 反向 Websocket Token: 与NapCat中一致
-  - ![alt text](AstrBot_napcat.png)
-  - 在NapCat面板中打开 `网络配置` 添加 `Websocket客户端`
-  - URL: `ws://astrbot:6199/ws`
-  - 消息格式: `Array`
-  - Token: 和AstrBot配置中一致即可
-  - ![alt text](napcat.png)
+- 在AstrBot消息平台添加 `QQ个人号(aiocqhttp)`
+- 反向 Websocket 主机地址: `0.0.0.0`或 `astrbot`
+- 反向 Websocket 端口: `6199`
+- 反向 Websocket Token: 与NapCat中一致
+- ![alt text](AstrBot_napcat.png)
+- 在NapCat面板中打开 `网络配置` 添加 `Websocket客户端`
+- URL: `ws://astrbot:6199/ws`
+- 消息格式: `Array`
+- Token: 和AstrBot配置中一致即可
+- ![alt text](napcat.png)
 
-- ### WeChatPadPro
-  - 在AstrBot消息平台添加 `微信个人号(WeChatPadPro)`
-  - admin_key: `wxpadpro1238`
-  - host: `wechatpadpro`
-  - port: `1238`
-  - ![alt text](AstrBot_wxpadpro.png)
 
 ## 官方文档与仓库
 - 官方文档：https://docs.astrbot.app
@@ -107,7 +90,6 @@
 - AstrBot 仓库：https://github.com/AstrBotDevs/AstrBot
 - NapCat仓库：https://github.com/NapNeko/NapCatQQ
 - NapCat文档：https://napcat.napneko.icu
-- WeChatPadPro 仓库：https://github.com/WeChatPadPro/WeChatPadPro
 
 ## 特别感谢
 - LinuxMirrors：https://linuxmirrors.cn 本项目的docker环境配置使用了他们的脚本
@@ -115,6 +97,13 @@
 ---
 
 ## 更新日志
+
+- **2025-12-18 (v2.1.0)**：
+  - 移除wechatpadpro支持
+  - 优化管理功能
+  - 支持自定义端口映射
+  - 支持密码管理
+
 - **2025-11-09 (v2.0.1)**：
   - 合并重复 start/stop/restart/rebuild/delete 逻辑为统一函数，减少维护成本
   - 新增 `--no-color` / `NO_COLOR=1` 关闭彩色输出（便于日志重定向）

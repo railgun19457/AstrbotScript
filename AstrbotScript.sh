@@ -16,11 +16,13 @@ CONFIG_FILE="$SCRIPT_DIR/AstrbotScript.conf"
 BASE_DIR="/opt/AstrBot"           # 服务安装根目录
 NETWORK_NAME="astrbot"            # Docker 网络名称
 COMPOSE_FILENAME="compose.yml"    # Compose 文件名
+ASTRBOT_PORT="6185:6185"          # AstrBot 端口映射 (格式: 宿主机端口:容器端口,可用逗号分隔多个)
+NAPCAT_PORT="6099:6099"           # NapCat 端口映射 (格式: 宿主机端口:容器端口,可用逗号分隔多个)
 
 # 如果配置文件存在则读取
 if [[ -f "$CONFIG_FILE" ]]; then
   # 注意：只读取合法的变量名，忽略注释和空行
-  source <(grep -E "^(BASE_DIR|NETWORK_NAME)=" "$CONFIG_FILE")
+  source <(grep -E "^(BASE_DIR|NETWORK_NAME|ASTRBOT_PORT|NAPCAT_PORT)=" "$CONFIG_FILE")
 else
   # 如果配置文件不存在，则创建默认配置文件
   cat >"$CONFIG_FILE" <<'EOF'
@@ -34,6 +36,15 @@ BASE_DIR="/opt/AstrBot"
 
 # Docker 网络名称
 NETWORK_NAME="astrbot"
+
+# ==================== 端口配置 ====================
+# AstrBot 端口映射 (格式: 宿主机端口:容器端口,可用逗号分隔多个)
+# 示例: ASTRBOT_PORT="6185:6185,8080:8080"
+ASTRBOT_PORT="6185:6185"
+
+# NapCat 端口映射 (格式: 宿主机端口:容器端口,可用逗号分隔多个)
+# 示例: NAPCAT_PORT="6099:6099,3000:3000"
+NAPCAT_PORT="6099:6099"
 EOF
 fi
 
@@ -135,6 +146,24 @@ ensure_dirs(){ local base="$1"; shift; for d in "$@"; do mkdir -p -- "$base/$d" 
 generate_full_compose(){
   local outfile="$1"
 
+  # 生成端口映射的 YAML 格式
+  generate_port_yaml() {
+    local ports="$1"
+    local indent="$2"
+    IFS=',' read -ra PORT_ARRAY <<< "$ports"
+    for port in "${PORT_ARRAY[@]}"; do
+      echo "${indent}- \"${port}\""
+    done
+  }
+
+  # 生成 AstrBot 端口配置
+  local astrbot_ports
+  astrbot_ports=$(generate_port_yaml "$ASTRBOT_PORT" "      ")
+
+  # 生成 NapCat 端口配置
+  local napcat_ports
+  napcat_ports=$(generate_port_yaml "$NAPCAT_PORT" "      ")
+
   cat >"$outfile" <<COMPOSE_EOF
 services:
   astrbot:
@@ -144,7 +173,7 @@ services:
     environment:
       - TZ=Asia/Shanghai
     ports:
-      - "6185:6185"
+$astrbot_ports
     volumes:
       - ./astrbot/data:/AstrBot/data
       - /var/run/docker.sock:/var/run/docker.sock
@@ -162,7 +191,7 @@ services:
       - NAPCAT_GID=\${NAPCAT_GID:-1000}
       - MODE=astrbot
     ports:
-      - "6099:6099"
+$napcat_ports
     volumes:
       - ./astrbot/data:/AstrBot/data
       - ./napcat/ntqq:/app/.config/QQ
@@ -212,7 +241,47 @@ BASE_DIR="$BASE_DIR"
 
 # Docker 网络名称
 NETWORK_NAME="$NETWORK_NAME"
+
+# ==================== 端口配置 ====================
+# AstrBot 端口映射 (格式: 宿主机端口:容器端口,可用逗号分隔多个)
+# 示例: ASTRBOT_PORT="6185:6185,8080:8080"
+ASTRBOT_PORT="$ASTRBOT_PORT"
+
+# NapCat 端口映射 (格式: 宿主机端口:容器端口,可用逗号分隔多个)
+# 示例: NAPCAT_PORT="6099:6099,3000:3000"
+NAPCAT_PORT="$NAPCAT_PORT"
 EOF
+}
+
+# 验证端口映射格式
+validate_port_mapping(){
+  local port_str="$1"
+  # 移除空格
+  port_str="${port_str// /}"
+
+  # 检查是否为空
+  [[ -z "$port_str" ]] && return 1
+
+  # 分割多个端口映射
+  IFS=',' read -ra PORT_ARRAY <<< "$port_str"
+
+  for mapping in "${PORT_ARRAY[@]}"; do
+    # 检查格式是否为 数字:数字
+    if [[ ! "$mapping" =~ ^[0-9]+:[0-9]+$ ]]; then
+      return 1
+    fi
+
+    # 提取宿主机端口和容器端口
+    local host_port="${mapping%%:*}"
+    local container_port="${mapping##*:}"
+
+    # 验证端口范围
+    if (( host_port < 1 || host_port > 65535 || container_port < 1 || container_port > 65535 )); then
+      return 1
+    fi
+  done
+
+  return 0
 }
 
 # ==================== 设置菜单 ====================
@@ -221,25 +290,29 @@ menu_settings(){
     clear_screen
     cat <<EOF
 ${C_BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-${C_BRIGHT_BLUE}${C_BOLD}           环境配置设置${C_RESET}
+${C_BRIGHT_BLUE}${C_BOLD}                    安装设置${C_RESET}
 ${C_BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
 ${C_BRIGHT_YELLOW}当前配置:${C_RESET}
-  ${C_CYAN}📁 安装目录:${C_RESET}  ${C_BRIGHT_WHITE}$BASE_DIR${C_RESET}
-  ${C_CYAN}🌐 网络名称:${C_RESET}  ${C_BRIGHT_WHITE}$NETWORK_NAME${C_RESET}
+  ${C_CYAN}📁 安装目录:${C_RESET}     ${C_BRIGHT_WHITE}$BASE_DIR${C_RESET}
+  ${C_CYAN}🌐 网络名称:${C_RESET}     ${C_BRIGHT_WHITE}$NETWORK_NAME${C_RESET}
+  ${C_CYAN}🔌 AstrBot端口:${C_RESET}  ${C_BRIGHT_WHITE}$ASTRBOT_PORT${C_RESET}
+  ${C_CYAN}🔌 NapCat端口:${C_RESET}   ${C_BRIGHT_WHITE}$NAPCAT_PORT${C_RESET}
 
 ${C_BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
 ${C_BRIGHT_YELLOW}修改选项:${C_RESET}
   ${C_GREEN}1)${C_RESET} 修改安装目录
   ${C_GREEN}2)${C_RESET} 修改网络名称
-  
+  ${C_GREEN}3)${C_RESET} 修改 AstrBot 端口
+  ${C_GREEN}4)${C_RESET} 修改 NapCat 端口
+
   ${C_BRIGHT_RED}0)${C_RESET} 返回主菜单
 
 ${C_BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 EOF
 
-    read -r -p "${C_BRIGHT_BLUE}请选择 (0-2):${C_RESET} " opt || true
+    read -r -p "${C_BRIGHT_BLUE}请选择 (0-4):${C_RESET} " opt || true
 
     case "$opt" in
       1)
@@ -270,6 +343,70 @@ EOF
         fi
         pause
         ;;
+      3)
+        clear_screen
+        cat <<EOF
+${C_CYAN}当前 AstrBot 端口映射: ${C_BRIGHT_WHITE}$ASTRBOT_PORT${C_RESET}
+
+${C_BRIGHT_YELLOW}端口映射格式说明:${C_RESET}
+  ${C_GREEN}•${C_RESET} 单个端口: ${C_BRIGHT_WHITE}宿主机端口:容器端口${C_RESET}
+    示例: ${C_CYAN}6185:6185${C_RESET}
+  ${C_GREEN}•${C_RESET} 多个端口: 用逗号分隔
+    示例: ${C_CYAN}6185:6185,8080:8080,9000:9000${C_RESET}
+
+EOF
+        read -r -p "${C_BRIGHT_BLUE}请输入新的端口映射 (留空保持不变):${C_RESET} " new_port || true
+        if [[ -n "$new_port" ]]; then
+          # 移除空格
+          new_port="${new_port// /}"
+          if validate_port_mapping "$new_port"; then
+            ASTRBOT_PORT="$new_port"
+            save_config
+            success "AstrBot 端口映射已更新为: $ASTRBOT_PORT"
+            info "配置已保存到: $CONFIG_FILE"
+            warn "注意: 需要重新部署服务才能生效"
+          else
+            err "无效的端口映射格式"
+            err "格式: 宿主机端口:容器端口 或 端口1:端口1,端口2:端口2"
+            err "端口范围: 1-65535"
+          fi
+        else
+          info "端口映射保持不变"
+        fi
+        pause
+        ;;
+      4)
+        clear_screen
+        cat <<EOF
+${C_CYAN}当前 NapCat 端口映射: ${C_BRIGHT_WHITE}$NAPCAT_PORT${C_RESET}
+
+${C_BRIGHT_YELLOW}端口映射格式说明:${C_RESET}
+  ${C_GREEN}•${C_RESET} 单个端口: ${C_BRIGHT_WHITE}宿主机端口:容器端口${C_RESET}
+    示例: ${C_CYAN}6099:6099${C_RESET}
+  ${C_GREEN}•${C_RESET} 多个端口: 用逗号分隔
+    示例: ${C_CYAN}6099:6099,3000:3000,8000:8000${C_RESET}
+
+EOF
+        read -r -p "${C_BRIGHT_BLUE}请输入新的端口映射 (留空保持不变):${C_RESET} " new_port || true
+        if [[ -n "$new_port" ]]; then
+          # 移除空格
+          new_port="${new_port// /}"
+          if validate_port_mapping "$new_port"; then
+            NAPCAT_PORT="$new_port"
+            save_config
+            success "NapCat 端口映射已更新为: $NAPCAT_PORT"
+            info "配置已保存到: $CONFIG_FILE"
+            warn "注意: 需要重新部署服务才能生效"
+          else
+            err "无效的端口映射格式"
+            err "格式: 宿主机端口:容器端口 或 端口1:端口1,端口2:端口2"
+            err "端口范围: 1-65535"
+          fi
+        else
+          info "端口映射保持不变"
+        fi
+        pause
+        ;;
       0) return 0 ;;
       *) warn "❌ 无效选择" && sleep 1 ;;
     esac
@@ -294,14 +431,13 @@ ${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━�
 ${astrbot_mark} ${C_GREEN}1)${C_RESET} ${C_BRIGHT_WHITE}AstrBot${C_RESET}
 ${napcat_mark} ${C_GREEN}2)${C_RESET} ${C_BRIGHT_WHITE}NapCat${C_RESET}
 
-      ${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-      ${C_BRIGHT_GREEN}3)${C_RESET} 开始安装
-      ${C_BRIGHT_RED}4)${C_RESET} 返回主菜单
+${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
+${C_BRIGHT_GREEN}3)${C_RESET} 开始安装
+${C_BRIGHT_RED}0)${C_RESET} 返回主菜单
 ${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 EOF
 
-    read -r -p "${C_BRIGHT_BLUE}请选择 (1-4):${C_RESET} " opt || true
-
+    read -r -p "${C_BRIGHT_BLUE}请选择 (0-3):${C_RESET} " opt || true
     case "$opt" in
       1) selected_astrbot=$((1-selected_astrbot)) ;;
       2) selected_napcat=$((1-selected_napcat)) ;;
@@ -321,7 +457,7 @@ EOF
         install_service_begin "${service_types[@]}"
         return 0
         ;;
-      4) return 0 ;;
+      0) return 0 ;;
       *) warn "❌ 无效选择" && sleep 1 ;;
     esac
   done
@@ -379,7 +515,7 @@ show_service_logs(){
   info "正在获取 $service_name 服务的日志（按 Ctrl+C 退出）..."
   docker logs -f --tail 100 "$service_name" 2>/dev/null || err "无法获取日志 - 容器不存在"
 }
-rebuild_service(){ local base="$1" service_name="$2"; warn "这会拉取最新镜像并升级 $service_name"; read -r -p "确认? (Y/N): " c || true; [[ "$c" =~ ^[Yy]$ ]] || { info "已取消"; pause; return 0; }; service_action rebuild "$base" "$service_name"; pause; }
+rebuild_service(){ local base="$1" service_name="$2"; warn "这会拉取最新镜像并重建容器 $service_name"; read -r -p "确认? (Y/N): " c || true; [[ "$c" =~ ^[Yy]$ ]] || { info "已取消"; pause; return 0; }; service_action rebuild "$base" "$service_name"; pause; }
 
 # ==================== Compose 文件操作 ====================
 delete_service(){
@@ -408,47 +544,53 @@ EOF
 show_all_services_status(){
   clear_screen
   
+  # 统一分隔线长度和样式 (70个字符)
+  local sep="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
   cat <<EOF
-${C_BRIGHT_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-${C_BRIGHT_BLUE}${C_BOLD}                                        📊 服务状态${C_RESET}
-${C_BRIGHT_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
+${C_BRIGHT_GREEN}${sep}${C_RESET}
+${C_BRIGHT_BLUE}${C_BOLD}                              📊 服务状态${C_RESET}
+${C_BRIGHT_GREEN}${sep}${C_RESET}
 EOF
-  
-  # 表头（调整列宽以适应内容）
-  printf "${C_BRIGHT_CYAN}%-12s %-14s %-18s %-22s %-36s${C_RESET}\n" "状态" "服务名" "容器IP" "镜像" "端口"
-  echo "${C_BRIGHT_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}"
-  
+
   # 定义所有可能的服务
   local all_services=("astrbot" "napcat")
-  
+
   for svc in "${all_services[@]}"; do
     local container_name="$svc"
-    
+
     # 检查容器是否存在和运行状态
     local container_exists
     container_exists=$(docker ps -a --filter "name=$container_name" --format '{{.Names}}' 2>/dev/null | head -1)
-    
+
     if [[ -z "$container_exists" ]]; then
-      printf "%-12s %-14s %-16s %-20s %-30s\n" "⚠️  未安装" "$svc" "-" "-" "-"
-      continue
+       echo "${C_BRIGHT_WHITE}服务名称: ${C_CYAN}$svc${C_RESET}"
+       echo "${C_BRIGHT_WHITE}当前状态: ${C_YELLOW}⚠️  未安装${C_RESET}"
+       echo "${C_BRIGHT_GREEN}${sep}${C_RESET}"
+       continue
     fi
-    
+
     local status="$(docker ps --filter "name=$container_name" --format '{{.Status}}' 2>/dev/null || echo '')"
-    local status_icon="❌ 未运行"
+    local status_icon="${C_RED}❌ 未运行${C_RESET}"
     if [[ "$status" == *"Up"* ]]; then
-      status_icon="✅ 运行中"
+      status_icon="${C_GREEN}✅ 运行中${C_RESET}"
     fi
-    
+
     # 获取容器IP、镜像名和端口信息
     local container_ip="$(docker inspect "$container_name" --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' 2>/dev/null || echo '-')"
     local image="$(docker ps -a --filter "name=$container_name" --format '{{.Image}}' 2>/dev/null || echo '-')"
-    local ports="$(docker ps -a --filter "name=$container_name" --format '{{.Ports}}' 2>/dev/null | sed 's/0\.0\.0\.0://g' | tr '\n' ' ' || echo '-')"
+    # 优化端口显示，过滤 IPv6，替换换行符为逗号
+    local ports="$(docker ps -a --filter "name=$container_name" --format '{{.Ports}}' 2>/dev/null | tr ',' '\n' | grep -v "\[::\]" | sed 's/0\.0\.0\.0://g' | sed 's/^[ \t]*//' | tr '\n' ',' | sed 's/,$//' || echo '-')"
     [[ -z "$ports" || "$ports" == " " ]] && ports="-"
-    
-    printf "%-12s %-14s %-16s %-20s %-30s\n" "$status_icon" "$svc" "$container_ip" "$image" "$ports"
+
+    echo "${C_BRIGHT_WHITE}服务名称: ${C_CYAN}$svc${C_RESET}"
+    echo "${C_BRIGHT_WHITE}当前状态: $status_icon"
+    echo "${C_BRIGHT_WHITE}容器 IP : ${C_MAGENTA}$container_ip${C_RESET}"
+    echo "${C_BRIGHT_WHITE}镜像名称: ${C_BLUE}$image${C_RESET}"
+    echo "${C_BRIGHT_WHITE}端口映射: ${C_YELLOW}$ports${C_RESET}"
+    echo "${C_BRIGHT_GREEN}${sep}${C_RESET}"
   done
   
-  echo "${C_BRIGHT_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}"
   echo ""
   pause
 }
@@ -480,7 +622,8 @@ menu_service_submenu(){
         # 获取容器详细信息
         container_ip="$(docker inspect "$service_name" --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' 2>/dev/null || echo '-')"
         image="$(docker inspect "$service_name" --format '{{.Config.Image}}' 2>/dev/null || echo '-')"
-        ports="$(docker port "$service_name" 2>/dev/null | sed 's/0\.0\.0\.0://g' | tr '\n' ' ' || echo '-')"
+        # 优化端口显示，过滤 IPv6
+        ports="$(docker ps --filter "name=$service_name" --format '{{.Ports}}' 2>/dev/null | tr ',' '\n' | grep -v "\[::\]" | sed 's/0\.0\.0\.0://g' | sed 's/^[ \t]*//' | tr '\n' ',' | sed 's/,$//' || echo '-')"
         [[ -z "$ports" || "$ports" == " " ]] && ports="-"
       else
         status_icon="❌ 未运行"
@@ -504,9 +647,9 @@ ${C_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━�
 ${C_MAGENTA}  📋 操作选项:${C_RESET}
 ${C_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
-  ${C_GREEN}[1]${C_RESET} 启动服务               ${C_GREEN}[2]${C_RESET} 停止服务
-  ${C_GREEN}[3]${C_RESET} 重启服务               ${C_GREEN}[4]${C_RESET} 查看日志
-  ${C_GREEN}[5]${C_RESET} 升级服务 (更新镜像)    ${C_BRIGHT_RED}[6]${C_RESET} 删除服务
+  ${C_GREEN}[1]${C_RESET} 启动服务                 ${C_GREEN}[2]${C_RESET} 停止服务
+  ${C_GREEN}[3]${C_RESET} 重启服务                 ${C_GREEN}[4]${C_RESET} 查看日志
+  ${C_GREEN}[5]${C_RESET} 升级(更新镜像并重建容器) ${C_BRIGHT_RED}[6]${C_RESET} 删除服务
   ${C_BRIGHT_BLUE}[0]${C_RESET} 返回上级菜单
 
 ${C_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
@@ -533,7 +676,7 @@ main_menu(){
     clear_screen
     cat <<EOF
 ${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-${C_BRIGHT_BLUE}${C_BOLD}      AstrBot 集成部署与管理脚本 v2.0.1${C_RESET}
+${C_BRIGHT_BLUE}${C_BOLD}      AstrBot 集成部署与管理脚本 v2.1.0${C_RESET}
 ${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
 ${C_BRIGHT_YELLOW}📋 环境配置:${C_RESET}
