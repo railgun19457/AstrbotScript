@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 # AstrBot / NapCat 一键部署与管理脚本
 # 项目地址:https://github.com/railgun19457/AstrbotScript
-# 容器配置脚本来源: https://linuxmirrors.cn
+# 容器加速配置脚本来源: https://linuxmirrors.cn
 
 set -euo pipefail
 
-SCRIPT_VERSION="2.0.1"
+SCRIPT_VERSION="2.1.0"
+
+# ==================== 错误代码常量 ====================
+readonly ERR_SUCCESS=0
+readonly ERR_USER_INPUT=1
+readonly ERR_SYSTEM=2
 
 # ==================== 配置文件加载 ====================
 # 获取脚本所在的目录
@@ -89,6 +94,259 @@ clear_screen(){
   clear 2>/dev/null || printf '\033[2J\033[3J\033[1;1H'
 }
 
+# ==================== Layer 1: 核心工具函数扩展 ====================
+
+# 验证非空字符串
+validate_non_empty(){
+  local value="$1"
+  [[ -n "$value" ]]
+}
+
+# 验证目录路径
+validate_directory_path(){
+  local path="$1"
+  [[ -n "$path" && "$path" =~ ^[a-zA-Z0-9/_.-]+$ ]]
+}
+
+# 确保文件存在
+ensure_file_exists(){
+  local file="$1"
+  if [[ ! -f "$file" ]]; then
+    err "文件不存在: $file"
+    return $ERR_USER_INPUT
+  fi
+  return $ERR_SUCCESS
+}
+
+# 安全创建目录
+safe_create_dir(){
+  local dir="$1"
+  if ! mkdir -p -- "$dir" 2>/dev/null; then
+    err "无法创建目录: $dir"
+    return $ERR_SYSTEM
+  fi
+  return $ERR_SUCCESS
+}
+
+# 显示标题头
+print_header(){
+  local title="$1"
+  local width=70
+  echo "${C_BRIGHT_CYAN}$(printf '━%.0s' $(seq 1 $width))${C_RESET}"
+  printf "${C_BRIGHT_BLUE}${C_BOLD}%*s${C_RESET}\n" $(((${#title}+$width)/2)) "$title"
+  echo "${C_BRIGHT_CYAN}$(printf '━%.0s' $(seq 1 $width))${C_RESET}"
+}
+
+# 显示分隔线
+print_separator(){
+  local width="${1:-70}"
+  echo "${C_BRIGHT_CYAN}$(printf '━%.0s' $(seq 1 $width))${C_RESET}"
+}
+
+# 显示键值对
+print_key_value(){
+  local key="$1" value="$2"
+  printf "  ${C_CYAN}%s:${C_RESET} ${C_BRIGHT_WHITE}%s${C_RESET}\n" "$key" "$value"
+}
+
+# 通用用户输入提示
+prompt_user(){
+  local prompt="$1"
+  local default="${2:-}"
+  local input=""
+
+  if [[ -n "$default" ]]; then
+    read -r -p "${C_BRIGHT_BLUE}${prompt} [${default}]:${C_RESET} " input || true
+    echo "${input:-$default}"
+  else
+    read -r -p "${C_BRIGHT_BLUE}${prompt}:${C_RESET} " input || true
+    echo "$input"
+  fi
+}
+
+# 密码输入提示（带确认）
+prompt_password(){
+  local prompt="$1"
+  local password=""
+  read -r -s -p "${C_BRIGHT_BLUE}${prompt}:${C_RESET} " password || true
+  echo "" >&2
+  echo "$password"
+}
+
+# 是/否确认提示
+prompt_yes_no(){
+  local prompt="$1"
+  local default="${2:-N}"
+  local response=""
+
+  read -r -p "${C_BRIGHT_BLUE}${prompt} (Y/N) [${default}]:${C_RESET} " response || true
+  response="${response:-$default}"
+
+  [[ "$response" =~ ^[Yy]$ ]]
+}
+
+# 菜单选择提示
+prompt_choice(){
+  local prompt="$1"
+  local choice=""
+  read -r -p "${C_BRIGHT_BLUE}${prompt}:${C_RESET} " choice || true
+  echo "$choice"
+}
+
+# ==================== Layer 2: 配置管理函数 ====================
+
+# 显示端口格式帮助信息
+show_port_format_help(){
+  cat <<EOF
+
+${C_BRIGHT_YELLOW}端口映射格式说明:${C_RESET}
+  ${C_GREEN}•${C_RESET} 单个端口: ${C_BRIGHT_WHITE}宿主机端口:容器端口${C_RESET}
+    示例: ${C_CYAN}6185:6185${C_RESET}
+  ${C_GREEN}•${C_RESET} 多个端口: 用逗号分隔
+    示例: ${C_CYAN}6185:6185,8080:8080,9000:9000${C_RESET}
+
+EOF
+}
+
+# 重新生成 compose 文件（如果存在）
+regenerate_compose_if_exists(){
+  if [[ ! -f "$BASE_DIR/$COMPOSE_FILENAME" ]]; then
+    return $ERR_SUCCESS
+  fi
+
+  info "正在重新生成 compose 文件..."
+  if generate_full_compose "$BASE_DIR/$COMPOSE_FILENAME"; then
+    success "✓ compose 文件已更新"
+    warn "注意: 需要重新部署服务才能生效"
+    return $ERR_SUCCESS
+  else
+    err "compose 文件生成失败"
+    return $ERR_SYSTEM
+  fi
+}
+
+# 通用设置更新函数
+update_setting(){
+  local var_name="$1"
+  local display_name="$2"
+  local current_value="${!var_name}"
+
+  clear_screen
+  echo "${C_CYAN}当前${display_name}: ${C_BRIGHT_WHITE}$current_value${C_RESET}"
+
+  local new_value
+  new_value=$(prompt_user "请输入新的${display_name} (留空保持不变)")
+
+  if [[ -z "$new_value" ]]; then
+    info "${display_name}保持不变"
+    pause
+    return $ERR_SUCCESS
+  fi
+
+  eval "$var_name=\"$new_value\""
+  save_config
+  success "${display_name}已更新为: $new_value"
+  info "配置已保存到: $CONFIG_FILE"
+  pause
+  return $ERR_SUCCESS
+}
+
+# 通用端口设置更新函数（消除 AstrBot 和 NapCat 的重复代码）
+update_port_setting(){
+  local service="$1"
+  local port_var="${service^^}_PORT"  # 转换为大写: astrbot -> ASTRBOT_PORT
+  local current_port="${!port_var}"
+
+  clear_screen
+  echo "${C_CYAN}当前 ${service} 端口映射: ${C_BRIGHT_WHITE}$current_port${C_RESET}"
+  show_port_format_help
+
+  local new_port
+  new_port=$(prompt_user "请输入新的端口映射 (留空保持不变)")
+
+  if [[ -z "$new_port" ]]; then
+    info "端口映射保持不变"
+    pause
+    return $ERR_SUCCESS
+  fi
+
+  # 移除空格
+  new_port="${new_port// /}"
+
+  if ! validate_port_mapping "$new_port"; then
+    err "无效的端口映射格式"
+    err "格式: 宿主机端口:容器端口 或 端口1:端口1,端口2:端口2"
+    err "端口范围: 1-65535"
+    pause
+    return $ERR_USER_INPUT
+  fi
+
+  eval "$port_var=\"$new_port\""
+  save_config
+  success "${service} 端口映射已更新为: $new_port"
+  info "配置已保存到: $CONFIG_FILE"
+
+  # 如果 compose 文件存在，重新生成
+  regenerate_compose_if_exists
+
+  pause
+  return $ERR_SUCCESS
+}
+
+# ==================== Layer 3: JSON 操作抽象层 ====================
+
+# 读取 JSON 字段值
+json_read_field(){
+  local file="$1"
+  local field_path="$2"
+
+  if [[ ! -f "$file" ]]; then
+    echo ""
+    return $ERR_USER_INPUT
+  fi
+
+  if has_cmd jq; then
+    jq -r ".$field_path // \"\"" "$file" 2>/dev/null || echo ""
+  else
+    # 提取字段名（从路径中获取最后一部分）
+    local field_name="${field_path##*.}"
+    grep -o "\"${field_name}\"[[:space:]]*:[[:space:]]*\"[^\"]*\"" "$file" 2>/dev/null | \
+      sed "s/.*\"${field_name}\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/" || echo ""
+  fi
+}
+
+# 写入 JSON 字段值
+json_write_field(){
+  local file="$1"
+  local field_path="$2"
+  local new_value="$3"
+
+  if [[ ! -f "$file" ]]; then
+    err "文件不存在: $file"
+    return $ERR_USER_INPUT
+  fi
+
+  if has_cmd jq; then
+    if jq ".$field_path = \"$new_value\"" "$file" > "${file}.tmp" 2>/dev/null; then
+      mv "${file}.tmp" "$file"
+      return $ERR_SUCCESS
+    else
+      rm -f "${file}.tmp"
+      err "JSON 更新失败"
+      return $ERR_SYSTEM
+    fi
+  else
+    # 提取字段名（从路径中获取最后一部分）
+    local field_name="${field_path##*.}"
+    if sed -i.bak "s/\"${field_name}\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"${field_name}\": \"$new_value\"/" "$file" 2>/dev/null; then
+      return $ERR_SUCCESS
+    else
+      err "JSON 更新失败"
+      return $ERR_SYSTEM
+    fi
+  fi
+}
+
 # ==================== Docker 检测与安装 ====================
 detect_compose_cmd(){ docker compose version >/dev/null 2>&1 && echo "docker compose" && return || has_cmd docker-compose && echo "docker-compose" || echo ""; }
 
@@ -109,6 +367,92 @@ install_docker(){
   [[ -z "$(detect_compose_cmd)" ]] && warn "未检测到 Compose，可能需要手动安装" || info "Compose 已检测"
   success "Docker 安装完成"
   pause
+}
+
+# ==================== Layer 4: Docker 操作辅助函数 ====================
+
+# 检查容器是否存在
+container_exists(){
+  local container="$1"
+  docker ps -a --filter "name=^${container}$" --format '{{.Names}}' 2>/dev/null | grep -q "^${container}$"
+}
+
+# 检查容器是否运行中
+container_running(){
+  local container="$1"
+  docker ps --filter "name=^${container}$" --format '{{.Names}}' 2>/dev/null | grep -q "^${container}$"
+}
+
+# 获取容器信息
+container_get_info(){
+  local container="$1"
+  local format="$2"
+  local default="${3:--}"
+  docker inspect "$container" --format "$format" 2>/dev/null || echo "$default"
+}
+
+# 格式化端口显示
+get_formatted_ports(){
+  local service="$1"
+  local ports
+  ports=$(docker ps --filter "name=^${service}$" --format '{{.Ports}}' 2>/dev/null | \
+    tr ',' '\n' | \
+    grep -v "\[::\]" | \
+    sed 's/0\.0\.0\.0://g' | \
+    sed 's/^[ \t]*//' | \
+    tr '\n' ',' | \
+    sed 's/,$//' || echo '-')
+
+  [[ -z "$ports" || "$ports" == " " ]] && ports="-"
+  echo "$ports"
+}
+
+# 启动服务依赖
+start_dependencies(){
+  local service="$1"
+  local deps
+  deps=$(service_dependencies "$service")
+
+  [[ -z "$deps" ]] && return $ERR_SUCCESS
+
+  for dep in $deps; do
+    if container_exists "$dep"; then
+      docker start "$dep" >/dev/null 2>&1 || \
+      docker restart "$dep" >/dev/null 2>&1 || true
+    fi
+  done
+
+  return $ERR_SUCCESS
+}
+
+# 检查镜像更新
+check_image_update(){
+  local base="$1"
+  local service="$2"
+
+  local current_digest
+  current_digest=$(docker inspect "$service" --format='{{.Image}}' 2>/dev/null || echo "")
+
+  info "正在拉取最新镜像..."
+  if ! compose_exec "$base" pull "$service"; then
+    err "拉取镜像失败"
+    return $ERR_SYSTEM
+  fi
+
+  local image_name
+  image_name=$(docker inspect "$service" --format='{{.Config.Image}}' 2>/dev/null || echo "")
+
+  local new_digest=""
+  if [[ -n "$image_name" ]]; then
+    new_digest=$(docker images --no-trunc --quiet "$image_name" 2>/dev/null | head -1 || echo "")
+  fi
+
+  # 返回是否有更新 (0=有更新, 1=无更新)
+  if [[ -n "$current_digest" && -n "$new_digest" && "$current_digest" == "$new_digest" ]]; then
+    return 1  # 无更新
+  else
+    return 0  # 有更新
+  fi
 }
 
 # ==================== 网络与目录初始化 ====================
@@ -231,6 +575,163 @@ detect_installed_services(){
   printf '%s\n' "${detected_services[@]}"
 }
 
+# ==================== Layer 5: 服务管理辅助函数 ====================
+
+# 获取服务状态信息（返回键值对格式）
+get_service_status(){
+  local service="$1"
+
+  # 默认状态
+  echo "name=$service"
+  echo "icon=⚠️  未安装"
+  echo "ip=-"
+  echo "image=-"
+  echo "ports=-"
+
+  # 检查容器是否存在
+  if ! container_exists "$service"; then
+    return $ERR_SUCCESS
+  fi
+
+  # 容器存在，检查是否运行中
+  if container_running "$service"; then
+    echo "icon=✅ 运行中"
+    echo "ip=$(container_get_info "$service" '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' '-')"
+    echo "image=$(container_get_info "$service" '{{.Config.Image}}' '-')"
+    echo "ports=$(get_formatted_ports "$service")"
+  else
+    echo "icon=❌ 未运行"
+    echo "image=$(docker ps -a --filter "name=^${service}$" --format '{{.Image}}' 2>/dev/null || echo '-')"
+  fi
+
+  return $ERR_SUCCESS
+}
+
+# 重新生成 compose 文件（包含新的随机 MAC 地址）
+regenerate_compose_with_new_mac(){
+  local base="$1"
+
+  if [[ ! -f "$base/$COMPOSE_FILENAME" ]]; then
+    return $ERR_SUCCESS
+  fi
+
+  info "正在重新生成 compose 文件..."
+  if generate_full_compose "$base/$COMPOSE_FILENAME"; then
+    success "✓ compose 文件已更新（包含新的随机 MAC 地址）"
+    return $ERR_SUCCESS
+  else
+    warn "compose 文件生成失败，继续使用现有配置"
+    return $ERR_SYSTEM
+  fi
+}
+
+# 启动服务
+service_start(){
+  local base="$1"
+  local service="$2"
+
+  info "启动 $service ..."
+  start_dependencies "$service"
+
+  if compose_exec "$base" up -d "$service" 2>/dev/null; then
+    success "$service 启动成功"
+    return $ERR_SUCCESS
+  elif docker start "$service" 2>/dev/null; then
+    success "$service 启动成功"
+    return $ERR_SUCCESS
+  else
+    err "$service 启动失败"
+    return $ERR_SYSTEM
+  fi
+}
+
+# 停止服务
+service_stop(){
+  local base="$1"
+  local service="$2"
+
+  info "停止 $service ..."
+
+  if compose_exec "$base" stop "$service" 2>/dev/null; then
+    success "$service 停止成功"
+  elif docker stop "$service" 2>/dev/null; then
+    success "$service 停止成功"
+  else
+    warn "容器不存在或已停止"
+  fi
+
+  # 停止依赖
+  local deps
+  deps=$(service_dependencies "$service")
+  if [[ -n "$deps" ]]; then
+    for d in $deps; do
+      docker stop "$d" 2>/dev/null || true
+    done
+  fi
+
+  return $ERR_SUCCESS
+}
+
+# 重启服务
+service_restart(){
+  local base="$1"
+  local service="$2"
+
+  info "重启 $service ..."
+  start_dependencies "$service"
+
+  if compose_exec "$base" restart "$service" 2>/dev/null; then
+    success "$service 重启成功"
+    return $ERR_SUCCESS
+  elif docker restart "$service" 2>/dev/null; then
+    success "$service 重启成功"
+    return $ERR_SUCCESS
+  else
+    err "$service 重启失败"
+    return $ERR_SYSTEM
+  fi
+}
+
+# 重建服务（更新镜像）
+service_rebuild(){
+  local base="$1"
+  local service="$2"
+
+  # 重新生成 compose 文件
+  regenerate_compose_with_new_mac "$base"
+
+  info "正在检查 $service 镜像更新..."
+
+  # 使用新的 check_image_update 函数
+  if check_image_update "$base" "$service"; then
+    # 有更新，重建容器
+    info "检测到镜像更新，正在重建容器..."
+    if compose_exec "$base" up -d "$service"; then
+      success "容器已使用最新镜像重建"
+      return $ERR_SUCCESS
+    else
+      err "重建容器失败"
+      return $ERR_SYSTEM
+    fi
+  else
+    # 无更新
+    info "镜像已是最新版本，无需重建"
+    return $ERR_SUCCESS
+  fi
+}
+
+# 删除服务
+service_delete(){
+  local service="$1"
+
+  if docker rm -fv "$service" 2>/dev/null; then
+    success "$service 删除成功"
+    return $ERR_SUCCESS
+  else
+    warn "容器不存在"
+    return $ERR_USER_INPUT
+  fi
+}
 
 # ==================== 菜单系统 ====================
 # ==================== 配置保存 ====================
@@ -290,6 +791,7 @@ validate_port_mapping(){
 }
 
 # ==================== 设置菜单 ====================
+# ==================== Layer 7: UI 层 - 设置菜单 ====================
 menu_settings(){
   while true; do
     clear_screen
@@ -317,125 +819,14 @@ ${C_BRIGHT_YELLOW}修改选项:${C_RESET}
 ${C_BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 EOF
 
-    read -r -p "${C_BRIGHT_BLUE}请选择 (0-4):${C_RESET} " opt || true
+    local choice
+    choice=$(prompt_choice "请选择 (0-4)")
 
-    case "$opt" in
-      1)
-        clear_screen
-        echo "${C_CYAN}当前安装目录: ${C_BRIGHT_WHITE}$BASE_DIR${C_RESET}"
-        read -r -p "${C_BRIGHT_BLUE}请输入新的安装目录 (留空保持不变):${C_RESET} " new_base || true
-        if [[ -n "$new_base" ]]; then
-          BASE_DIR="$new_base"
-          save_config
-          success "安装目录已更新为: $BASE_DIR"
-          info "配置已保存到: $CONFIG_FILE"
-        else
-          info "安装目录保持不变"
-        fi
-        pause
-        ;;
-      2)
-        clear_screen
-        echo "${C_CYAN}当前网络名称: ${C_BRIGHT_WHITE}$NETWORK_NAME${C_RESET}"
-        read -r -p "${C_BRIGHT_BLUE}请输入新的网络名称 (留空保持不变):${C_RESET} " new_network || true
-        if [[ -n "$new_network" ]]; then
-          NETWORK_NAME="$new_network"
-          save_config
-          success "网络名称已更新为: $NETWORK_NAME"
-          info "配置已保存到: $CONFIG_FILE"
-        else
-          info "网络名称保持不变"
-        fi
-        pause
-        ;;
-      3)
-        clear_screen
-        cat <<EOF
-${C_CYAN}当前 AstrBot 端口映射: ${C_BRIGHT_WHITE}$ASTRBOT_PORT${C_RESET}
-
-${C_BRIGHT_YELLOW}端口映射格式说明:${C_RESET}
-  ${C_GREEN}•${C_RESET} 单个端口: ${C_BRIGHT_WHITE}宿主机端口:容器端口${C_RESET}
-    示例: ${C_CYAN}6185:6185${C_RESET}
-  ${C_GREEN}•${C_RESET} 多个端口: 用逗号分隔
-    示例: ${C_CYAN}6185:6185,8080:8080,9000:9000${C_RESET}
-
-EOF
-        read -r -p "${C_BRIGHT_BLUE}请输入新的端口映射 (留空保持不变):${C_RESET} " new_port || true
-        if [[ -n "$new_port" ]]; then
-          # 移除空格
-          new_port="${new_port// /}"
-          if validate_port_mapping "$new_port"; then
-            ASTRBOT_PORT="$new_port"
-            save_config
-            success "AstrBot 端口映射已更新为: $ASTRBOT_PORT"
-            info "配置已保存到: $CONFIG_FILE"
-
-            # 如果 compose 文件存在，重新生成
-            if [[ -f "$BASE_DIR/$COMPOSE_FILENAME" ]]; then
-              info "正在重新生成 compose 文件..."
-              if generate_full_compose "$BASE_DIR/$COMPOSE_FILENAME"; then
-                success "✓ compose 文件已更新"
-                warn "注意: 需要重新部署服务才能生效"
-              else
-                err "compose 文件生成失败"
-              fi
-            else
-              warn "注意: 需要重新部署服务才能生效"
-            fi
-          else
-            err "无效的端口映射格式"
-            err "格式: 宿主机端口:容器端口 或 端口1:端口1,端口2:端口2"
-            err "端口范围: 1-65535"
-          fi
-        else
-          info "端口映射保持不变"
-        fi
-        pause
-        ;;
-      4)
-        clear_screen
-        cat <<EOF
-${C_CYAN}当前 NapCat 端口映射: ${C_BRIGHT_WHITE}$NAPCAT_PORT${C_RESET}
-
-${C_BRIGHT_YELLOW}端口映射格式说明:${C_RESET}
-  ${C_GREEN}•${C_RESET} 单个端口: ${C_BRIGHT_WHITE}宿主机端口:容器端口${C_RESET}
-    示例: ${C_CYAN}6099:6099${C_RESET}
-  ${C_GREEN}•${C_RESET} 多个端口: 用逗号分隔
-    示例: ${C_CYAN}6099:6099,3000:3000,8000:8000${C_RESET}
-
-EOF
-        read -r -p "${C_BRIGHT_BLUE}请输入新的端口映射 (留空保持不变):${C_RESET} " new_port || true
-        if [[ -n "$new_port" ]]; then
-          # 移除空格
-          new_port="${new_port// /}"
-          if validate_port_mapping "$new_port"; then
-            NAPCAT_PORT="$new_port"
-            save_config
-            success "NapCat 端口映射已更新为: $NAPCAT_PORT"
-            info "配置已保存到: $CONFIG_FILE"
-
-            # 如果 compose 文件存在，重新生成
-            if [[ -f "$BASE_DIR/$COMPOSE_FILENAME" ]]; then
-              info "正在重新生成 compose 文件..."
-              if generate_full_compose "$BASE_DIR/$COMPOSE_FILENAME"; then
-                success "✓ compose 文件已更新"
-                warn "注意: 需要重新部署服务才能生效"
-              else
-                err "compose 文件生成失败"
-              fi
-            else
-              warn "注意: 需要重新部署服务才能生效"
-            fi
-          else
-            err "无效的端口映射格式"
-            err "格式: 宿主机端口:容器端口 或 端口1:端口1,端口2:端口2"
-            err "端口范围: 1-65535"
-          fi
-        else
-          info "端口映射保持不变"
-        fi
-        pause
-        ;;
+    case "$choice" in
+      1) update_setting "BASE_DIR" "安装目录" ;;
+      2) update_setting "NETWORK_NAME" "网络名称" ;;
+      3) update_port_setting "astrbot" ;;
+      4) update_port_setting "napcat" ;;
       0) return 0 ;;
       *) warn "❌ 无效选择" && sleep 1 ;;
     esac
@@ -516,74 +907,231 @@ compose_exec(){ local dir="$1"; shift; local compose_cmd="$(detect_compose_cmd)"
 # ==================== 统一服务依赖与操作 ====================
 service_dependencies(){ echo ""; }
 
+# 服务操作调度器（简化版）
 service_action(){
-  local action="$1" base="$2" svc="$3"; shift 3
-  local deps="$(service_dependencies "$svc")"
-  # 依赖处理（仅 start/restart 时启动依赖）
-  if [[ "$action" =~ ^(start|restart)$ && -n "$deps" ]]; then
-    for d in $deps; do docker start "$d" >/dev/null 2>&1 || docker restart "$d" >/dev/null 2>&1 || true; done
-  fi
+  local action="$1"
+  local base="$2"
+  local service="$3"
+
   case "$action" in
-    start)   info "启动 $svc ..."; compose_exec "$base" up -d "$svc" 2>/dev/null || docker start "$svc" 2>/dev/null || err "启动失败" ;;
-    stop)    info "停止 $svc ..."; compose_exec "$base" stop "$svc" 2>/dev/null || docker stop "$svc" 2>/dev/null || warn "容器不存在" ;;
-    restart) info "重启 $svc ..."; compose_exec "$base" restart "$svc" 2>/dev/null || docker restart "$svc" 2>/dev/null || err "重启失败" ;;
-    rebuild)
-      # 重新生成 compose 文件以应用最新配置和新的 MAC 地址
-      if [[ -f "$base/$COMPOSE_FILENAME" ]]; then
-        info "正在重新生成 compose 文件..."
-        if generate_full_compose "$base/$COMPOSE_FILENAME"; then
-          success "✓ compose 文件已更新（包含新的随机 MAC 地址）"
-        else
-          warn "compose 文件生成失败，继续使用现有配置"
-        fi
-      fi
-
-      info "正在检查 $svc 镜像更新..."
-      # 获取当前镜像的 digest
-      local current_digest=""
-      current_digest=$(docker inspect "$svc" --format='{{.Image}}' 2>/dev/null || echo "")
-
-      # 强制拉取最新镜像（Docker 会智能地只下载变化的层）
-      info "正在拉取最新镜像..."
-      if compose_exec "$base" pull "$svc"; then
-        # 获取拉取后的镜像 digest
-        local image_name=""
-        image_name=$(docker inspect "$svc" --format='{{.Config.Image}}' 2>/dev/null || echo "")
-        local new_digest=""
-        if [[ -n "$image_name" ]]; then
-          new_digest=$(docker images --no-trunc --quiet "$image_name" 2>/dev/null | head -1 || echo "")
-        fi
-
-        # 对比 digest 判断是否有更新
-        if [[ -n "$current_digest" && -n "$new_digest" && "$current_digest" == "$new_digest" ]]; then
-          info "镜像已是最新版本，无需重建"
-        else
-          info "检测到镜像更新，正在重建容器..."
-          compose_exec "$base" up -d "$svc" || { err "重建容器失败"; return 1; }
-          success "容器已使用最新镜像重建"
-        fi
-      else
-        err "拉取镜像失败"
-        return 1
-      fi
-      ;;
-    delete)  docker rm -fv "$svc" 2>/dev/null || warn "容器不存在" ;;
+    start)   service_start "$base" "$service" ;;
+    stop)    service_stop "$base" "$service" ;;
+    restart) service_restart "$base" "$service" ;;
+    rebuild) service_rebuild "$base" "$service" ;;
+    delete)  service_delete "$service" ;;
+    *)       err "未知操作: $action"; return $ERR_USER_INPUT ;;
   esac
-  # 停止或删除依赖
-  if [[ "$action" == "stop" && -n "$deps" ]]; then for d in $deps; do docker stop "$d" 2>/dev/null || true; done; fi
-  success "$svc $action 完成"
 }
 
-# ==================== 服务操作 ====================
-start_service(){ service_action start "$1" "$2"; pause; }
-stop_service(){ service_action stop "$1" "$2"; pause; }
-restart_service(){ service_action restart "$1" "$2"; pause; }
+# ==================== 服务操作包装函数 ====================
+start_service(){ service_start "$1" "$2"; pause; }
+stop_service(){ service_stop "$1" "$2"; pause; }
+restart_service(){ service_restart "$1" "$2"; pause; }
 show_service_logs(){
   local base="$1" service_name="$2"
   info "正在获取 $service_name 服务的日志（按 Ctrl+C 退出）..."
   docker logs -f --tail 100 "$service_name" 2>/dev/null || err "无法获取日志 - 容器不存在"
 }
 rebuild_service(){ local base="$1" service_name="$2"; warn "这会拉取最新镜像并重建容器 $service_name"; read -r -p "确认? (Y/N): " c || true; [[ "$c" =~ ^[Yy]$ ]] || { info "已取消"; pause; return 0; }; service_action rebuild "$base" "$service_name"; pause; }
+
+# ==================== Layer 6: 密码管理框架 ====================
+
+# 获取服务密码配置（服务适配器）
+get_service_password_config(){
+  local service="$1"
+
+  case "$service" in
+    astrbot)
+      echo "config_file=astrbot/data/cmd_config.json"
+      echo "username_field=dashboard.username"
+      echo "password_field=dashboard.password"
+      echo "password_type=md5"
+      echo "display_name=AstrBot"
+      echo "has_username=true"
+      ;;
+    napcat)
+      echo "config_file=napcat/config/webui.json"
+      echo "username_field="
+      echo "password_field=token"
+      echo "password_type=plain"
+      echo "display_name=NapCat"
+      echo "has_username=false"
+      ;;
+    *)
+      err "不支持的服务: $service"
+      return $ERR_USER_INPUT
+      ;;
+  esac
+
+  return $ERR_SUCCESS
+}
+
+# 显示密码管理菜单
+show_password_menu(){
+  local service="$1"
+  local config_file="$2"
+  local -n config_ref="$3"
+
+  clear_screen
+  print_header "${config_ref[display_name]} 密码管理"
+
+  echo ""
+  echo "${C_BRIGHT_YELLOW}当前账号信息:${C_RESET}"
+
+  # 显示用户名（如果有）
+  if [[ "${config_ref[has_username]}" == "true" ]]; then
+    local current_username
+    current_username=$(json_read_field "$config_file" "${config_ref[username_field]}")
+    [[ -z "$current_username" ]] && current_username="未设置"
+    print_key_value "用户名" "$current_username"
+  fi
+
+  # 显示密码信息
+  if [[ "${config_ref[password_type]}" == "plain" ]]; then
+    local current_password
+    current_password=$(json_read_field "$config_file" "${config_ref[password_field]}")
+    [[ -z "$current_password" ]] && current_password="未设置"
+    print_key_value "密码 (Token)" "$current_password"
+    echo "  ${C_DIM}注意: ${config_ref[display_name]} 使用明文存储密码${C_RESET}"
+  else
+    print_key_value "密码" "${C_DIM}(已加密，无法直接查看)${C_RESET}"
+  fi
+
+  echo ""
+  print_separator
+  echo ""
+  echo "${C_BRIGHT_YELLOW}操作选项:${C_RESET}"
+
+  if [[ "${config_ref[has_username]}" == "true" ]]; then
+    echo "  ${C_GREEN}1)${C_RESET} 修改用户名"
+    echo "  ${C_GREEN}2)${C_RESET} 修改密码"
+    echo "  ${C_BRIGHT_RED}0)${C_RESET} 返回上级菜单"
+  else
+    echo "  ${C_GREEN}1)${C_RESET} 修改密码"
+    echo "  ${C_BRIGHT_RED}0)${C_RESET} 返回上级菜单"
+  fi
+
+  echo ""
+  print_separator
+}
+
+# 更新用户名
+update_username(){
+  local config_file="$1"
+  local username_field="$2"
+
+  local new_username
+  new_username=$(prompt_user "请输入新的用户名")
+
+  if [[ -z "$new_username" ]]; then
+    warn "用户名不能为空"
+    pause
+    return $ERR_USER_INPUT
+  fi
+
+  if json_write_field "$config_file" "$username_field" "$new_username"; then
+    success "用户名已更新为: $new_username"
+    info "请重启服务使更改生效"
+    pause
+    return $ERR_SUCCESS
+  else
+    pause
+    return $ERR_SYSTEM
+  fi
+}
+
+# 更新密码
+update_password(){
+  local config_file="$1"
+  local password_field="$2"
+  local password_type="$3"
+
+  local new_password
+  new_password=$(prompt_password "请输入新密码")
+
+  if [[ -z "$new_password" ]]; then
+    warn "密码不能为空"
+    pause
+    return $ERR_USER_INPUT
+  fi
+
+  local confirm_password
+  confirm_password=$(prompt_password "请再次输入新密码")
+
+  if [[ "$new_password" != "$confirm_password" ]]; then
+    err "两次输入的密码不一致"
+    pause
+    return $ERR_USER_INPUT
+  fi
+
+  # 根据类型处理密码
+  local final_password="$new_password"
+  if [[ "$password_type" == "md5" ]]; then
+    final_password=$(generate_md5 "$new_password")
+    if [[ $? -ne 0 ]]; then
+      pause
+      return $ERR_SYSTEM
+    fi
+  fi
+
+  if json_write_field "$config_file" "$password_field" "$final_password"; then
+    success "密码已更新"
+    info "请重启服务使更改生效"
+    pause
+    return $ERR_SUCCESS
+  else
+    pause
+    return $ERR_SYSTEM
+  fi
+}
+
+# 通用密码管理函数（替代 manage_astrbot_password 和 manage_napcat_password）
+manage_password(){
+  local base="$1"
+  local service="$2"
+
+  # 加载服务配置
+  local -A config
+  while IFS== read -r key value; do
+    config[$key]="$value"
+  done < <(get_service_password_config "$service")
+
+  local config_file="$base/${config[config_file]}"
+
+  # 检查配置文件是否存在
+  if ! ensure_file_exists "$config_file"; then
+    warn "请确保 ${config[display_name]} 已正确部署并至少运行过一次"
+    pause
+    return $ERR_USER_INPUT
+  fi
+
+  while true; do
+    show_password_menu "$service" "$config_file" config
+
+    local choice
+    choice=$(prompt_choice "请选择 (0-2)")
+
+    case "$choice" in
+      1)
+        if [[ "${config[has_username]}" == "true" ]]; then
+          update_username "$config_file" "${config[username_field]}"
+        else
+          update_password "$config_file" "${config[password_field]}" "${config[password_type]}"
+        fi
+        ;;
+      2)
+        if [[ "${config[has_username]}" == "true" ]]; then
+          update_password "$config_file" "${config[password_field]}" "${config[password_type]}"
+        else
+          warn "无效选择"
+          sleep 1
+        fi
+        ;;
+      0) return $ERR_SUCCESS ;;
+      *) warn "无效选择" && sleep 1 ;;
+    esac
+  done
+}
 
 # ==================== 密码管理功能 ====================
 # MD5 哈希函数
@@ -599,210 +1147,8 @@ generate_md5(){
   fi
 }
 
-# AstrBot 密码管理
-manage_astrbot_password(){
-  local base="$1"
-  local config_file="$base/astrbot/data/cmd_config.json"
-
-  # 检查配置文件是否存在
-  if [[ ! -f "$config_file" ]]; then
-    err "配置文件不存在: $config_file"
-    warn "请确保 AstrBot 已正确部署并至少运行过一次"
-    pause
-    return 1
-  fi
-
-  while true; do
-    clear_screen
-
-    # 读取当前账号信息
-    local current_username=""
-    if has_cmd jq && jq -e '.dashboard.username' "$config_file" >/dev/null 2>&1; then
-      current_username=$(jq -r '.dashboard.username // "未设置"' "$config_file" 2>/dev/null || echo "读取失败")
-    else
-      # 如果没有 jq，使用 grep 和 sed
-      current_username=$(grep -o '"username"[[:space:]]*:[[:space:]]*"[^"]*"' "$config_file" | sed 's/.*"username"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' || echo "读取失败")
-      [[ -z "$current_username" ]] && current_username="未设置"
-    fi
-
-    cat <<EOF
-${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-${C_BRIGHT_BLUE}${C_BOLD}           AstrBot 密码管理${C_RESET}
-${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-
-${C_BRIGHT_YELLOW}当前账号信息:${C_RESET}
-  ${C_CYAN}用户名:${C_RESET} ${C_BRIGHT_WHITE}$current_username${C_RESET}
-  ${C_CYAN}密码:${C_RESET}   ${C_DIM}(已加密，无法直接查看)${C_RESET}
-
-${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-
-${C_BRIGHT_YELLOW}操作选项:${C_RESET}
-  ${C_GREEN}1)${C_RESET} 修改用户名
-  ${C_GREEN}2)${C_RESET} 修改密码
-  ${C_BRIGHT_RED}0)${C_RESET} 返回上级菜单
-
-${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-EOF
-
-    read -r -p "${C_BRIGHT_BLUE}请选择 (0-2):${C_RESET} " opt || true
-
-    case "$opt" in
-      1)
-        read -r -p "${C_BRIGHT_BLUE}请输入新的用户名:${C_RESET} " new_username || true
-        if [[ -z "$new_username" ]]; then
-          warn "用户名不能为空"
-          pause
-          continue
-        fi
-
-        # 更新用户名
-        if has_cmd jq; then
-          jq ".dashboard.username = \"$new_username\"" "$config_file" > "${config_file}.tmp" && mv "${config_file}.tmp" "$config_file"
-        else
-          sed -i.bak "s/\"username\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"username\": \"$new_username\"/" "$config_file"
-        fi
-
-        success "用户名已更新为: $new_username"
-        info "请重启 AstrBot 服务使更改生效"
-        pause
-        ;;
-
-      2)
-        read -r -s -p "${C_BRIGHT_BLUE}请输入新密码:${C_RESET} " new_password || true
-        echo ""
-        if [[ -z "$new_password" ]]; then
-          warn "密码不能为空"
-          pause
-          continue
-        fi
-
-        read -r -s -p "${C_BRIGHT_BLUE}请再次输入新密码:${C_RESET} " confirm_password || true
-        echo ""
-
-        if [[ "$new_password" != "$confirm_password" ]]; then
-          err "两次输入的密码不一致"
-          pause
-          continue
-        fi
-
-        # 生成 MD5 哈希
-        local password_hash
-        password_hash=$(generate_md5 "$new_password")
-        if [[ $? -ne 0 ]]; then
-          pause
-          continue
-        fi
-
-        # 更新密码
-        if has_cmd jq; then
-          jq ".dashboard.password = \"$password_hash\"" "$config_file" > "${config_file}.tmp" && mv "${config_file}.tmp" "$config_file"
-        else
-          sed -i.bak "s/\"password\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"password\": \"$password_hash\"/" "$config_file"
-        fi
-
-        success "密码已更新"
-        info "请重启 AstrBot 服务使更改生效"
-        pause
-        ;;
-
-      0) return 0 ;;
-      *) warn "无效选择" && sleep 1 ;;
-    esac
-  done
-}
-
-# NapCat 密码管理
-manage_napcat_password(){
-  local base="$1"
-  local config_file="$base/napcat/config/webui.json"
-
-  # 检查配置文件是否存在
-  if [[ ! -f "$config_file" ]]; then
-    err "配置文件不存在: $config_file"
-    warn "请确保 NapCat 已正确部署并至少运行过一次"
-    pause
-    return 1
-  fi
-
-  while true; do
-    clear_screen
-
-    # 读取当前密码
-    local current_token=""
-    if has_cmd jq && jq -e '.token' "$config_file" >/dev/null 2>&1; then
-      current_token=$(jq -r '.token // "未设置"' "$config_file" 2>/dev/null || echo "读取失败")
-    else
-      # 如果没有 jq，使用 grep 和 sed
-      current_token=$(grep -o '"token"[[:space:]]*:[[:space:]]*"[^"]*"' "$config_file" | sed 's/.*"token"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' || echo "读取失败")
-      [[ -z "$current_token" ]] && current_token="未设置"
-    fi
-
-    cat <<EOF
-${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-${C_BRIGHT_BLUE}${C_BOLD}           NapCat 密码管理${C_RESET}
-${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-
-${C_BRIGHT_YELLOW}当前密码信息:${C_RESET}
-  ${C_CYAN}密码 (Token):${C_RESET} ${C_BRIGHT_WHITE}$current_token${C_RESET}
-
-${C_DIM}注意: NapCat 使用明文存储密码${C_RESET}
-
-${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-
-${C_BRIGHT_YELLOW}操作选项:${C_RESET}
-  ${C_GREEN}1)${C_RESET} 修改密码
-  ${C_BRIGHT_RED}0)${C_RESET} 返回上级菜单
-
-${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-EOF
-
-    read -r -p "${C_BRIGHT_BLUE}请选择 (0-1):${C_RESET} " opt || true
-
-    case "$opt" in
-      1)
-        read -r -p "${C_BRIGHT_BLUE}请输入新密码:${C_RESET} " new_token || true
-        if [[ -z "$new_token" ]]; then
-          warn "密码不能为空"
-          pause
-          continue
-        fi
-
-        # 更新密码
-        if has_cmd jq; then
-          jq ".token = \"$new_token\"" "$config_file" > "${config_file}.tmp" && mv "${config_file}.tmp" "$config_file"
-        else
-          sed -i.bak "s/\"token\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"token\": \"$new_token\"/" "$config_file"
-        fi
-
-        success "密码已更新为: $new_token"
-        info "请重启 NapCat 服务使更改生效"
-        pause
-        ;;
-
-      0) return 0 ;;
-      *) warn "无效选择" && sleep 1 ;;
-    esac
-  done
-}
-
-# 密码管理主函数
-manage_password(){
-  local base="$1"
-  local service_name="$2"
-
-  case "$service_name" in
-    astrbot)
-      manage_astrbot_password "$base"
-      ;;
-    napcat)
-      manage_napcat_password "$base"
-      ;;
-    *)
-      err "不支持的服务: $service_name"
-      pause
-      ;;
-  esac
-}
+# 注意: 旧的 manage_astrbot_password、manage_napcat_password 和 manage_password 函数
+# 已被 Layer 6 中的通用密码管理框架替代（见 lines 1047-1244）
 
 # ==================== Compose 文件操作 ====================
 delete_service(){
@@ -830,7 +1176,7 @@ EOF
 # ==================== 服务状态显示 ====================
 show_all_services_status(){
   clear_screen
-  
+
   # 统一分隔线长度和样式 (70个字符)
   local sep="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -844,40 +1190,21 @@ EOF
   local all_services=("astrbot" "napcat")
 
   for svc in "${all_services[@]}"; do
-    local container_name="$svc"
+    # 使用 get_service_status 获取服务状态
+    local -A status
+    while IFS== read -r key value; do
+      status[$key]="$value"
+    done < <(get_service_status "$svc")
 
-    # 检查容器是否存在和运行状态
-    local container_exists
-    container_exists=$(docker ps -a --filter "name=$container_name" --format '{{.Names}}' 2>/dev/null | head -1)
-
-    if [[ -z "$container_exists" ]]; then
-       echo "${C_BRIGHT_WHITE}服务名称: ${C_CYAN}$svc${C_RESET}"
-       echo "${C_BRIGHT_WHITE}当前状态: ${C_YELLOW}⚠️  未安装${C_RESET}"
-       echo "${C_BRIGHT_GREEN}${sep}${C_RESET}"
-       continue
-    fi
-
-    local status="$(docker ps --filter "name=$container_name" --format '{{.Status}}' 2>/dev/null || echo '')"
-    local status_icon="${C_RED}❌ 未运行${C_RESET}"
-    if [[ "$status" == *"Up"* ]]; then
-      status_icon="${C_GREEN}✅ 运行中${C_RESET}"
-    fi
-
-    # 获取容器IP、镜像名和端口信息
-    local container_ip="$(docker inspect "$container_name" --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' 2>/dev/null || echo '-')"
-    local image="$(docker ps -a --filter "name=$container_name" --format '{{.Image}}' 2>/dev/null || echo '-')"
-    # 优化端口显示，过滤 IPv6，替换换行符为逗号
-    local ports="$(docker ps -a --filter "name=$container_name" --format '{{.Ports}}' 2>/dev/null | tr ',' '\n' | grep -v "\[::\]" | sed 's/0\.0\.0\.0://g' | sed 's/^[ \t]*//' | tr '\n' ',' | sed 's/,$//' || echo '-')"
-    [[ -z "$ports" || "$ports" == " " ]] && ports="-"
-
-    echo "${C_BRIGHT_WHITE}服务名称: ${C_CYAN}$svc${C_RESET}"
-    echo "${C_BRIGHT_WHITE}当前状态: $status_icon"
-    echo "${C_BRIGHT_WHITE}容器 IP : ${C_MAGENTA}$container_ip${C_RESET}"
-    echo "${C_BRIGHT_WHITE}镜像名称: ${C_BLUE}$image${C_RESET}"
-    echo "${C_BRIGHT_WHITE}端口映射: ${C_YELLOW}$ports${C_RESET}"
+    # 显示服务信息
+    echo "${C_BRIGHT_WHITE}服务名称: ${C_CYAN}${status[name]}${C_RESET}"
+    echo "${C_BRIGHT_WHITE}当前状态: ${status[icon]}${C_RESET}"
+    echo "${C_BRIGHT_WHITE}容器 IP : ${C_MAGENTA}${status[ip]}${C_RESET}"
+    echo "${C_BRIGHT_WHITE}镜像名称: ${C_BLUE}${status[image]}${C_RESET}"
+    echo "${C_BRIGHT_WHITE}端口映射: ${C_YELLOW}${status[ports]}${C_RESET}"
     echo "${C_BRIGHT_GREEN}${sep}${C_RESET}"
   done
-  
+
   echo ""
   pause
 }
@@ -885,50 +1212,26 @@ EOF
 # ==================== 服务子菜单 ====================
 menu_service_submenu(){
   local service_name="$1"
-  
+
   while true; do
     clear_screen
-    
-    # 通过 docker ps 判断服务状态
-    local status_icon="⚠️  未安装"
-    local container_ip="-"
-    local image="-"
-    local ports="-"
-    
-    # 检查容器是否存在（包括未运行的）
-    local container_exists
-    container_exists=$(docker ps -a --filter "name=$service_name" --format '{{.Names}}' 2>/dev/null | head -1)
-    
-    if [[ -n "$container_exists" ]]; then
-      # 容器存在，检查是否运行中
-      local running_status
-      running_status=$(docker ps --filter "name=$service_name" --format '{{.Status}}' 2>/dev/null)
-      
-      if [[ -n "$running_status" ]]; then
-        status_icon="✅ 运行中"
-        # 获取容器详细信息
-        container_ip="$(docker inspect "$service_name" --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' 2>/dev/null || echo '-')"
-        image="$(docker inspect "$service_name" --format '{{.Config.Image}}' 2>/dev/null || echo '-')"
-        # 优化端口显示，过滤 IPv6
-        ports="$(docker ps --filter "name=$service_name" --format '{{.Ports}}' 2>/dev/null | tr ',' '\n' | grep -v "\[::\]" | sed 's/0\.0\.0\.0://g' | sed 's/^[ \t]*//' | tr '\n' ',' | sed 's/,$//' || echo '-')"
-        [[ -z "$ports" || "$ports" == " " ]] && ports="-"
-      else
-        status_icon="❌ 未运行"
-        # 获取镜像信息（即使未运行也能显示）
-        image="$(docker ps -a --filter "name=$service_name" --format '{{.Image}}' 2>/dev/null || echo '-')"
-      fi
-    fi
-    
+
+    # 使用 get_service_status 获取服务状态
+    local -A status
+    while IFS== read -r key value; do
+      status[$key]="$value"
+    done < <(get_service_status "$service_name")
+
     cat <<EOF
 ${C_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
   ${C_BRIGHT_BLUE}${C_BOLD}⚙️  $service_name 管理菜单${C_RESET}
 ${C_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
-  ${C_CYAN}服务状态:${C_RESET} ${C_BRIGHT_WHITE}$status_icon${C_RESET}
+  ${C_CYAN}服务状态:${C_RESET} ${C_BRIGHT_WHITE}${status[icon]}${C_RESET}
   ${C_CYAN}容器名称:${C_RESET} ${C_BRIGHT_WHITE}$service_name${C_RESET}
-  ${C_CYAN}镜像名称:${C_RESET} ${C_BRIGHT_WHITE}$image${C_RESET}
-  ${C_CYAN}容器IP:${C_RESET} ${C_BRIGHT_WHITE}$container_ip${C_RESET}
-  ${C_CYAN}端口映射:${C_RESET} ${C_BRIGHT_WHITE}$ports${C_RESET}
+  ${C_CYAN}镜像名称:${C_RESET} ${C_BRIGHT_WHITE}${status[image]}${C_RESET}
+  ${C_CYAN}容器IP:${C_RESET} ${C_BRIGHT_WHITE}${status[ip]}${C_RESET}
+  ${C_CYAN}端口映射:${C_RESET} ${C_BRIGHT_WHITE}${status[ports]}${C_RESET}
 
 ${C_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 ${C_MAGENTA}  📋 操作选项:${C_RESET}
