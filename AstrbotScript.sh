@@ -24,6 +24,9 @@ COMPOSE_FILENAME="compose.yml"    # Compose 文件名
 ASTRBOT_PORT="6185:6185"          # AstrBot 端口映射 (格式: 宿主机端口:容器端口,可用逗号分隔多个)
 NAPCAT_PORT="6099:6099"           # NapCat 端口映射 (格式: 宿主机端口:容器端口,可用逗号分隔多个)
 
+# 支持的服务列表
+readonly ALL_SERVICES=("astrbot" "napcat")
+
 # 如果配置文件存在则读取
 if [[ -f "$CONFIG_FILE" ]]; then
   # 注意：只读取合法的变量名，忽略注释和空行
@@ -74,12 +77,12 @@ success() { printf "%s\n" "${C_BRIGHT_GREEN}${C_BOLD}[SUCCESS]${C_RESET} $*" >&2
 debug()   { [[ -n "${DEBUG_LOG:-}" ]] && printf "%s\n" "${C_BRIGHT_CYAN}[DEBUG]${C_RESET} $*" >&2; }
 
 # ==================== 工具函数 ====================
-require_root(){ 
-  if [[ $EUID -ne 0 ]]; then 
+require_root(){
+  if [[ $EUID -ne 0 ]]; then
     err "需要 root 权限执行 (sudo)。"
-    return 1
+    return $ERR_USER_INPUT
   fi
-  return 0
+  return $ERR_SUCCESS
 }
 
 pause(){ 
@@ -96,34 +99,12 @@ clear_screen(){
 
 # ==================== Layer 1: 核心工具函数扩展 ====================
 
-# 验证非空字符串
-validate_non_empty(){
-  local value="$1"
-  [[ -n "$value" ]]
-}
-
-# 验证目录路径
-validate_directory_path(){
-  local path="$1"
-  [[ -n "$path" && "$path" =~ ^[a-zA-Z0-9/_.-]+$ ]]
-}
-
 # 确保文件存在
 ensure_file_exists(){
   local file="$1"
   if [[ ! -f "$file" ]]; then
     err "文件不存在: $file"
     return $ERR_USER_INPUT
-  fi
-  return $ERR_SUCCESS
-}
-
-# 安全创建目录
-safe_create_dir(){
-  local dir="$1"
-  if ! mkdir -p -- "$dir" 2>/dev/null; then
-    err "无法创建目录: $dir"
-    return $ERR_SYSTEM
   fi
   return $ERR_SUCCESS
 }
@@ -171,18 +152,6 @@ prompt_password(){
   read -r -s -p "${C_BRIGHT_BLUE}${prompt}:${C_RESET} " password || true
   echo "" >&2
   echo "$password"
-}
-
-# 是/否确认提示
-prompt_yes_no(){
-  local prompt="$1"
-  local default="${2:-N}"
-  local response=""
-
-  read -r -p "${C_BRIGHT_BLUE}${prompt} (Y/N) [${default}]:${C_RESET} " response || true
-  response="${response:-$default}"
-
-  [[ "$response" =~ ^[Yy]$ ]]
 }
 
 # 菜单选择提示
@@ -243,7 +212,7 @@ update_setting(){
     return $ERR_SUCCESS
   fi
 
-  eval "$var_name=\"$new_value\""
+  printf -v "$var_name" "%s" "$new_value"
   save_config
   success "${display_name}已更新为: $new_value"
   info "配置已保存到: $CONFIG_FILE"
@@ -281,7 +250,7 @@ update_port_setting(){
     return $ERR_USER_INPUT
   fi
 
-  eval "$port_var=\"$new_port\""
+  printf -v "$port_var" "%s" "$new_port"
   save_config
   success "${service} 端口映射已更新为: $new_port"
   info "配置已保存到: $CONFIG_FILE"
@@ -339,6 +308,7 @@ json_write_field(){
     # 提取字段名（从路径中获取最后一部分）
     local field_name="${field_path##*.}"
     if sed -i.bak "s/\"${field_name}\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"${field_name}\": \"$new_value\"/" "$file" 2>/dev/null; then
+      rm -f "${file}.bak"
       return $ERR_SUCCESS
     else
       err "JSON 更新失败"
@@ -353,17 +323,17 @@ detect_compose_cmd(){ docker compose version >/dev/null 2>&1 && echo "docker com
 check_docker_installed(){ has_cmd docker; }
 
 install_docker(){
-  require_root || { warn "安装 Docker 需要 root 权限"; pause; return 1; }
+  require_root || { warn "安装 Docker 需要 root 权限"; pause; return $ERR_SYSTEM; }
   info "安装 Docker 环境 (含镜像加速) ..."
   local downloader="" temp_script="/tmp/docker_install_$$.sh"
-  has_cmd curl && downloader="curl -fsSL" || has_cmd wget && downloader="wget -qO-" || { err "缺少 curl / wget"; pause; return 1; }
+  has_cmd curl && downloader="curl -fsSL" || has_cmd wget && downloader="wget -qO-" || { err "缺少 curl / wget"; pause; return $ERR_SYSTEM; }
   info "正在下载安装脚本..."
-  if ! $downloader https://linuxmirrors.cn/docker.sh > "$temp_script"; then err "下载安装脚本失败"; rm -f "$temp_script"; pause; return 1; fi
+  if ! $downloader https://linuxmirrors.cn/docker.sh > "$temp_script"; then err "下载安装脚本失败"; rm -f "$temp_script"; pause; return $ERR_SYSTEM; fi
   chmod +x "$temp_script"
   info "开始执行安装脚本..."
-  if ! bash "$temp_script"; then err "执行安装脚本失败"; rm -f "$temp_script"; pause; return 1; fi
+  if ! bash "$temp_script"; then err "执行安装脚本失败"; rm -f "$temp_script"; pause; return $ERR_SYSTEM; fi
   rm -f "$temp_script"
-  check_docker_installed || { err "Docker 未正确安装"; pause; return 1; }
+  check_docker_installed || { err "Docker 未正确安装"; pause; return $ERR_SYSTEM; }
   [[ -z "$(detect_compose_cmd)" ]] && warn "未检测到 Compose，可能需要手动安装" || info "Compose 已检测"
   success "Docker 安装完成"
   pause
@@ -462,23 +432,23 @@ init_network(){
     info "正在创建 Docker 网络: $NETWORK_NAME"
     if ! docker network create --driver bridge "$NETWORK_NAME" >/dev/null 2>&1; then
       err "创建网络失败，请检查 Docker 是否运行"
-      return 1
+      return $ERR_SYSTEM
     fi
     info "✓ 网络创建成功"
   else
     info "✓ 使用已存在的网络: $NETWORK_NAME"
   fi
-  return 0
+  return $ERR_SUCCESS
 }
 
 # 初始化安装目录
 init_base_dir(){
   if ! mkdir -p -- "$BASE_DIR" 2>/dev/null; then
     err "无法创建目录: $BASE_DIR"
-    return 1
+    return $ERR_SYSTEM
   fi
   info "✓ 安装根目录: $BASE_DIR"
-  return 0
+  return $ERR_SUCCESS
 }
 
 ensure_dirs(){ local base="$1"; shift; for d in "$@"; do mkdir -p -- "$base/$d" || { err "无法创建目录: $base/$d"; return 1; }; done; }
@@ -561,19 +531,6 @@ COMPOSE_EOF
 }
 
 # ==================== 服务检测与管理 ====================
-# 从运行中的容器检测已安装的服务列表
-detect_installed_services(){
-  local -a detected_services=()
-
-  # 检查两个主服务容器是否存在（不管是否运行）
-  for svc_name in astrbot napcat; do
-    if docker ps -a --filter "name=$svc_name" --format '{{.Names}}' 2>/dev/null | grep -q "^$svc_name$"; then
-      detected_services+=("$svc_name")
-    fi
-  done
-
-  printf '%s\n' "${detected_services[@]}"
-}
 
 # ==================== Layer 5: 服务管理辅助函数 ====================
 
@@ -605,6 +562,16 @@ get_service_status(){
   fi
 
   return $ERR_SUCCESS
+}
+
+# 解析服务状态到关联数组
+parse_service_status(){
+  local service="$1"
+  local -n status_ref="$2"
+
+  while IFS== read -r key value; do
+    status_ref[$key]="$value"
+  done < <(get_service_status "$service")
 }
 
 # 重新生成 compose 文件（包含新的随机 MAC 地址）
@@ -696,18 +663,58 @@ service_restart(){
 service_rebuild(){
   local base="$1"
   local service="$2"
+  local compose_file="$base/$COMPOSE_FILENAME"
+
+  # 计算旧 compose 文件的哈希值（如果存在）
+  local old_hash=""
+  if [[ -f "$compose_file" ]]; then
+    if has_cmd md5sum; then
+      old_hash=$(md5sum "$compose_file" 2>/dev/null | awk '{print $1}')
+    elif has_cmd md5; then
+      old_hash=$(md5 -q "$compose_file" 2>/dev/null)
+    fi
+  fi
 
   # 重新生成 compose 文件
   regenerate_compose_with_new_mac "$base"
 
+  # 计算新 compose 文件的哈希值
+  local new_hash=""
+  if [[ -f "$compose_file" ]]; then
+    if has_cmd md5sum; then
+      new_hash=$(md5sum "$compose_file" 2>/dev/null | awk '{print $1}')
+    elif has_cmd md5; then
+      new_hash=$(md5 -q "$compose_file" 2>/dev/null)
+    fi
+  fi
+
+  # 检查 compose 文件是否有变化
+  local compose_changed=false
+  if [[ -n "$old_hash" && -n "$new_hash" && "$old_hash" != "$new_hash" ]]; then
+    compose_changed=true
+  fi
+
   info "正在检查 $service 镜像更新..."
 
   # 使用新的 check_image_update 函数
+  local image_updated=false
   if check_image_update "$base" "$service"; then
-    # 有更新，重建容器
-    info "检测到镜像更新，正在重建容器..."
+    image_updated=true
+  fi
+
+  # 判断是否需要重建
+  if [[ "$image_updated" == true || "$compose_changed" == true ]]; then
+    # 显示重建原因
+    if [[ "$image_updated" == true && "$compose_changed" == true ]]; then
+      info "检测到镜像更新和配置变化，正在重建容器..."
+    elif [[ "$image_updated" == true ]]; then
+      info "检测到镜像更新，正在重建容器..."
+    else
+      info "检测到配置变化，正在重建容器..."
+    fi
+
     if compose_exec "$base" up -d "$service"; then
-      success "容器已使用最新镜像重建"
+      success "容器已重建完成"
       return $ERR_SUCCESS
     else
       err "重建容器失败"
@@ -715,7 +722,7 @@ service_rebuild(){
     fi
   else
     # 无更新
-    info "镜像已是最新版本，无需重建"
+    info "镜像和配置均无变化，无需重建"
     return $ERR_SUCCESS
   fi
 }
@@ -823,10 +830,10 @@ EOF
     choice=$(prompt_choice "请选择 (0-4)")
 
     case "$choice" in
-      1) update_setting "BASE_DIR" "安装目录" ;;
-      2) update_setting "NETWORK_NAME" "网络名称" ;;
-      3) update_port_setting "astrbot" ;;
-      4) update_port_setting "napcat" ;;
+      1) update_setting "BASE_DIR" "安装目录" || true ;;
+      2) update_setting "NETWORK_NAME" "网络名称" || true ;;
+      3) update_port_setting "astrbot" || true ;;
+      4) update_port_setting "napcat" || true ;;
       0) return 0 ;;
       *) warn "❌ 无效选择" && sleep 1 ;;
     esac
@@ -905,6 +912,8 @@ install_service_begin(){
 compose_exec(){ local dir="$1"; shift; local compose_cmd="$(detect_compose_cmd)"; [[ -z "$compose_cmd" ]] && { err "缺少 compose"; return 2; }; local cmd="cd '$dir' && $compose_cmd $*"; eval "$cmd"; }
 
 # ==================== 统一服务依赖与操作 ====================
+# 服务依赖关系（预留接口，当前无依赖）
+# 返回: 空格分隔的依赖服务名称列表
 service_dependencies(){ echo ""; }
 
 # 服务操作调度器（简化版）
@@ -1047,7 +1056,7 @@ update_password(){
   local password_type="$3"
 
   local new_password
-  new_password=$(prompt_password "请输入新密码")
+  new_password=$(prompt_password "请输入新密码(不显示)")
 
   if [[ -z "$new_password" ]]; then
     warn "密码不能为空"
@@ -1147,9 +1156,6 @@ generate_md5(){
   fi
 }
 
-# 注意: 旧的 manage_astrbot_password、manage_napcat_password 和 manage_password 函数
-# 已被 Layer 6 中的通用密码管理框架替代（见 lines 1047-1244）
-
 # ==================== Compose 文件操作 ====================
 delete_service(){
   local base="$1" service_name="$2"; clear_screen; cat <<EOF
@@ -1163,7 +1169,7 @@ ${C_BRIGHT_RED}━━━━━━━━━━━━━━━━━━━━━�
 
 ${C_BRIGHT_RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 EOF
-  read -r -p "${C_BRIGHT_BLUE}选择 (1-3):${C_RESET} " ch || true
+  read -r -p "${C_BRIGHT_BLUE}选择 (0-2):${C_RESET} " ch || true
   case "$ch" in
     1) read -r -p "${C_BRIGHT_BLUE}确认? (Y/N):${C_RESET} " c || true; [[ "$c" =~ ^[Yy]$ ]] && service_action delete "$base" "$service_name" && info "保留数据: $base/$service_name" ;;
     2) read -r -p "${C_BRIGHT_RED}${C_BOLD}确认完全删除? (Y/N):${C_RESET} " c || true; [[ "$c" =~ ^[Yy]$ ]] || { info "已取消"; pause; return 0; }; service_action delete "$base" "$service_name"; rm -rf -- "$base/$service_name"; info "${C_RED}数据目录已删除${C_RESET}" ;;
@@ -1187,14 +1193,12 @@ ${C_BRIGHT_GREEN}${sep}${C_RESET}
 EOF
 
   # 定义所有可能的服务
-  local all_services=("astrbot" "napcat")
+  local all_services=("${ALL_SERVICES[@]}")
 
   for svc in "${all_services[@]}"; do
     # 使用 get_service_status 获取服务状态
     local -A status
-    while IFS== read -r key value; do
-      status[$key]="$value"
-    done < <(get_service_status "$svc")
+    parse_service_status "$svc" status
 
     # 显示服务信息
     echo "${C_BRIGHT_WHITE}服务名称: ${C_CYAN}${status[name]}${C_RESET}"
@@ -1218,9 +1222,7 @@ menu_service_submenu(){
 
     # 使用 get_service_status 获取服务状态
     local -A status
-    while IFS== read -r key value; do
-      status[$key]="$value"
-    done < <(get_service_status "$service_name")
+    parse_service_status "$service_name" status
 
     cat <<EOF
 ${C_GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
