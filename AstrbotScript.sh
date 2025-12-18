@@ -156,6 +156,11 @@ generate_full_compose(){
     done
   }
 
+  # 生成随机 MAC 地址（Docker 兼容格式）
+  generate_random_mac() {
+    printf "02:42:%02x:%02x:%02x:%02x" $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256))
+  }
+
   # 生成 AstrBot 端口配置
   local astrbot_ports
   astrbot_ports=$(generate_port_yaml "$ASTRBOT_PORT" "      ")
@@ -164,12 +169,16 @@ generate_full_compose(){
   local napcat_ports
   napcat_ports=$(generate_port_yaml "$NAPCAT_PORT" "      ")
 
+  # 生成随机 MAC 地址
+  local random_mac
+  random_mac=$(generate_random_mac)
+
   cat >"$outfile" <<COMPOSE_EOF
 services:
   astrbot:
     image: soulter/astrbot:latest
     container_name: astrbot
-    restart: always
+    restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
     ports:
@@ -179,13 +188,11 @@ $astrbot_ports
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - astrbot
-    cpus: 1.0
-    mem_limit: 1g
 
   napcat:
     image: mlikiowa/napcat-docker:latest
     container_name: napcat
-    restart: always
+    restart: unless-stopped
     environment:
       - NAPCAT_UID=\${NAPCAT_UID:-1000}
       - NAPCAT_GID=\${NAPCAT_GID:-1000}
@@ -198,9 +205,7 @@ $napcat_ports
       - ./napcat/config:/app/napcat/config
     networks:
       - astrbot
-    mac_address: "02:42:ac:11:00:02"
-    cpus: 1.0
-    mem_limit: 1g
+    mac_address: "$random_mac"
 
 networks:
   astrbot:
@@ -364,7 +369,19 @@ EOF
             save_config
             success "AstrBot 端口映射已更新为: $ASTRBOT_PORT"
             info "配置已保存到: $CONFIG_FILE"
-            warn "注意: 需要重新部署服务才能生效"
+
+            # 如果 compose 文件存在，重新生成
+            if [[ -f "$BASE_DIR/$COMPOSE_FILENAME" ]]; then
+              info "正在重新生成 compose 文件..."
+              if generate_full_compose "$BASE_DIR/$COMPOSE_FILENAME"; then
+                success "✓ compose 文件已更新"
+                warn "注意: 需要重新部署服务才能生效"
+              else
+                err "compose 文件生成失败"
+              fi
+            else
+              warn "注意: 需要重新部署服务才能生效"
+            fi
           else
             err "无效的端口映射格式"
             err "格式: 宿主机端口:容器端口 或 端口1:端口1,端口2:端口2"
@@ -396,7 +413,19 @@ EOF
             save_config
             success "NapCat 端口映射已更新为: $NAPCAT_PORT"
             info "配置已保存到: $CONFIG_FILE"
-            warn "注意: 需要重新部署服务才能生效"
+
+            # 如果 compose 文件存在，重新生成
+            if [[ -f "$BASE_DIR/$COMPOSE_FILENAME" ]]; then
+              info "正在重新生成 compose 文件..."
+              if generate_full_compose "$BASE_DIR/$COMPOSE_FILENAME"; then
+                success "✓ compose 文件已更新"
+                warn "注意: 需要重新部署服务才能生效"
+              else
+                err "compose 文件生成失败"
+              fi
+            else
+              warn "注意: 需要重新部署服务才能生效"
+            fi
           else
             err "无效的端口映射格式"
             err "格式: 宿主机端口:容器端口 或 端口1:端口1,端口2:端口2"
@@ -499,6 +528,16 @@ service_action(){
     stop)    info "停止 $svc ..."; compose_exec "$base" stop "$svc" 2>/dev/null || docker stop "$svc" 2>/dev/null || warn "容器不存在" ;;
     restart) info "重启 $svc ..."; compose_exec "$base" restart "$svc" 2>/dev/null || docker restart "$svc" 2>/dev/null || err "重启失败" ;;
     rebuild)
+      # 重新生成 compose 文件以应用最新配置和新的 MAC 地址
+      if [[ -f "$base/$COMPOSE_FILENAME" ]]; then
+        info "正在重新生成 compose 文件..."
+        if generate_full_compose "$base/$COMPOSE_FILENAME"; then
+          success "✓ compose 文件已更新（包含新的随机 MAC 地址）"
+        else
+          warn "compose 文件生成失败，继续使用现有配置"
+        fi
+      fi
+
       info "正在检查 $svc 镜像更新..."
       # 获取当前镜像的 digest
       local current_digest=""
