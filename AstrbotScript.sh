@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-SCRIPT_VERSION="2.1.0"
+SCRIPT_VERSION="2.1.1"
 
 # ==================== 错误代码常量 ====================
 readonly ERR_SUCCESS=0
@@ -173,6 +173,8 @@ ${C_BRIGHT_YELLOW}端口映射格式说明:${C_RESET}
     示例: ${C_CYAN}6185:6185${C_RESET}
   ${C_GREEN}•${C_RESET} 多个端口: 用逗号分隔
     示例: ${C_CYAN}6185:6185,8080:8080,9000:9000${C_RESET}
+  ${C_GREEN}•${C_RESET} 留空: 不映射端口
+  ${C_GREEN}•${C_RESET} 输入 ${C_CYAN}q${C_RESET}: 保持当前配置不变
 
 EOF
 }
@@ -225,15 +227,18 @@ update_port_setting(){
   local service="$1"
   local port_var="${service^^}_PORT"  # 转换为大写: astrbot -> ASTRBOT_PORT
   local current_port="${!port_var}"
+  local current_port_display="$current_port"
+  [[ -z "$current_port_display" ]] && current_port_display="(不映射端口)"
 
   clear_screen
-  echo "${C_CYAN}当前 ${service} 端口映射: ${C_BRIGHT_WHITE}$current_port${C_RESET}"
+  echo "${C_CYAN}当前 ${service} 端口映射: ${C_BRIGHT_WHITE}$current_port_display${C_RESET}"
   show_port_format_help
 
   local new_port
-  new_port=$(prompt_user "请输入新的端口映射 (留空保持不变)")
+  new_port=$(prompt_user "请输入新的端口映射 (直接回车=不映射，q=保持不变)")
 
-  if [[ -z "$new_port" ]]; then
+  # q / Q: 保持不变
+  if [[ "$new_port" =~ ^[Qq]$ ]]; then
     info "端口映射保持不变"
     pause
     return $ERR_SUCCESS
@@ -241,6 +246,19 @@ update_port_setting(){
 
   # 移除空格
   new_port="${new_port// /}"
+
+  if [[ -z "$new_port" ]]; then
+    printf -v "$port_var" "%s" ""
+    save_config
+    success "${service} 端口映射已更新为: (不映射端口)"
+    info "配置已保存到: $CONFIG_FILE"
+
+    # 如果 compose 文件存在，重新生成
+    regenerate_compose_if_exists
+
+    pause
+    return $ERR_SUCCESS
+  fi
 
   if ! validate_port_mapping "$new_port"; then
     err "无效的端口映射格式"
@@ -476,12 +494,28 @@ generate_full_compose(){
   }
 
   # 生成 AstrBot 端口配置
-  local astrbot_ports
-  astrbot_ports=$(generate_port_yaml "$ASTRBOT_PORT" "      ")
+  local astrbot_ports_block=""
+  if [[ -n "${ASTRBOT_PORT// /}" ]]; then
+    local astrbot_ports
+    astrbot_ports=$(generate_port_yaml "$ASTRBOT_PORT" "      ")
+    astrbot_ports_block=$(cat <<EOF
+    ports:
+$astrbot_ports
+EOF
+)
+  fi
 
   # 生成 NapCat 端口配置
-  local napcat_ports
-  napcat_ports=$(generate_port_yaml "$NAPCAT_PORT" "      ")
+  local napcat_ports_block=""
+  if [[ -n "${NAPCAT_PORT// /}" ]]; then
+    local napcat_ports
+    napcat_ports=$(generate_port_yaml "$NAPCAT_PORT" "      ")
+    napcat_ports_block=$(cat <<EOF
+    ports:
+$napcat_ports
+EOF
+)
+  fi
 
   # 生成随机 MAC 地址
   local random_mac
@@ -495,8 +529,7 @@ services:
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
-    ports:
-$astrbot_ports
+$astrbot_ports_block
     volumes:
       - ./astrbot/data:/AstrBot/data
       - /var/run/docker.sock:/var/run/docker.sock
@@ -511,8 +544,7 @@ $astrbot_ports
       - NAPCAT_UID=\${NAPCAT_UID:-1000}
       - NAPCAT_GID=\${NAPCAT_GID:-1000}
       - MODE=astrbot
-    ports:
-$napcat_ports
+$napcat_ports_block
     volumes:
       - ./astrbot/data:/AstrBot/data
       - ./napcat/ntqq:/app/.config/QQ
@@ -772,8 +804,8 @@ validate_port_mapping(){
   # 移除空格
   port_str="${port_str// /}"
 
-  # 检查是否为空
-  [[ -z "$port_str" ]] && return 1
+  # 允许空值（表示不映射端口）
+  [[ -z "$port_str" ]] && return 0
 
   # 分割多个端口映射
   IFS=',' read -ra PORT_ARRAY <<< "$port_str"
@@ -802,6 +834,12 @@ validate_port_mapping(){
 menu_settings(){
   while true; do
     clear_screen
+
+    local astrbot_port_display="$ASTRBOT_PORT"
+    local napcat_port_display="$NAPCAT_PORT"
+    [[ -z "$astrbot_port_display" ]] && astrbot_port_display="(不映射端口)"
+    [[ -z "$napcat_port_display" ]] && napcat_port_display="(不映射端口)"
+
     cat <<EOF
 ${C_BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 ${C_BRIGHT_BLUE}${C_BOLD}                    安装设置${C_RESET}
@@ -810,8 +848,8 @@ ${C_BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━�
 ${C_BRIGHT_YELLOW}当前配置:${C_RESET}
   ${C_CYAN}📁 安装目录:${C_RESET}     ${C_BRIGHT_WHITE}$BASE_DIR${C_RESET}
   ${C_CYAN}🌐 网络名称:${C_RESET}     ${C_BRIGHT_WHITE}$NETWORK_NAME${C_RESET}
-  ${C_CYAN}🔌 AstrBot端口:${C_RESET}  ${C_BRIGHT_WHITE}$ASTRBOT_PORT${C_RESET}
-  ${C_CYAN}🔌 NapCat端口:${C_RESET}   ${C_BRIGHT_WHITE}$NAPCAT_PORT${C_RESET}
+  ${C_CYAN}🔌 AstrBot端口:${C_RESET}  ${C_BRIGHT_WHITE}$astrbot_port_display${C_RESET}
+  ${C_CYAN}🔌 NapCat端口:${C_RESET}   ${C_BRIGHT_WHITE}$napcat_port_display${C_RESET}
 
 ${C_BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
@@ -1270,7 +1308,7 @@ main_menu(){
     clear_screen
     cat <<EOF
 ${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
-${C_BRIGHT_BLUE}${C_BOLD}      AstrBot 集成部署与管理脚本 v2.1.0${C_RESET}
+${C_BRIGHT_BLUE}${C_BOLD}      AstrBot 集成部署与管理脚本 $SCRIPT_VERSION${C_RESET}
 ${C_BRIGHT_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}
 
 ${C_BRIGHT_YELLOW}📋 环境配置:${C_RESET}
